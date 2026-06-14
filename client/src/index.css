@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+:root{
+  --primary:#A8DF8E;
+  --bg:#F3FDE8;
+  --light-pink:#FFE5E5;
+  --accent:#FFBFBF;
+  --text:#333333;
+}
+
+body{
+  background: var(--bg);
+  color: var(--text);
+}
+
+.btn{
+  background: var(--primary);
+  color: #222;
+}
+
+.card{
+  background: white;
+  border-radius: 12px;
+}
+
+.navbar{
+  background: var(--accent);
+}
