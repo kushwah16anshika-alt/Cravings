@@ -1,11 +1,13 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Contactus from "./pages/Contactus";
+import ContactUs from "./pages/ContactUs";
+
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 const App = () => {
   return (
@@ -16,8 +18,10 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/contactus" element={<Contactus />} />
+        <Route path="/contactus" element={<ContactUs />} />
       </Routes>
+
+      <Footer />
     </BrowserRouter>
   );
 };

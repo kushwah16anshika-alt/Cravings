@@ -1,28 +1,68 @@
 @import "tailwindcss";
 
-:root{
-  --primary:#A8DF8E;
-  --bg:#F3FDE8;
-  --light-pink:#FFE5E5;
-  --accent:#FFBFBF;
-  --text:#333333;
-}
+:root {
+  --primary: #001bb7;
+  --primary-text: #dfdff8;
+  --secondary: #0046ff;
+  --accent: #ff8040;
+  --success: #16a34a;
+  --error: #dc2626;
+  --warning: #f59e0b;
+  --background: #f5f1dc;
+  --text: #111827;
 
-body{
-  background: var(--bg);
-  color: var(--text);
-}
+  --success: #16a34a;
+  --error: #dc2626;
+  --warning: #f59e0b;
+  --info: #0ea5e9;
 
-.btn{
-  background: var(--primary);
-  color: #222;
-}
+  --background: #f5f1dc;
+  --surface: #ffffff;
+  --card: #f8fafc;
+  --border: #d1d5db;
 
-.card{
-  background: white;
-  border-radius: 12px;
-}
+  --text: #111827;
+  --text-light: #6b7280;
+  --text-dark: #030712;
 
-.navbar{
-  background: var(--accent);
+  --blue: #2563eb;
+  --light-blue: #60a5fa;
+  --dark-blue: #1e3a8a;
+
+  --green: #22c55e;
+  --light-green: #86efac;
+  --dark-green: #166534;
+
+  --red: #ef4444;
+  --light-red: #fca5a5;
+  --dark-red: #991b1b;
+
+  --yellow: #eab308;
+  --light-yellow: #fde68a;
+  --dark-yellow: #a16207;
+
+  --orange: #f97316;
+  --light-orange: #fdba74;
+  --dark-orange: #c2410c;
+
+  --purple: #9333ea;
+  --light-purple: #d8b4fe;
+  --dark-purple: #581c87;
+
+  --pink: #ec4899;
+  --light-pink: #f9a8d4;
+  --dark-pink: #9d174d;
+
+  --teal: #14b8a6;
+  --cyan: #06b6d4;
+
+  --indigo: #4f46e5;
+  --lime: #84cc16;
+
+  --gray: #6b7280;
+  --light-gray: #e5e7eb;
+  --dark-gray: #374151;
+
+  --black: #000000;
+  --white: #ffffff;
 }
