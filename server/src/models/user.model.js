@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const UserSchema = mongoose.Schema(
   {
-    fullName: {
+    fullname: {
       type: String,
       required: true,
     },
@@ -28,8 +28,19 @@ const UserSchema = mongoose.Schema(
       required: true,
     },
     photo: {
+      url: {
+        type: String,
+        required: true,
+      },
+      publicId: {
+        type: String,
+      },
+    },
+    userType: {
       type: String,
+      enum: ["admin", "customer", "rider", "restaurant"],
       required: true,
+      default: "customer",
     },
   },
   {

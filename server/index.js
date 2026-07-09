@@ -1,51 +1,54 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-console.log("MONGO_DB_URI =", process.env.MONGO_DB_URI);
-import authRoutes from "./src/routers/auth.route.js";
-import publicRoutes from "./src/routers/public.route.js";
-
-import connectDB from "./src/config/dbConnection.config.js";
-
+import cloudinary from "./src/config/cloudinary.config.js";
 import express from "express";
+import connectDB from "./src/config/dbConnection.config.js";
+import AuthRouter from "./src/routers/auth.route.js";
+import PublicRouter from "./src/routers/public.route.js";
+import UserRouter from "./src/routers/user.route.js";
 import morgan from "morgan";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
+app.use(cookieParser());
+
 app.use(morgan("dev"));
+
+app.use("/auth", AuthRouter);
+app.use("/public", PublicRouter);
+app.use("/user", UserRouter);
 
 // Default API
 app.get("/", (req, res) => {
   console.log("Default Get API Hit");
-  res.json({ message: "Welcome to my first backend Project" });
+  res.json({ message: "Welcome to my Cravings Project" });
 });
-app.use("/auth", authRoutes);
-app.use("/public", publicRoutes);
-// Error Handler
+
+// Default Error Handler
 app.use((err, req, res, next) => {
   const ErrMessage = err.message || "Internal Server Error";
-  const ErrStatusCode = err.statusCode || 500;
+  const ErrStausCode = err.statusCode || 500;
 
-  res.status(ErrStatusCode).json({ message: ErrMessage });
+  res.status(ErrStausCode).json({ message: ErrMessage });
 });
 
 const port = process.env.PORT || 5000;
 
-//  START SERVER ONLY AFTER DB CONNECTS
-const startServer = async () => {
+app.listen(port, async () => {
+  console.log("Server Started on port:", port);
+  connectDB();
+
   try {
-    // console.log(process.env.MONGO_DB_URI);
-    await connectDB();
-
-    app.listen(port, () => {
-      console.log("Server Started on port:", port);
-    });
+    const result = await cloudinary.api.ping();
+    console.log("Cloudinary Connected :");
+    console.log(result);
   } catch (error) {
-    console.error("Failed to start server:", error.message);
+    console.log(error.message);
+    process.exit(1);
   }
-};
-
-startServer();
+});
