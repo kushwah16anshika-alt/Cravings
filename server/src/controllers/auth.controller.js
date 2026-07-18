@@ -6,11 +6,11 @@ import { sendOTPEmail } from "../utils/email.service.js";
 
 export const RegisterUser = async (req, res, next) => {
   try {
-    const { fullName, email, password, phone, gender, dob, userType } =
+    const { fullname, email, password, phone, gender, dob, userType } =
       req.body;
 
     if (
-      !fullName ||
+      !fullname ||
       !email ||
       !password ||
       !phone ||
@@ -31,7 +31,7 @@ export const RegisterUser = async (req, res, next) => {
       return next(error);
     }
 
-    const photoURL = `https://placehold.co/600x400?text=${fullName
+    const photoURL = `https://placehold.co/600x400?text=${fullname
       .charAt(0)
       .toUpperCase()}`;
 
@@ -45,7 +45,7 @@ export const RegisterUser = async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(password, SALT);
 
     await User.create({
-      fullName,
+      fullname,
       email,
       password: hashedPassword,
       phone,

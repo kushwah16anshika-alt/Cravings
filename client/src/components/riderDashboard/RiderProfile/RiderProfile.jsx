@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { MdOutlineDeliveryDining, MdAddCircleOutline } from "react-icons/md";
-import api from "../../../config/ApiConfig";
+import api from "../../../config/api.config.js";
 import CreateRiderProfile from "./CreateRiderProfile";
 
 const VehicleDetails = ({ data }) => (

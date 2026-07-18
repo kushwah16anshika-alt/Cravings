@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import image from "../assets/images/craving.png";
+import image from "../assets/foodTable.webp";
 import api from "../config/api.config.js";
 import toast from "react-hot-toast";
 

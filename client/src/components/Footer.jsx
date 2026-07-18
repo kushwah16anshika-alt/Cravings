@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logoCircle from "../assets/circleLogo.png";
+import logoCircle from "../assets/images/circleLogo-DpCri5UD.png";
 
 const Footer = () => {
   const location = useLocation().pathname;

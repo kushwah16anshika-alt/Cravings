@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import api from "../config/api.config";
 import { useAuth } from "../context/AuthContext";
-import ForgotPasswordModal from "../components/commonModals/ForgotPasswordModal";
+import ForgotPasswordModal from "../components/commomModals/ForgotPasswordModal.jsx";
 import foodBg from "../assets/images/fresh-gourmet-meal-beef-taco-salad-plate-generated-by-ai.jpg";
 
 const Login = () => {

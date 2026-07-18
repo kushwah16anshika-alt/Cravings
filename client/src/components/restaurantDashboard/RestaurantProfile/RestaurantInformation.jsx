@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import api from "../../../config/ApiConfig";
+import api from "../../../config/api.config.js";
 import runningLoader from "../../../assets/runningLoader.gif";
 
 const RestaurantInformation = ({

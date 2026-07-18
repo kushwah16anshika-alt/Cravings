@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { MdOutlineAddAPhoto, MdDelete, MdEdit } from "react-icons/md";
-import api from "../../../config/ApiConfig";
+import api from "../../../config/api.config.js";
 
 const MAX_IMAGE_SIZE_BYTES = 5242880;
 const MAX_GALLERY_IMAGES = 8;

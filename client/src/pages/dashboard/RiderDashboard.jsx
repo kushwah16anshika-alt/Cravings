@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import RiderSidebar from "../../components/riderDashboard/RiderSidebar";
 import RiderOverview from "../../components/riderDashboard/RiderOverview";
-import RiderOrders from "../../components/riderDashboard/RiderOrders";
+import RiderOrders from "../../components/riderDashboard/RiderOrder";
 import RiderSetting from "../../components/riderDashboard/RiderSetting";
 import RiderProfileContainer from "../../components/riderDashboard/RiderProfile/RiderProfile";
 

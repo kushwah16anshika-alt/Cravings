@@ -1,130 +1,9 @@
-
-// import React from "react";
-// import { Link, useNavigate } from "react-router-dom";
-// import { useAuth } from "../context/AuthContext";
-// import { FaPowerOff } from "react-icons/fa";
-// import toast from "react-hot-toast";
-// import api from "../config/api.config.js";
-
-// import cravingLogo from "../assets/images/circleLogo-DpCri5UD.png";
-
-// const Navbar = () => {
-//   const {
-//     user,
-//     isLogin,
-//     role,
-//     setUser,
-//     setIsLogin,
-//     setRole,
-//   } = useAuth();
-
-//   const navigate = useNavigate();
-
-//   const handleNavigate = () => {
-//     if (role === "restaurant") {
-//       navigate("/restaurant-dashboard");
-//     } else if (role === "rider") {
-//       navigate("/rider-dashboard");
-//     } else if (role === "admin") {
-//       navigate("/admin-dashboard");
-//     } else {
-//       navigate("/UserDashboard");
-//     }
-//   };
-
-//   const handleLogout = async () => {
-//     try {
-//       const res = await api.get("/auth/logout");
-
-//       toast.success(res.data.message);
-
-//       sessionStorage.removeItem("UserData");
-//       setUser(null);
-//       setIsLogin(false);
-//       setRole(null);
-
-//       navigate("/");
-//     } catch (error) {
-//       toast.error(
-//         error.response?.data?.message ||
-//           "Unknown error occurred during logout."
-//       );
-//     }
-//   };
-
-//   return (
-//     <div className="sticky top-0 z-50 flex items-center justify-between px-8 py-2 bg-orange-500 text-white shadow-md">
-//       {/* Logo */}
-//       <Link to="/">
-//         <img
-//           src={cravingLogo}
-//           alt="Logo"
-//           className="w-20 h-10 object-contain"
-//         />
-//       </Link>
-
-//       {isLogin ? (
-//         <div className="flex items-center gap-3">
-//           <button
-//             onClick={handleNavigate}
-//             className="flex items-center gap-3 border border-transparent hover:border-white px-3 py-1 rounded transition"
-//             title="Go to Dashboard"
-//           >
-//             <img
-//               src={
-//                 user?.photo?.url ||
-//                 "https://cdn-icons-png.flaticon.com/512/149/149071.png"
-//               }
-//               alt={user?.fullName}
-//               className="w-12 h-12 rounded-full object-cover"
-//             />
-
-//             <div className="flex flex-col items-start">
-//               <span className="text-base">{user?.fullName}</span>
-//               <span className="text-xs uppercase">
-//                 {role || "customer"}
-//               </span>
-//             </div>
-//           </button>
-
-//           <button
-//             onClick={handleLogout}
-//             className="border border-transparent hover:border-white hover:bg-red-500 p-3 rounded transition"
-//             title="Logout"
-//           >
-//             <FaPowerOff />
-//           </button>
-//         </div>
-//       ) : (
-//         <div className="flex items-center gap-3">
-//           <Link
-//             to="/login"
-//             className="hover:text-orange-500 hover:bg-white px-3 py-1 rounded transition"
-//           >
-//             Login
-//           </Link>
-
-//           <Link
-//             to="/register"
-//             className="bg-white text-orange-500 hover:bg-orange-600 hover:text-white px-3 py-1 rounded transition"
-//           >
-//             Register
-//           </Link>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default Navbar;
-
-
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { FaPowerOff } from "react-icons/fa";
 import toast from "react-hot-toast";
-import api from "../config/ApiConfig";
+import api from "../config/api.config.js";
 import logoLight from "../assets/transparentLogoLight.png";
 
 const Navbar = () => {
@@ -133,14 +12,18 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleNavigate = () => {
-    if (role === "restaurant") {
-      navigate("/restaurant-dashboard");
-    } else if (role === "rider") {
-      navigate("/rider-dashboard");
-    } else if (role === "admin") {
-      navigate("/admin-dashboard");
-    } else {
-      navigate("/customer-dashboard");
+    switch (role) {
+      case "restaurant":
+        navigate("/restaurant-dashboard");
+        break;
+      case "rider":
+        navigate("/rider-dashboard");
+        break;
+      case "admin":
+        navigate("/admin-dashboard");
+        break;
+      default:
+        navigate("/customer-dashboard");
     }
   };
 
@@ -159,77 +42,85 @@ const Navbar = () => {
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
-          "Unknown error occurred during logout.",
+          "Unknown error occurred during logout."
       );
     }
   };
 
   return (
-    <div className="sticky top-0 z-50 flex items-center justify-between px-12 py-1 bg-(--color-primary) text-white w-full h-16 shadow-md">
-      <Link to="/" className="h-full">
-        <img
-          src={logoLight}
-          alt="Logo"
-          className="h-full w-fit object-contain"
-        />
-      </Link>
+    <nav className="sticky top-0 z-50 bg-orange-400 text-white shadow-lg">
+      <div className="max-w-7xl mx-auto flex items-center justify-between h-16 px-6">
+        {/* Logo */}
+        <Link to="/" className="flex items-center">
+          <img
+            src={logoLight}
+            alt="Cravings"
+            className="h-12 w-auto object-contain"
+          />
+        </Link>
 
-      {isLogin ? (
-        <div className="flex items-center bg-white/10 hover:bg-white/20 border border-white/20 transition rounded-full pr-2 pl-1 py-1 shadow-lg">
-          <button
-            onClick={handleNavigate}
-            className="flex items-center gap-3 cursor-pointer text-left"
-          >
-            <div className="relative">
-              <img
-                src={
-                  user?.photo?.url ||
-                  "https://cdn-icons-png.flaticon.com/512/149/149071.png"
-                }
-                alt={user?.fullName}
-                className="w-10 h-10 rounded-full object-cover ring-2 ring-white/40"
-              />
+        {/* Right Section */}
+        {isLogin ? (
+          <div className="flex items-center gap-4">
+            {/* Profile */}
+            <button
+              onClick={handleNavigate}
+              className="flex items-center gap-3 bg-orange-500 hover:bg-orange-700 transition-all duration-300 px-3 py-2 rounded-full shadow-md"
+            >
+              <div className="relative">
+                <img
+                  src={
+                    user?.photo?.url ||
+                    "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                  }
+                  alt={user?.fullName}
+                  className="w-11 h-11 rounded-full object-cover border-2 border-white"
+                />
 
-              <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-(--color-primary) rounded-full"></div>
-            </div>
+                <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-orange-600"></span>
+              </div>
 
-            <div className="flex flex-col mr-3">
-              <span className="text-sm font-bold">
-                {user?.fullName}
-              </span>
+              <div className="hidden sm:flex flex-col text-left">
+                <span className="font-semibold text-sm">
+                  {user?.fullName}
+                </span>
 
-              <span className="text-[10px] uppercase font-bold">
-                {role}
-              </span>
-            </div>
-          </button>
+                <span className="text-xs capitalize text-orange-100">
+                  {role}
+                </span>
+              </div>
+            </button>
 
-          <button
-            onClick={handleLogout}
-            className="hover:bg-red-500 p-2.5 rounded-full transition"
-            title="Logout"
-          >
-            <FaPowerOff size={16} />
-          </button>
-        </div>
-      ) : (
-        <div className="flex items-center gap-2">
-          <Link
-            to="/login"
-            className="px-3 py-1 rounded hover:bg-white hover:text-(--color-primary) transition"
-          >
-            Login
-          </Link>
+            {/* Logout */}
+            <button
+              onClick={handleLogout}
+              title="Logout"
+              className="w-11 h-11 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center transition-all duration-300 shadow-md"
+            >
+              <FaPowerOff size={18} />
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            {/* Login */}
+            <Link
+              to="/login"
+              className="px-5 py-2 rounded-lg border border-white text-white hover:bg-white hover:text-orange-600 transition-all duration-300 font-medium"
+            >
+              Login
+            </Link>
 
-          <Link
-            to="/register/customer"
-            className="bg-white text-(--color-primary) px-3 py-1 rounded hover:bg-(--color-primary) hover:text-white border transition"
-          >
-            Register
-          </Link>
-        </div>
-      )}
-    </div>
+            {/* Register */}
+            <Link
+              to="/register/customer"
+              className="px-5 py-2 rounded-lg bg-white text-orange-600 hover:bg-orange-100 transition-all duration-300 font-semibold shadow-md"
+            >
+              Register
+            </Link>
+          </div>
+        )}
+      </div>
+    </nav>
   );
 };
 

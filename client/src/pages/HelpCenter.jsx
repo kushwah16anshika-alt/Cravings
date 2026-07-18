@@ -9,7 +9,7 @@ import {
   FaChevronDown,
   FaChevronUp,
 } from "react-icons/fa";
-import api from "../config/ApiConfig";
+import api from "../config/api.config.js";
 
 const HelpCenter = () => {
   const [formData, setFormData] = useState({

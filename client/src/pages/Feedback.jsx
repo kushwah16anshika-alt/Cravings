@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { FaStar } from "react-icons/fa";
-import api from "../config/ApiConfig";
+import api from "../config/api.config.js";
 
 const Feedback = () => {
   const [formData, setFormData] = useState({

@@ -117,7 +117,7 @@ app.use(morgan("dev"));
 
 // Routes
 app.use("/auth", AuthRouter);
-app.use("/public", PublicRouter);
+app.use("/api/public", PublicRouter);
 app.use("/user", UserRouter);
 app.use("/restaurant", RestaurantRouter);
 

@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { MdEdit } from "react-icons/md";
 import { MdOutlineAddAPhoto, MdOutlineLockReset } from "react-icons/md";
 import { useAuth } from "../../context/AuthContext";
-import api from "../../config/ApiConfig";
+import api from "../../config/api.config.js";
 import toast from "react-hot-toast";
-import PasswordChangeModal from "../commonModals/PasswordChangeModal";
+import PasswordChangeModal from "../commomModals/PasswordChangeModal.jsx";
 
 const CustomerSetting = () => {
   const { user, setUser } = useAuth();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
-import api from "../../config/ApiConfig";
+import api from "../../config/api.config.js";
 import toast from "react-hot-toast";
 import { MdAdd, MdClose } from "react-icons/md";
 

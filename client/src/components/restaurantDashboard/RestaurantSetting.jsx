@@ -1,9 +1,9 @@
 //
 
 import React, { useState } from "react";
-import RestaurantInformation from "./settings/RestaurantInformation";
-import RestaurantCoreDetails from "./settings/RestaurantCoreDetails";
-import RestaurantPhotos from "./settings/RestaurantPhotos";
+import RestaurantInformation from "./RestaurantProfile/RestaurantInformation";
+import RestaurantCoreDetails from "./RestaurantProfile/ContactAndHours.jsx";
+import RestaurantPhotos from "./RestaurantProfile/RestaurantPhotos.jsx";
 
 const RestaurantProfileContainer = () => {
   const tabs = [

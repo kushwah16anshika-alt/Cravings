@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { MdOutlineDeliveryDining } from "react-icons/md";
 import { useAuth } from "../../../context/AuthContext";
-import api from "../../../config/ApiConfig";
+import api from "../../../config/api.config.js";
 import runningLoader from "../../../assets/runningLoader.gif";
 
 const CreateRiderProfile = ({ onSuccess, onCancel }) => {

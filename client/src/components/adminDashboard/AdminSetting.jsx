@@ -1,10 +1,7 @@
-
 import React, { useState } from "react";
-import { MdEdit } from "react-icons/md";
-import { MdOutlineAddAPhoto } from "react-icons/md";
-import { MdOutlineLockReset } from "react-icons/md";
+import { MdEdit, MdOutlineAddAPhoto, MdOutlineLockReset } from "react-icons/md";
 import { useAuth } from "../../context/AuthContext";
-import api from "../../config/api.config";
+import api from "../../config/api.config.js";
 import toast from "react-hot-toast";
 import PasswordChangeModal from "../commomModals/PasswordChangeModal.jsx";
 
@@ -20,7 +17,7 @@ const AdminSetting = () => {
     useState(false);
 
   const [formData, setFormData] = useState({
-    fullName: user?.fullname || "",
+    fullName: user?.fullName || "",
     email: user?.email || "",
     phone: user?.phone || "",
   });
@@ -40,7 +37,6 @@ const AdminSetting = () => {
     if (!file) return;
 
     setProfilePic(file);
-
     setProfilePicPreview(URL.createObjectURL(file));
   };
 
@@ -50,28 +46,22 @@ const AdminSetting = () => {
 
       const payload = new FormData();
 
-      payload.append("fullname", formData.fullName);
-
+      payload.append("fullName", formData.fullName);
       payload.append("email", formData.email.toLowerCase());
-
       payload.append("phone", formData.phone);
 
       if (profilePic) {
-        payload.append("photo", profilePic);
+        payload.append("displayPic", profilePic);
       }
 
-      const response = await api.put("/user/edit-profile", payload);
+      const response = await api.put("/common/edit-profile", payload);
 
-      const updatedUser = response.data.data;
+      setUser(response.data.data);
 
-      setUser(updatedUser);
-
-      sessionStorage.setItem("UserData", JSON.stringify(updatedUser));
+      sessionStorage.setItem("cravingUser", JSON.stringify(response.data.data));
 
       setProfilePic(null);
-
       setProfilePicPreview(null);
-
       setEditingProfile(false);
 
       toast.success("Profile updated successfully!");
@@ -84,144 +74,142 @@ const AdminSetting = () => {
 
   const handleCancelProfile = () => {
     setFormData({
-      fullName: user?.fullname || "",
-
+      fullName: user?.fullName || "",
       email: user?.email || "",
-
       phone: user?.phone || "",
     });
 
     setProfilePic(null);
-
     setProfilePicPreview(null);
-
     setEditingProfile(false);
   };
+
   return (
     <>
       <div className="overflow-y-auto h-full p-6 space-y-6">
-        <div className="bg-(--color-base-200) rounded-lg p-6">
-          {/* Header */}
+        <div className="bg-(--color-base-100) rounded-2xl shadow-xl overflow-hidden border border-(--color-base-300)">
+          <div className="h-32 bg-linear-to-r from-(--color-primary) to-(--color-secondary) relative">
+            <div className="absolute top-4 right-4 z-10">
+              {!editingProfile ? (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setEditingProfile(true)}
+                    className="flex items-center gap-2 bg-white text-(--color-primary) hover:bg-(--color-primary) hover:text-(--color-primary-content) px-4 py-2 rounded-lg text-sm font-bold shadow-md"
+                  >
+                    <MdEdit />
+                    Edit Profile
+                  </button>
 
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">Profile Information</h3>
+                  <button
+                    onClick={() => setIsPasswordChangeModalOpen(true)}
+                    className="flex items-center gap-2 bg-white text-(--color-primary) hover:bg-(--color-primary) hover:text-(--color-primary-content) px-4 py-2 rounded-lg text-sm font-bold shadow-md"
+                  >
+                    <MdOutlineLockReset />
+                    Change Password
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleCancelProfile}
+                    disabled={isLoading}
+                    className="bg-white/20 text-white px-4 py-2 rounded-lg text-sm"
+                  >
+                    Cancel
+                  </button>
 
-            {!editingProfile ? (
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setEditingProfile(true)}
-                  className="flex items-center gap-2 bg-(--color-primary) text-(--color-primary-content) px-3 py-1 rounded text-sm"
-                >
-                  <MdEdit />
-                  Edit
-                </button>
-
-                <button
-                  onClick={() => setIsPasswordChangeModalOpen(true)}
-                  className="flex items-center gap-2 border border-(--color-primary) text-(--color-primary) px-3 py-1 rounded text-sm hover:bg-(--color-primary) hover:text-(--color-primary-content)"
-                >
-                  <MdOutlineLockReset />
-                  Change Password
-                </button>
-              </div>
-            ) : (
-              <div className="flex gap-2">
-                <button
-                  onClick={handleSaveProfile}
-                  disabled={isLoading}
-                  className="flex items-center gap-2 bg-(--color-primary) text-(--color-primary-content) px-3 py-1 rounded text-sm"
-                >
-                  {isLoading ? "Saving..." : "Save Changes"}
-                </button>
-
-                <button
-                  onClick={handleCancelProfile}
-                  disabled={isLoading}
-                  className="flex items-center gap-2 bg-(--color-secondary) text-(--color-secondary-content) px-3 py-1 rounded text-sm"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Profile Content */}
-
-          <div className="flex items-center gap-6">
-            {/* Image */}
-
-            <div className="relative">
-              <div className="w-36 h-36">
-                <img
-                  src={
-                    profilePicPreview ||
-                    user?.photo?.url ||
-                    "https://via.placeholder.com/150"
-                  }
-                  alt="Profile"
-                  className="w-full h-full rounded-full object-cover border-2 border-(--color-primary)"
-                />
-              </div>
-
-              {editingProfile && (
-                <div className="absolute bottom-1 right-1 border p-2 rounded-full bg-(--color-base-200)">
-                  <label htmlFor="profilePic" className="cursor-pointer">
-                    <MdOutlineAddAPhoto className="text-xl" />
-                  </label>
-
-                  <input
-                    type="file"
-                    id="profilePic"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleProfilePicChange}
-                  />
+                  <button
+                    onClick={handleSaveProfile}
+                    disabled={isLoading}
+                    className="bg-white text-(--color-primary) px-4 py-2 rounded-lg text-sm font-bold"
+                  >
+                    {isLoading ? "Saving..." : "Save Changes"}
+                  </button>
                 </div>
               )}
             </div>
+          </div>
 
-            {/* Form */}
+          <div className="px-8 pb-8">
+            <div className="flex flex-col md:flex-row gap-8">
+              <div className="-mt-16 relative">
+                <div className="w-32 h-32 rounded-full p-1 bg-white shadow-lg relative group">
+                  <img
+                    src={
+                      profilePicPreview ||
+                      user?.photo?.url ||
+                      "https://via.placeholder.com/150"
+                    }
+                    alt="Profile"
+                    className="w-full h-full rounded-full object-cover"
+                  />
 
-            <div className="w-full">
-              <div className="grid grid-cols-5 gap-3 items-center">
-                <label className="font-semibold">Full Name</label>
+                  {editingProfile && (
+                    <>
+                      <label
+                        htmlFor="profilePic"
+                        className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center text-white cursor-pointer"
+                      >
+                        <MdOutlineAddAPhoto className="text-3xl" />
+                      </label>
 
-                <input
-                  type="text"
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleProfileChange}
-                  disabled={!editingProfile}
-                  className={`col-span-4 px-3 py-2 border rounded ${
-                    editingProfile
-                      ? "border-(--color-secondary)"
-                      : "border-transparent"
-                  }`}
-                />
+                      <input
+                        type="file"
+                        id="profilePic"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleProfilePicChange}
+                      />
+                    </>
+                  )}
+                </div>
+              </div>
 
-                <label className="font-semibold">Email</label>
+              <div className="w-full mt-4">
+                <h3 className="text-2xl font-bold">
+                  {user?.fullName || "Admin Profile"}
+                </h3>
 
-                <input
-                  type="email"
-                  value={formData.email}
-                  disabled
-                  className="col-span-4 px-3 py-2 border rounded border-transparent bg-gray-100"
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                  <div>
+                    <label className="text-sm font-semibold">Full Name</label>
 
-                <label className="font-semibold">Phone</label>
+                    <input
+                      type="text"
+                      name="fullName"
+                      value={formData.fullName}
+                      onChange={handleProfileChange}
+                      disabled={!editingProfile}
+                      className="w-full px-4 py-3 bg-(--color-base-200) rounded-xl"
+                    />
+                  </div>
 
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleProfileChange}
-                  disabled={!editingProfile}
-                  className={`col-span-4 px-3 py-2 border rounded ${
-                    editingProfile
-                      ? "border-(--color-secondary)"
-                      : "border-transparent"
-                  }`}
-                />
+                  <div>
+                    <label className="text-sm font-semibold">Email</label>
+
+                    <input
+                      type="email"
+                      value={formData.email}
+                      disabled
+                      className="w-full px-4 py-3 bg-(--color-base-200) rounded-xl"
+                    />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="text-sm font-semibold">
+                      Phone Number
+                    </label>
+
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleProfileChange}
+                      disabled={!editingProfile}
+                      className="w-full px-4 py-3 bg-(--color-base-200) rounded-xl"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
