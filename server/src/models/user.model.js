@@ -42,6 +42,26 @@ const UserSchema = mongoose.Schema(
       required: true,
       default: "customer",
     },
+    lastPasswordChange: {
+      type: Date,
+      default: null,
+    },
+
+    address: {
+      type: String,
+    },
+
+    city: {
+      type: String,
+    },
+
+    state: {
+      type: String,
+    },
+
+    pincode: {
+      type: String,
+    },
   },
   {
     timestamps: true,

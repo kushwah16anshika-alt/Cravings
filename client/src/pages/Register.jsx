@@ -1,220 +1,338 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import image from "../assets/images/craving.png";
 import api from "../config/api.config.js";
 import toast from "react-hot-toast";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { userType } = useParams();
 
-  const [registerData, setRegisterData] = useState({
-    fullName: "",
+  const [formData, setFormData] = useState({
+    userType: userType || "customer",
+    fullname: "",
     email: "",
+    phone: "",
     gender: "",
     dob: "",
-    phone: "",
     password: "",
     confirmPassword: "",
+    agreeTerms: false,
   });
 
-  const [validateError, setValidateError] = useState("");
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
 
-    setRegisterData((prevData) => ({
-      ...prevData,
-      [name]: value,
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
     }));
+  };
+
+  const handleUserTypeChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      userType: e.target.value,
+    }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.fullname.trim()) {
+      newErrors.fullname = "Full name is required";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    }
+
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    }
+
+    if (!formData.gender) {
+      newErrors.gender = "Gender is required";
+    }
+
+    if (!formData.dob) {
+      newErrors.dob = "Date of birth is required";
+    }
+
+    if (!formData.password || formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Please confirm your password";
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    if (!formData.agreeTerms) {
+      newErrors.agreeTerms = "You must agree to terms and conditions";
+    }
+
+    return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (registerData.password !== registerData.confirmPassword) {
-      setValidateError("Passwords do not match");
+    setErrors({});
+    setLoading(true);
+
+    const validationErrors = validateForm();
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      setLoading(false);
       return;
     }
 
-    setValidateError("");
-
-    const payload = {
-      fullName: registerData.fullName,
-      email: registerData.email.toLowerCase(),
-      gender: registerData.gender,
-      dob: registerData.dob,
-      phone: registerData.phone,
-      password: registerData.password,
-    };
-
     try {
-      const res = await api.post("/auth/register", payload);
-
-      toast.success(res.data.message);
-
-      setRegisterData({
-        fullName: "",
-        email: "",
-        gender: "",
-        dob: "",
-        phone: "",
-        password: "",
-        confirmPassword: "",
+      const res = await api.post("/auth/register", {
+        userType: formData.userType,
+        fullname: formData.fullname,
+        email: formData.email.toLowerCase(),
+        phone: formData.phone,
+        gender: formData.gender,
+        dob: formData.dob,
+        password: formData.password,
       });
 
+      toast.success(res.data.message);
       navigate("/login");
     } catch (error) {
-      const msg =
-        error.response?.data?.message || error.message || "Registration failed";
-
-      console.log(msg);
-
-      setValidateError(msg);
-      toast.error(msg);
+      toast.error(
+        error.response?.data?.message ||
+          "Unknown error occurred during registration. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
-  const inputClass =
-    "border p-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-400";
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-orange-50 p-6">
-      <div className="w-full max-w-6xl bg-white rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+    <div className="min-h-[90vh] bg-[url('/foodTable.webp')] flex items-center justify-end bg-cover bg-center p-10 py-12 md:pe-30">
+      <div className="bg-white rounded-lg shadow-md px-10 py-6 max-w-md w-full">
+        <h1 className="text-3xl font-bold text-(--color-primary) mb-2 text-center">
+          Create Account
+        </h1>
 
-        <div className="hidden md:flex items-center justify-center bg-orange-100">
-          <img src={image} alt="Craving" className="w-4/5 object-contain" />
+        <p className="text-(--color-secondary) text-center mb-4">
+          Join us as a Customer, Restaurant, or Rider
+        </p>
+
+        <div className="mb-6">
+          <label className="block text-(--color-neutral) font-semibold mb-3">
+            Register as:
+          </label>
+
+          <div className="flex gap-5">
+            {["customer", "restaurant", "rider"].map((type) => (
+              <label
+                key={type}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <input
+                  type="radio"
+                  name="userType"
+                  value={type}
+                  checked={formData.userType === type}
+                  onChange={handleUserTypeChange}
+                  className="cursor-pointer"
+                />
+
+                <span className="capitalize">{type}</span>
+              </label>
+            ))}
+          </div>
         </div>
 
-        <div className="p-8 md:p-10">
-          <h2 className="text-3xl font-bold text-orange-500 text-center">
-            Create an Account
-          </h2>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <input
+              type="text"
+              name="fullname"
+              value={formData.fullname}
+              onChange={handleInputChange}
+              placeholder="Enter your full name"
+              className={`w-full px-3 py-2 border rounded-md ${
+                errors.fullname ? "border-red-500 border-2" : ""
+              }`}
+            />
 
-          <p className="text-center text-gray-500 mt-2">
-            Join Cravings today!
-          </p>
+            {errors.fullname && (
+              <span className="text-red-500 text-xs">
+                {errors.fullname}
+              </span>
+            )}
+          </div>
 
-          <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4 mt-6">
+          <div className="mb-4">
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              placeholder="Enter your email"
+              className={`w-full px-3 py-2 border rounded-md ${
+                errors.email ? "border-red-500 border-2" : ""
+              }`}
+            />
 
-            <div className="col-span-2 flex flex-col gap-2">
-              <label>Full Name</label>
-              <input
-                type="text"
-                name="fullName"
-                value={registerData.fullName}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
+            {errors.email && (
+              <span className="text-red-500 text-xs">
+                {errors.email}
+              </span>
+            )}
+          </div>
 
-            <div className="flex flex-col gap-2">
-              <label>Email</label>
-              <input
-                type="email"
-                name="email"
-                value={registerData.email}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
+          <div className="mb-4">
+            <input
+              type="number"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              placeholder="Enter your phone number"
+              className={`w-full px-3 py-2 border rounded-md ${
+                errors.phone ? "border-red-500 border-2" : ""
+              }`}
+            />
 
-            <div className="flex flex-col gap-2">
-              <label>Phone</label>
-              <input
-                type="tel"
-                name="phone"
-                value={registerData.phone}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label>Gender</label>
+            {errors.phone && (
+              <span className="text-red-500 text-xs">
+                {errors.phone}
+              </span>
+            )}
+          </div>
+                    <div className="mb-4 grid grid-cols-2 gap-4">
+            <div>
               <select
                 name="gender"
-                value={registerData.gender}
-                onChange={handleChange}
-                className={inputClass}
+                value={formData.gender}
+                onChange={handleInputChange}
+                className={`w-full px-3 py-2 border rounded-md ${
+                  errors.gender ? "border-red-500 border-2" : ""
+                }`}
               >
                 <option value="">Select Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
                 <option value="other">Other</option>
               </select>
+
+              {errors.gender && (
+                <span className="text-red-500 text-xs">
+                  {errors.gender}
+                </span>
+              )}
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label>Date of Birth</label>
+            <div>
               <input
                 type="date"
                 name="dob"
-                value={registerData.dob}
-                onChange={handleChange}
-                className={inputClass}
+                value={formData.dob}
+                onChange={handleInputChange}
+                className={`w-full px-3 py-2 border rounded-md ${
+                  errors.dob ? "border-red-500 border-2" : ""
+                }`}
               />
+
+              {errors.dob && (
+                <span className="text-red-500 text-xs">
+                  {errors.dob}
+                </span>
+              )}
             </div>
-
-            <div className="flex flex-col gap-2">
-              <label>Password</label>
-              <input
-                type="password"
-                name="password"
-                value={registerData.password}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label>Confirm Password</label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={registerData.confirmPassword}
-                onChange={handleChange}
-                className={inputClass}
-              />
-            </div>
-
-            {validateError && (
-              <p className="text-red-500 text-sm col-span-2">
-                {validateError}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              className="col-span-2 bg-orange-500 text-white py-3 rounded-lg hover:bg-orange-600 transition"
-            >
-              Register
-            </button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm">
-              Already have an account?{" "}
-              <button
-                type="button"
-                onClick={() => navigate("/login")}
-                className="text-orange-500 font-semibold hover:underline"
-              >
-                Login here
-              </button>
-            </p>
-
-            <p className="text-sm mt-2">
-              Having Trouble?{" "}
-              <button
-                type="button"
-                onClick={() => navigate("/contactus")}
-                className="text-orange-500 font-semibold hover:underline"
-              >
-                Contact Us
-              </button>
-            </p>
           </div>
-        </div>
+
+          <div className="mb-4">
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              placeholder="Enter your password"
+              className={`w-full px-3 py-2 border rounded-md ${
+                errors.password ? "border-red-500 border-2" : ""
+              }`}
+            />
+
+            {errors.password && (
+              <span className="text-red-500 text-xs">
+                {errors.password}
+              </span>
+            )}
+          </div>
+
+          <div className="mb-6">
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+              placeholder="Confirm your password"
+              className={`w-full px-3 py-2 border rounded-md ${
+                errors.confirmPassword ? "border-red-500 border-2" : ""
+              }`}
+            />
+
+            {errors.confirmPassword && (
+              <span className="text-red-500 text-xs">
+                {errors.confirmPassword}
+              </span>
+            )}
+          </div>
+
+          <div className="mb-6">
+            <label className="flex items-start gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                name="agreeTerms"
+                checked={formData.agreeTerms}
+                onChange={handleInputChange}
+                className="mt-1 cursor-pointer"
+              />
+
+              <span className="text-sm">
+                I agree to the{" "}
+                <span className="text-orange-500 hover:underline">
+                  terms and conditions
+                </span>
+              </span>
+            </label>
+
+            {errors.agreeTerms && (
+              <span className="text-red-500 text-xs ml-6">
+                {errors.agreeTerms}
+              </span>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition"
+          >
+            {loading ? "Registering..." : "Register"}
+          </button>
+        </form>
+
+        <p className="text-center mt-5 text-sm">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="text-orange-500 font-semibold hover:underline"
+          >
+            Login here
+          </Link>
+        </p>
       </div>
     </div>
   );

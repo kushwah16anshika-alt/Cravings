@@ -2,8 +2,8 @@ import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 
 const AdminUser = {
-  fullName: "Admin",
-  email: "Admin@cravings678.com",
+  fullname: "Admin",
+  email: "admin@cravings678.com".toLowerCase(),
   password: await bcrypt.hash("StrongPassword@123", 10),
   dob: "2000-01-01",
   gender: "other",
@@ -28,6 +28,7 @@ const adminSeed = async () => {
     console.log("Admin Create Sucessfully");
   } catch (error) {
     console.log("Admin Not Created");
+    console.error(error);
     throw error;
   }
 };

@@ -1,63 +1,36 @@
-
-// import React from "react";
-// import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-// import Home from "./pages/Home";
-// import Login from "./pages/Login";
-// import Register from "./pages/Register";
-// import ContactUs from "./pages/ContactUs";
-// import UserDashboard from "./pages/dashboard/userDashboard";
-
-// import Navbar from "./components/Navbar";
-// import Footer from "./components/Footer";
-
-// import { Toaster } from "react-hot-toast";
-// import { AuthProvider } from "./context/AuthContext";
-
-// const App = () => {
-//   return (
-//     <AuthProvider>
-//       <BrowserRouter>
-//         <Toaster />
-
-//         <Navbar />
-
-//         <Routes>
-//           <Route path="/" element={<Home />} />
-//           <Route path="/login" element={<Login />} />
-//           <Route path="/register" element={<Register />} />
-//           <Route path="/contact-us" element={<ContactUs />} />
-//           <Route path="/UserDashboard" element={<UserDashboard />} />
-//         </Routes>
-
-//         <Footer />
-//       </BrowserRouter>
-//     </AuthProvider>
-//   );
-// };
-
-// export default App;
-
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import ContactUs from "./pages/ContactUs";
-
-import UserDashboard from "./pages/dashboard/UserDashboard";
-import RestaurantDashboard from "./pages/dashboard/RestaurantDashboard";
-import RiderDashboard from "./pages/dashboard/RiderDashboard";
-import AdminDashboard from "./pages/dashboard/AdminDashboard";
+import { Toaster } from "react-hot-toast";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
-import { Toaster } from "react-hot-toast";
+import Home from "./pages/Home";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Contact from "./pages/Contact";
+import Feedback from "./pages/Feedback";
+import HelpCenter from "./pages/HelpCenter";
+
+import CustomerDashboard from "./pages/dashboard/CustomerDashboard";
+import RestaurantDashboard from "./pages/dashboard/RestaurantDashboard";
+import RiderDashboard from "./pages/dashboard/RiderDashboard";
+import AdminDashboard from "./pages/dashboard/AdminDashboard";
+
 import { AuthProvider } from "./context/AuthContext";
 
 const App = () => {
+  const location = useLocation();
+
+  const hideFooterRoutes = [
+    "/customer-dashboard",
+    "/restaurant-dashboard",
+    "/rider-dashboard",
+    "/admin-dashboard",
+  ];
+
+  const shouldShowFooter = !hideFooterRoutes.includes(location.pathname);
+
   return (
     <AuthProvider>
       <BrowserRouter>
@@ -68,14 +41,19 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
 
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/feedback" element={<Feedback />} />
+          <Route path="/help-center" element={<HelpCenter />} />
+
           <Route path="/login" element={<Login />} />
 
           <Route path="/register" element={<Register />} />
           <Route path="/register/:userType" element={<Register />} />
 
-          <Route path="/contact-us" element={<ContactUs />} />
-
-          <Route path="/UserDashboard" element={<UserDashboard />} />
+          <Route
+            path="/customer-dashboard"
+            element={<CustomerDashboard />}
+          />
           <Route
             path="/restaurant-dashboard"
             element={<RestaurantDashboard />}
@@ -84,7 +62,7 @@ const App = () => {
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
         </Routes>
 
-        <Footer />
+        {shouldShowFooter && <Footer />}
       </BrowserRouter>
     </AuthProvider>
   );

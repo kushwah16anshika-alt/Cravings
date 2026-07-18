@@ -1,56 +1,25 @@
-
-
-
-// import React, { useContext, useEffect, useState } from "react";
-
-// const AuthContext = React.createContext();
-
-// export const AuthProvider = ({ children }) => {
-//   const [user, setUser] = useState(
-//     JSON.parse(sessionStorage.getItem("UserData")) || ""
-//   );
-
-//   const [isLogin, setIsLogin] = useState(!!user);
-
-//   useEffect(() => {
-//     setIsLogin(!!user);
-//   }, [user]);
-
-//   const value = {
-//     user,
-//     setUser,
-//     isLogin,
-//     setIsLogin,
-//   };
-
-//   return (
-//     <AuthContext.Provider value={value}>
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// };
-
-// export const useAuth = () => useContext(AuthContext);
-
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const data = sessionStorage.getItem("UserData");
+    const data = sessionStorage.getItem("cravingUser");
     return data ? JSON.parse(data) : null;
   });
 
   const [isLogin, setIsLogin] = useState(!!user);
+  const [role, setRole] = useState(user ? user.userType : null);
 
   useEffect(() => {
     if (user) {
-      sessionStorage.setItem("UserData", JSON.stringify(user));
+      sessionStorage.setItem("cravingUser", JSON.stringify(user));
       setIsLogin(true);
+      setRole(user.userType);
     } else {
-      sessionStorage.removeItem("UserData");
+      sessionStorage.removeItem("cravingUser");
       setIsLogin(false);
+      setRole(null);
     }
   }, [user]);
 
@@ -61,6 +30,8 @@ export const AuthProvider = ({ children }) => {
         setUser,
         isLogin,
         setIsLogin,
+        role,
+        setRole,
       }}
     >
       {children}

@@ -1,44 +1,35 @@
-// export const AuthProtect = async (req, res, next) => {
-//   try {
-//     // Controller Logic
-
-//     next();
-//   } catch (error) {
-//     console.log(error.message);
-
-//     const err = new Error("Unknown Error At Middleware");
-//     err.statusCode = 500;
-
-//     next(err);
-//   }
-// };
-
-
-
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 
+// Middleware for Normal Authentication
+
 export const AuthProtect = async (req, res, next) => {
   try {
-    const token = req.cookies?.Oreo;
+    const token = req.cookies.Oreo;
+
     if (!token) {
       const error = new Error("Session Expired");
       error.statusCode = 401;
       return next(error);
     }
 
+    // Added from second code
     console.log("Token From MiddleWare : ", token);
 
     const decode = await jwt.verify(token, process.env.JWT_SECRET);
+
     if (!decode) {
       const error = new Error("Session Expired");
       error.statusCode = 401;
       return next(error);
     }
 
+    // Added from second code
     console.log("Decode:", decode);
 
     const verifiedUser = await User.findById(decode.id);
+
+    // Added from second code
     console.log("VerifiedUser:", verifiedUser);
 
     if (!verifiedUser) {
@@ -47,7 +38,147 @@ export const AuthProtect = async (req, res, next) => {
       return next(error);
     }
 
+    // Send the verified user to the Controller for further processing
     req.user = verifiedUser;
+
+    next();
+  } catch (error) {
+    console.log(error.message);
+    next(error);
+  }
+};
+
+// Middleware for Forgot Password OTP verification
+
+export const OTPAuthProtect = async (req, res, next) => {
+  try {
+    const token = req.cookies.kitkat;
+
+    if (!token) {
+      const error = new Error("Session Expired");
+      error.statusCode = 401;
+      return next(error);
+    }
+
+    // console.log("Token From MiddleWare : ", token);
+
+    const decode = await jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!decode) {
+      const error = new Error("Session Expired");
+      error.statusCode = 401;
+      return next(error);
+    }
+
+    // console.log("Decode:", decode);
+
+    const verifiedUser = await User.findById(decode.id);
+
+    // console.log("VerifiedUser:", verifiedUser);
+
+    if (!verifiedUser) {
+      const error = new Error("Session Expired");
+      error.statusCode = 401;
+      return next(error);
+    }
+
+    // Send the verified user to the Controller for further processing
+    req.user = verifiedUser;
+
+    next();
+  } catch (error) {
+    console.log(error.message);
+    next(error);
+  }
+};
+
+// Middleware for Restaurant Authentication
+
+export const RestaurantAuthProtect = async (req, res, next) => {
+  try {
+    const token = req.cookies.Oreo;
+
+    if (!token) {
+      const error = new Error("Session Expired");
+      error.statusCode = 401;
+      return next(error);
+    }
+
+    // console.log("Token From MiddleWare : ", token);
+
+    const decode = await jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!decode) {
+      const error = new Error("Session Expired");
+      error.statusCode = 401;
+      return next(error);
+    }
+
+    // console.log("Decode:", decode);
+
+    const verifiedUser = await User.findById(decode.id);
+
+    // console.log("VerifiedUser:", verifiedUser);
+
+    if (!verifiedUser) {
+      const error = new Error("Session Expired");
+      error.statusCode = 401;
+      return next(error);
+    }
+
+    if (verifiedUser.userType !== "restaurant") {
+      const error = new Error("Unauthorized Access");
+      error.statusCode = 403;
+      return next(error);
+    }
+
+    // Send the verified user to the Controller for further processing
+    req.user = verifiedUser;
+
+    next();
+  } catch (error) {
+    console.log(error.message);
+    next(error);
+  }
+};
+
+// Middleware for Rider Authentication
+// Added from second code
+
+export const RiderAuthProtect = async (req, res, next) => {
+  try {
+    const token = req.cookies.Oreo;
+
+    if (!token) {
+      const error = new Error("Session Expired");
+      error.statusCode = 401;
+      return next(error);
+    }
+
+    const decode = await jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!decode) {
+      const error = new Error("Session Expired");
+      error.statusCode = 401;
+      return next(error);
+    }
+
+    const verifiedUser = await User.findById(decode.id);
+
+    if (!verifiedUser) {
+      const error = new Error("Session Expired");
+      error.statusCode = 401;
+      return next(error);
+    }
+
+    if (verifiedUser.userType !== "rider") {
+      const error = new Error("Unauthorized Access");
+      error.statusCode = 403;
+      return next(error);
+    }
+
+    req.user = verifiedUser;
+
     next();
   } catch (error) {
     console.log(error.message);
