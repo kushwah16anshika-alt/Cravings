@@ -9,7 +9,7 @@ const Register = () => {
   const { userType } = useParams();
 
   const [formData, setFormData] = useState({
-    userType: userType || "customer",
+    userType: userType || "user",
     fullname: "",
     email: "",
     phone: "",
@@ -85,13 +85,15 @@ const Register = () => {
     setErrors({});
     setLoading(true);
 
-    const validationErrors = validateForm();
+    const validationErrors = validateForm(formData);
 
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       setLoading(false);
       return;
     }
+
+    console.log("Form Data:", formData);
 
     try {
       const res = await api.post("/auth/register", {
@@ -132,26 +134,30 @@ const Register = () => {
             Register as:
           </label>
 
-          <div className="flex gap-5">
-            {["customer", "restaurant", "rider"].map((type) => (
-              <label
-                key={type}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <input
-                  type="radio"
-                  name="userType"
-                  value={type}
-                  checked={formData.userType === type}
-                  onChange={handleUserTypeChange}
-                  className="cursor-pointer"
-                />
+         <div className="flex gap-5">
+  {[
+    { label: "Customer", value: "user" },
+    { label: "Restaurant", value: "restaurant" },
+    { label: "Rider", value: "rider" },
+  ].map((type) => (
+    <label
+      key={type.value}
+      className="flex items-center gap-2 cursor-pointer"
+    >
+      <input
+        type="radio"
+        name="userType"
+        value={type.value}
+        checked={formData.userType === type.value}
+        onChange={handleUserTypeChange}
+        className="cursor-pointer"
+      />
 
-                <span className="capitalize">{type}</span>
-              </label>
-            ))}
-          </div>
-        </div>
+      <span>{type.label}</span>
+    </label>
+  ))}
+</div>
+</div>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -337,5 +343,7 @@ const Register = () => {
     </div>
   );
 };
+
+
 
 export default Register;

@@ -1,3 +1,4 @@
+
 import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import { genToken, genOTPToken } from "../utils/auth.service.js";

@@ -12,7 +12,7 @@ import Contact from "./pages/ContactUs";
 import Feedback from "./pages/Feedback";
 import HelpCenter from "./pages/HelpCenter";
 
-import CustomerDashboard from "./pages/dashboard/UserDashboard";
+import UserDashboard from "./pages/dashboard/UserDashboard";
 import RestaurantDashboard from "./pages/dashboard/RestaurantDashboard";
 import RiderDashboard from "./pages/dashboard/RiderDashboard";
 import AdminDashboard from "./pages/dashboard/AdminDashboard";
@@ -48,9 +48,9 @@ const App = () => {
         <Route path="/register/:userType" element={<Register />} />
 
         <Route
-          path="/customer-dashboard"
-          element={<CustomerDashboard />}
-        />
+  path="/customer-dashboard"
+  element={<UserDashboard />}
+/>
         <Route
           path="/restaurant-dashboard"
           element={<RestaurantDashboard />}

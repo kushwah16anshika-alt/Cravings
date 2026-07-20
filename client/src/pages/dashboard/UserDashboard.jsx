@@ -8,13 +8,23 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const UserDashboard = () => {
-  const { isLogin, role } = useAuth();
+  const { isLogin, user } = useAuth();
+
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const active = useLocation().state?.activeTab;
-  const [activeTab, setActiveTab] = React.useState(active || "overview");
+  const [activeTab, setActiveTab] = React.useState(
+    location.state?.activeTab || "overview"
+  );
+  console.log("isLogin =", isLogin);
+console.log("user =", user);
 
-  if (!isLogin || role !== "user") {
+if (user) {
+  console.log("userType =", user.userType);
+}
+
+  // Access Protection
+  if (!isLogin || user?.userType !== "user") {
     return (
       <div className="h-[92vh] bg-[url('/foodTable.webp')] bg-cover bg-center">
         <div className="h-full backdrop-blur-lg flex flex-col items-center justify-center">
@@ -23,8 +33,8 @@ const UserDashboard = () => {
           </h1>
 
           <button
-            className="mt-4 px-4 py-2 bg-(--color-primary) text-white rounded-md"
             onClick={() => navigate("/login")}
+            className="mt-4 px-5 py-2 bg-(--color-primary) text-white rounded-md hover:opacity-90 transition"
           >
             Go to Login
           </button>
@@ -34,12 +44,17 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="h-[91vh] flex gap-2 p-2">
+    <div className="h-[91vh] flex gap-3 p-3">
+      {/* Sidebar */}
       <div className="w-3/17 bg-(--color-base-200) p-4 rounded-lg shadow-md h-full">
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+        <Sidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
       </div>
 
-      <div className="w-14/17 bg-(--color-base-100) p-4 rounded-lg shadow-md h-full">
+      {/* Dashboard Content */}
+      <div className="w-14/17 bg-(--color-base-100) p-4 rounded-lg shadow-md h-full overflow-y-auto">
         {activeTab === "overview" && <Overview />}
         {activeTab === "orders" && <Order />}
         {activeTab === "wishlist" && <Wishlist />}

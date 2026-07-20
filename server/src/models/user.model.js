@@ -38,9 +38,9 @@ const UserSchema = mongoose.Schema(
     },
     userType: {
       type: String,
-      enum: ["admin", "customer", "rider", "restaurant"],
+      enum: ["admin", "user", "rider", "restaurant"],
       required: true,
-      default: "customer",
+      default: "user",
     },
     lastPasswordChange: {
       type: Date,

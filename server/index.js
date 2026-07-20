@@ -94,7 +94,7 @@ import connectDB from "./src/config/dbConnection.config.js";
 
 import AuthRouter from "./src/routers/auth.route.js";
 import PublicRouter from "./src/routers/public.route.js";
-import UserRouter from "./src/models/user.model.js";
+import UserRouter from "./src/routers/user.route.js";
 import RestaurantRouter from "./src/routers/restaurant.route.js";
 
 import morgan from "morgan";

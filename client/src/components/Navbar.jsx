@@ -8,6 +8,8 @@ import logoLight from "../assets/transparentLogoLight.png";
 
 const Navbar = () => {
   const { user, isLogin, role, setUser, setIsLogin, setRole } = useAuth();
+  console.log("Navbar user:", user);
+console.log("Navbar role:", role);
 
   const navigate = useNavigate();
 

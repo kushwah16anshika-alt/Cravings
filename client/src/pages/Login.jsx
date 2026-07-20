@@ -65,13 +65,22 @@ const Login = () => {
         email: formData.email.toLowerCase(),
         password: formData.password,
       });
+      console.log("Login Response:", res.data);
+
+setUser(res.data.data);
+setRole(res.data.data.userType);
+setIsLogin(true);
+
+console.log("User Type:", res.data.data.userType);
+
 
       toast.success(res.data.message);
 
       sessionStorage.setItem(
-        "UserData",
-        JSON.stringify(res.data.data)
-      );
+  "cravingUser",
+  JSON.stringify(res.data.data)
+);
+
 
       setUser(res.data.data);
       setIsLogin(true);
