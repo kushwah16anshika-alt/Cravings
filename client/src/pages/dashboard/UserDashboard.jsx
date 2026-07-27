@@ -24,24 +24,33 @@ if (user) {
 }
 
   // Access Protection
-  if (!isLogin || user?.userType !== "user") {
-    return (
-      <div className="h-[92vh] bg-[url('/foodTable.webp')] bg-cover bg-center">
-        <div className="h-full backdrop-blur-lg flex flex-col items-center justify-center">
-          <h1 className="text-2xl font-bold text-(--color-neutral-content)">
-            Access Denied. Please log in as a user to view this page.
-          </h1>
+// Access Protection
+if (!isLogin) {
+  return (
+    <div className="h-[92vh] flex items-center justify-center">
+      <h1>Please login first.</h1>
+    </div>
+  );
+}
 
-          <button
-            onClick={() => navigate("/login")}
-            className="mt-4 px-5 py-2 bg-(--color-primary) text-white rounded-md hover:opacity-90 transition"
-          >
-            Go to Login
-          </button>
-        </div>
+if (user?.userType !== "customer") {
+  return (
+    <div className="h-[92vh] bg-[url('/foodTable.webp')] bg-cover bg-center">
+      <div className="h-full backdrop-blur-lg flex flex-col items-center justify-center">
+        <h1 className="text-2xl font-bold text-(--color-neutral-content)">
+          Access Denied
+        </h1>
+
+        <button
+          onClick={() => navigate("/login")}
+          className="mt-4 px-5 py-2 bg-(--color-primary) text-white rounded-md"
+        >
+          Go to Login
+        </button>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   return (
     <div className="h-[91vh] flex gap-3 p-3">

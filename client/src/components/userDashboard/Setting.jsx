@@ -1,9 +1,408 @@
+// import React, { useState } from "react";
+// import { MdEdit, MdOutlineAddAPhoto, MdOutlineLockReset } from "react-icons/md";
+// import { FaUserCircle } from "react-icons/fa";
+// import toast from "react-hot-toast";
+
+// import { useAuth } from "../../context/AuthContext";
+// import api from "../../config/api.config.js";
+// import PasswordChangeModal from "../commomModals/PasswordChangeModal.jsx";
+
+// const CustomerSetting = () => {
+//   const { user, setUser } = useAuth();
+
+//   const [editingProfile, setEditingProfile] = useState(false);
+
+//   const [profilePic, setProfilePic] = useState(null);
+
+//   const [profilePicPreview, setProfilePicPreview] = useState(null);
+
+//   const [isLoading, setIsLoading] = useState(false);
+
+//   const [isPasswordChangeModalOpen, setIsPasswordChangeModalOpen] =
+//     useState(false);
+
+//   const [formData, setFormData] = useState({
+//     fullName: user?.fullName || "",
+//     email: user?.email || "",
+//     phone: user?.phone || "",
+//   });
+
+//   const handleProfileChange = (e) => {
+//     const { name, value } = e.target;
+
+//     setFormData((prev) => ({
+//       ...prev,
+//       [name]: value,
+//     }));
+//   };
+
+//   const handleProfilePicChange = (e) => {
+//     const file = e.target.files[0];
+
+//     if (!file) return;
+
+//     setProfilePic(file);
+
+//     setProfilePicPreview(URL.createObjectURL(file));
+//   };
+
+//   const handleSaveProfile = async () => {
+//     try {
+//       setIsLoading(true);
+
+//       const payload = new FormData();
+
+//       payload.append("fullName", formData.fullName);
+
+//       payload.append("email", formData.email.toLowerCase());
+
+//       payload.append("phone", formData.phone);
+
+//       if (profilePic) {
+//         payload.append("displayPic", profilePic);
+//       }
+
+//       const response = await api.put("/user/edit-profile", payload);
+
+//       const updatedUser = response.data.data;
+
+//       setUser(updatedUser);
+
+//       sessionStorage.setItem("cravingUser", JSON.stringify(updatedUser));
+
+//       toast.success("Profile updated successfully");
+
+//       setEditingProfile(false);
+//     } catch (error) {
+//       toast.error(error.response?.data?.message || "Profile update failed");
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   const handleCancelProfile = () => {
+//     setFormData({
+//       fullName: user?.fullName || "",
+
+//       email: user?.email || "",
+
+//       phone: user?.phone || "",
+//     });
+
+//     setProfilePic(null);
+
+//     setProfilePicPreview(null);
+
+//     setEditingProfile(false);
+//   };
+
+//   return (
+//     <>
+//       <div
+//         className="
+//       h-full
+//       overflow-y-auto
+//       p-6
+//       bg-gradient-to-br
+//       from-orange-50
+//       via-white
+//       to-red-50
+//       "
+//       >
+//         <div
+//           className="
+//         max-w-5xl
+//         mx-auto
+//         bg-white
+//         rounded-3xl
+//         shadow-2xl
+//         overflow-hidden
+//         border
+//         border-orange-100
+//         "
+//         >
+//           {/* Header Banner */}
+
+//           <div
+//             className="
+//           h-40
+//           bg-gradient-to-r
+//           from-orange-500
+//           via-red-500
+//           to-pink-500
+//           relative
+//           "
+//           >
+//             <div
+//               className="
+//             absolute
+//             bottom-5
+//             left-8
+//             text-white
+//             "
+//             >
+//               <h1
+//                 className="
+//               text-3xl
+//               font-extrabold
+//               "
+//               >
+//                 My Profile
+//               </h1>
+
+//               <p>Manage your Cravings account</p>
+//             </div>
+//           </div>
+
+//           <div className="p-8">
+//             {/* Profile top section */}
+
+//             <div
+//               className=" flex flex-col
+//             md:flex-row
+//             justify-between
+//             items-center
+//             -mt-20
+//             mb-10
+//             "
+//             >
+//               {/* Image */}
+
+//               <div className="relative">
+//                 <img
+//                   src={
+//                     profilePicPreview ||
+//                     user?.photo?.url ||
+//                     "https://via.placeholder.com/150"
+//                   }
+//                   alt="profile"
+//                   className="
+//                 w-40
+//                 h-40
+//                 rounded-full
+//                 object-cover
+//                 border-8
+//                 border-white
+//                 shadow-xl
+//                 "
+//                 />
+
+//                 {editingProfile && (
+//                   <label
+//                     htmlFor="profilePic"
+//                     className="
+//                   absolute
+//                   bottom-3
+//                   right-3
+//                   bg-orange-500
+//                   text-white
+//                   p-3
+//                   rounded-full
+//                   cursor-pointer
+//                   shadow-lg
+//                   hover:scale-110
+//                   transition
+//                   "
+//                   >
+//                     <MdOutlineAddAPhoto size={22} />
+
+//                     <input
+//                       id="profilePic"
+//                       type="file"
+//                       accept="image/*"
+//                       className="hidden"
+//                       onChange={handleProfilePicChange}
+//                     />
+//                   </label>
+//                 )}
+//               </div>
+
+//               {/* Buttons */}
+
+//               <div
+//                 className="
+//               flex
+//               gap-3
+//               mt-6
+//               md:mt-20
+//               "
+//               >
+//                 {!editingProfile ? (
+//                   <>
+//                     <button
+//                       onClick={() => setEditingProfile(true)}
+//                       className="
+//               flex
+//               items-center
+//               gap-2
+//               px-6
+//               py-3
+//               rounded-2xl
+//               bg-gradient-to-r
+//               from-orange-500
+//               to-red-500
+//               text-white
+//               font-bold
+//               shadow-lg
+//               hover:scale-105
+//               transition
+//               "
+//                     >
+//                       <MdEdit />
+//                       Edit Profile
+//                     </button>
+
+//                     <button
+//                       onClick={() => setIsPasswordChangeModalOpen(true)}
+//                       className="
+//               flex
+//               items-center
+//               gap-2
+//               px-6
+//               py-3
+//               rounded-2xl
+//               border-2
+//               border-orange-500
+//               text-orange-600
+//               font-bold
+//               hover:bg-orange-500
+//               hover:text-white
+//               transition
+//               "
+//                     >
+//                       <MdOutlineLockReset />
+//                       Password
+//                     </button>
+//                   </>
+//                 ) : (
+//                   <>
+//                     <button
+//                       onClick={handleSaveProfile}
+//                       disabled={isLoading}
+//                       className="
+//               px-6
+//               py-3
+//               rounded-2xl
+//               bg-green-500
+//               text-white
+//               font-bold
+//               "
+//                     >
+//                       {isLoading ? "Saving..." : "Save"}
+//                     </button>
+
+//                     <button
+//                       onClick={handleCancelProfile}
+//                       className="
+//               px-6
+//               py-3
+//               rounded-2xl
+//               bg-gray-200
+//               font-bold
+//               "
+//                     >
+//                       Cancel
+//                     </button>
+//                   </>
+//                 )}
+//               </div>
+//             </div>
+
+//             {/* Form Cards */}
+
+//             <div
+//               className="
+//             grid
+//             md:grid-cols-2
+//             gap-6
+//             "
+//             >
+//               {[
+//                 {
+//                   label: "Full Name",
+//                   name: "fullName",
+//                   type: "text",
+//                 },
+
+//                 {
+//                   label: "Email Address",
+//                   name: "email",
+//                   type: "email",
+//                 },
+
+//                 {
+//                   label: "Phone Number",
+//                   name: "phone",
+//                   type: "tel",
+//                 },
+//               ].map((item) => (
+//                 <div
+//                   key={item.name}
+//                   className="
+//             bg-orange-50
+//             p-5
+//             rounded-2xl
+//             border
+//             border-orange-100
+//             "
+//                 >
+//                   <label
+//                     className="
+//                 text-orange-700
+//                 font-bold
+//                 text-sm
+//                 "
+//                   >
+//                     {item.label}
+//                   </label>
+
+//                   <input
+//                     type={item.type}
+//                     name={item.name}
+//                     value={formData[item.name]}
+//                     disabled={item.name === "email" || !editingProfile}
+//                     onChange={handleProfileChange}
+//                     className="
+//                 mt-3
+//                 w-full
+//                 px-4
+//                 py-3
+//                 bg-white
+//                 rounded-xl
+//                 border
+//                 border-orange-200
+//                 outline-none
+//                 focus:ring-2
+//                 focus:ring-orange-400
+//                 "
+//                   />
+//                 </div>
+//               ))}
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {isPasswordChangeModalOpen && (
+//         <PasswordChangeModal
+//           open={isPasswordChangeModalOpen}
+//           onClose={() => setIsPasswordChangeModalOpen(false)}
+//         />
+//       )}
+//     </>
+//   );
+// };
+
+// export default CustomerSetting;
+
+
 import React, { useState } from "react";
-import { MdEdit } from "react-icons/md";
-import { MdOutlineAddAPhoto, MdOutlineLockReset } from "react-icons/md";
+import { MdEdit, MdOutlineAddAPhoto, MdOutlineLockReset } from "react-icons/md";
+import { FaUserCircle } from "react-icons/fa";
+import toast from "react-hot-toast";
+
 import { useAuth } from "../../context/AuthContext";
 import api from "../../config/api.config.js";
-import toast from "react-hot-toast";
 import PasswordChangeModal from "../commomModals/PasswordChangeModal.jsx";
 
 const CustomerSetting = () => {
@@ -13,18 +412,16 @@ const CustomerSetting = () => {
   const [profilePic, setProfilePic] = useState(null);
   const [profilePicPreview, setProfilePicPreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  const [isPasswordChangeModalOpen, setIsPasswordChangeModalOpen] =
-    useState(false);
+  const [isPasswordChangeModalOpen, setIsPasswordChangeModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: user?.fullName || "",
     email: user?.email || "",
     phone: user?.phone || "",
   });
-    const handleProfileChange = (e) => {
-    const { name, value } = e.target;
 
+  const handleProfileChange = (e) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -33,7 +430,6 @@ const CustomerSetting = () => {
 
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
-
     if (!file) return;
 
     setProfilePic(file);
@@ -45,7 +441,6 @@ const CustomerSetting = () => {
       setIsLoading(true);
 
       const payload = new FormData();
-
       payload.append("fullName", formData.fullName);
       payload.append("email", formData.email.toLowerCase());
       payload.append("phone", formData.phone);
@@ -55,27 +450,15 @@ const CustomerSetting = () => {
       }
 
       const response = await api.put("/user/edit-profile", payload);
-
       const updatedUser = response.data.data;
 
       setUser(updatedUser);
+      sessionStorage.setItem("cravingUser", JSON.stringify(updatedUser));
 
-      sessionStorage.setItem(
-        "cravingUser",
-        JSON.stringify(updatedUser)
-      );
-
-      setProfilePic(null);
-      setProfilePicPreview(null);
-
-      toast.success("Profile updated successfully!");
-
+      toast.success("Profile updated successfully");
       setEditingProfile(false);
     } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to update profile"
-      );
+      toast.error(error.response?.data?.message || "Profile update failed");
     } finally {
       setIsLoading(false);
     }
@@ -90,155 +473,126 @@ const CustomerSetting = () => {
 
     setProfilePic(null);
     setProfilePicPreview(null);
-
     setEditingProfile(false);
   };
-    return (
+
+  const fields = [
+    { label: "Full Name", name: "fullName", type: "text" },
+    { label: "Email Address", name: "email", type: "email" },
+    { label: "Phone Number", name: "phone", type: "tel" },
+  ];
+
+  return (
     <>
-      <div className="overflow-y-auto h-full p-6 space-y-6">
-        <div className="bg-(--color-base-200) rounded-lg p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">
-              Profile Information
-            </h3>
-
-            {!editingProfile ? (
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setEditingProfile(true)}
-                  className="flex items-center gap-2 bg-(--color-primary) text-(--color-primary-content) px-3 py-1 rounded text-sm"
-                >
-                  <MdEdit />
-                  Edit
-                </button>
-
-                <button
-                  onClick={() =>
-                    setIsPasswordChangeModalOpen(true)
-                  }
-                  className="flex items-center gap-2 border border-(--color-primary) text-(--color-primary) px-3 py-1 rounded text-sm hover:bg-(--color-primary) hover:text-(--color-primary-content)"
-                >
-                  <MdOutlineLockReset />
-                  Change Password
-                </button>
-              </div>
-            ) : (
-              <div className="flex gap-2 justify-end">
-                <button
-                  onClick={handleSaveProfile}
-                  disabled={isLoading}
-                  className="flex items-center gap-2 bg-(--color-primary) text-(--color-primary-content) px-3 py-1 rounded text-sm"
-                >
-                  {isLoading ? "Saving..." : "Save Changes"}
-                </button>
-
-                <button
-                  onClick={handleCancelProfile}
-                  disabled={isLoading}
-                  className="flex items-center gap-2 bg-(--color-secondary) text-(--color-secondary-content) px-3 py-1 rounded text-sm"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
+      <div className="h-full overflow-y-auto p-6 bg-gradient-to-br from-orange-50 via-white to-red-50">
+        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border border-orange-100">
+          {/* Header */}
+          <div className="h-40 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 relative">
+            <div className="absolute bottom-5 left-8 text-white">
+              <h1 className="text-3xl font-extrabold">My Profile</h1>
+              <p>Manage your Cravings account</p>
+            </div>
           </div>
-                    <div>
-            <div className="flex items-center gap-6">
+
+          <div className="p-8">
+            {/* Profile */}
+            <div className="flex flex-col md:flex-row justify-between items-center -mt-20 mb-10">
               <div className="relative">
-                <div className="w-36 h-36">
-                  <img
-                    src={
-                      profilePicPreview ||
-                      user?.photo?.url ||
-                      "https://via.placeholder.com/150"
-                    }
-                    alt="Profile"
-                    className="w-full h-full rounded-full object-cover border-2 border-(--color-primary)"
-                  />
-                </div>
+                <img
+                  src={
+                    profilePicPreview ||
+                    user?.photo?.url ||
+                    "https://via.placeholder.com/150"
+                  }
+                  alt="profile"
+                  className="w-40 h-40 rounded-full object-cover border-8 border-white shadow-xl"
+                />
 
                 {editingProfile && (
-                  <div
-                    className="absolute cursor-pointer bottom-1 right-1 border p-2 rounded-full w-fit bg-(--color-base-200)"
-                    title="Change Photo"
+                  <label
+                    htmlFor="profilePic"
+                    className="absolute bottom-3 right-3 bg-orange-500 text-white p-3 rounded-full cursor-pointer shadow-lg hover:scale-110 transition"
                   >
-                    <label
-                      htmlFor="profilePic"
-                      className="cursor-pointer"
-                    >
-                      <MdOutlineAddAPhoto className="text-xl" />
-                    </label>
+                    <MdOutlineAddAPhoto size={22} />
 
                     <input
+                      id="profilePic"
                       type="file"
                       accept="image/*"
-                      name="profilePic"
-                      id="profilePic"
                       className="hidden"
                       onChange={handleProfilePicChange}
                     />
-                  </div>
+                  </label>
                 )}
               </div>
-                            <div className="space-y-4 w-full">
-                <div className="grid grid-cols-5 gap-2 justify-center items-center">
-                  <label className="block text-sm font-semibold mb-2">
-                    Full Name
+
+              <div className="flex gap-3 mt-6 md:mt-20">
+                {!editingProfile ? (
+                  <>
+                    <button
+                      onClick={() => setEditingProfile(true)}
+                      className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold shadow-lg hover:scale-105 transition"
+                    >
+                      <MdEdit />
+                      Edit Profile
+                    </button>
+
+                    <button
+                      onClick={() => setIsPasswordChangeModalOpen(true)}
+                      className="flex items-center gap-2 px-6 py-3 rounded-2xl border-2 border-orange-500 text-orange-600 font-bold hover:bg-orange-500 hover:text-white transition"
+                    >
+                      <MdOutlineLockReset />
+                      Password
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleSaveProfile}
+                      disabled={isLoading}
+                      className="px-6 py-3 rounded-2xl bg-green-500 text-white font-bold"
+                    >
+                      {isLoading ? "Saving..." : "Save"}
+                    </button>
+
+                    <button
+                      onClick={handleCancelProfile}
+                      className="px-6 py-3 rounded-2xl bg-gray-200 font-bold"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Form */}
+            <div className="grid md:grid-cols-2 gap-6">
+              {fields.map((field) => (
+                <div
+                  key={field.name}
+                  className="bg-orange-50 p-5 rounded-2xl border border-orange-100"
+                >
+                  <label className="text-orange-700 font-bold text-sm">
+                    {field.label}
                   </label>
 
                   <input
-                    type="text"
-                    name="fullName"
-                    value={formData.fullName}
+                    type={field.type}
+                    name={field.name}
+                    value={formData[field.name]}
+                    disabled={field.name === "email" || !editingProfile}
                     onChange={handleProfileChange}
-                    disabled={!editingProfile}
-                    className={`w-full px-3 py-2 border ${
-                      editingProfile
-                        ? "border-(--color-secondary)"
-                        : "border-transparent"
-                    } rounded col-span-4`}
-                  />
-
-                  <label className="block text-sm font-semibold mb-2">
-                    Email
-                  </label>
-
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleProfileChange}
-                    disabled
-                    className={`w-full px-3 py-2 border ${
-                      editingProfile
-                        ? "border-(--color-secondary) text-(--color-secondary)"
-                        : "border-transparent"
-                    } rounded col-span-4`}
-                  />
-
-                  <label className="block text-sm font-semibold mb-2">
-                    Phone
-                  </label>
-
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleProfileChange}
-                    disabled={!editingProfile}
-                    className={`w-full px-3 py-2 border ${
-                      editingProfile
-                        ? "border-(--color-secondary)"
-                        : "border-transparent"
-                    } rounded col-span-4`}
+                    className="mt-3 w-full px-4 py-3 bg-white rounded-xl border border-orange-200 outline-none focus:ring-2 focus:ring-orange-400"
                   />
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
-            {isPasswordChangeModalOpen && (
+
+      {isPasswordChangeModalOpen && (
         <PasswordChangeModal
           open={isPasswordChangeModalOpen}
           onClose={() => setIsPasswordChangeModalOpen(false)}

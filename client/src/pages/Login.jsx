@@ -81,26 +81,19 @@ console.log("User Type:", res.data.data.userType);
   JSON.stringify(res.data.data)
 );
 
+setUser(res.data.data);
+setRole(res.data.data.userType);
+setIsLogin(true);
 
-      setUser(res.data.data);
-      setIsLogin(true);
-      setRole(res.data.data.userType);
-
-      setFormData({
-        email: "",
-        password: "",
-        rememberMe: false,
-      });
-
-      if (res.data.data.userType === "restaurant") {
-        navigate("/restaurant-dashboard");
-      } else if (res.data.data.userType === "rider") {
-        navigate("/rider-dashboard");
-      } else if (res.data.data.userType === "admin") {
-        navigate("/admin-dashboard");
-      } else {
-        navigate("/customer-dashboard");
-      }
+if (res.data.data.userType === "restaurant") {
+  navigate("/restaurant-dashboard");
+} else if (res.data.data.userType === "rider") {
+  navigate("/rider-dashboard");
+} else if (res.data.data.userType === "admin") {
+  navigate("/admin-dashboard");
+} else {
+  navigate("/customer-dashboard");
+}
     } catch (error) {
       toast.error(
         error.response?.data?.message ||

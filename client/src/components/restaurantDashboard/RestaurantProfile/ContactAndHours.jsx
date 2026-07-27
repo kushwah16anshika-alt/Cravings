@@ -14,21 +14,28 @@ const ContactAndHours = ({ initialData, onSuccess }) => {
     closingTime: initialData?.servingHours?.closingTime || "",
     facebookUrl:
       initialData?.socialMediaLinks?.find(
-        (item) => item.platform === "facebook",
+        (item) => item.platform === "facebook"
       )?.url || "",
     instagramUrl:
       initialData?.socialMediaLinks?.find(
-        (item) => item.platform === "instagram",
+        (item) => item.platform === "instagram"
       )?.url || "",
     twitterUrl:
-      initialData?.socialMediaLinks?.find((item) => item.platform === "twitter")
-        ?.url || "",
+      initialData?.socialMediaLinks?.find(
+        (item) => item.platform === "twitter"
+      )?.url || "",
   });
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
+
 
   const handleCancel = () => {
     setFormData({
@@ -38,19 +45,21 @@ const ContactAndHours = ({ initialData, onSuccess }) => {
       closingTime: initialData?.servingHours?.closingTime || "",
       facebookUrl:
         initialData?.socialMediaLinks?.find(
-          (item) => item.platform === "facebook",
+          (item) => item.platform === "facebook"
         )?.url || "",
       instagramUrl:
         initialData?.socialMediaLinks?.find(
-          (item) => item.platform === "instagram",
+          (item) => item.platform === "instagram"
         )?.url || "",
       twitterUrl:
         initialData?.socialMediaLinks?.find(
-          (item) => item.platform === "twitter",
+          (item) => item.platform === "twitter"
         )?.url || "",
     });
+
     setIsEditing(false);
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -60,12 +69,31 @@ const ContactAndHours = ({ initialData, onSuccess }) => {
 
       const payload = new FormData();
 
-      payload.append("contactDetails.email", formData.contactEmail);
-      payload.append("contactDetails.phone", formData.contactPhone);
-      payload.append("servingHours.openingTime", formData.openingTime);
-      payload.append("servingHours.closingTime", formData.closingTime);
+
+      payload.append(
+        "contactDetails.email",
+        formData.contactEmail
+      );
+
+      payload.append(
+        "contactDetails.phone",
+        formData.contactPhone
+      );
+
+
+      payload.append(
+        "servingHours.openingTime",
+        formData.openingTime
+      );
+
+      payload.append(
+        "servingHours.closingTime",
+        formData.closingTime
+      );
+
 
       const socialMediaLinks = [];
+
 
       if (formData.facebookUrl) {
         socialMediaLinks.push({
@@ -74,12 +102,14 @@ const ContactAndHours = ({ initialData, onSuccess }) => {
         });
       }
 
+
       if (formData.instagramUrl) {
         socialMediaLinks.push({
           platform: "instagram",
           url: formData.instagramUrl,
         });
       }
+
 
       if (formData.twitterUrl) {
         socialMediaLinks.push({
@@ -88,157 +118,442 @@ const ContactAndHours = ({ initialData, onSuccess }) => {
         });
       }
 
-      payload.append("socialMediaLinks", JSON.stringify(socialMediaLinks));
 
-      const response = await api.post("/restaurant/update-profile", payload, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      payload.append(
+        "socialMediaLinks",
+        JSON.stringify(socialMediaLinks)
+      );
 
-      toast.success(response.data.message || "Contact updated successfully!");
+
+      const response = await api.post(
+        "/restaurant/update-profile",
+        payload,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+
+      toast.success(
+        response.data.message ||
+          "Contact updated successfully!"
+      );
+
 
       setIsEditing(false);
+
 
       if (onSuccess) {
         onSuccess();
       }
-    } catch (err) {
-      console.error(err);
+
+
+    } catch (error) {
+
+      console.error(error);
+
       toast.error(
-        err.response?.data?.message || "Failed to update contact details",
+        error.response?.data?.message ||
+        "Failed to update contact details"
       );
+
     } finally {
+
       setIsLoading(false);
+
     }
   };
 
+
+
   return (
+
     <form
       onSubmit={handleSubmit}
-      className="bg-(--color-base-100) p-6 rounded-2xl shadow-md border border-(--color-base-300)"
+      className="
+      min-h-full
+      bg-gradient-to-br
+      from-orange-50
+      via-white
+      to-red-50
+      p-6
+      rounded-3xl
+      shadow-2xl
+      border
+      border-orange-100
+      "
     >
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-bold border-b-2 border-(--color-primary) pb-2">
-          Contact & Hours
-        </h3>
+
+
+      {/* Header */}
+
+      <div className="
+      flex
+      flex-col
+      md:flex-row
+      justify-between
+      items-start
+      md:items-center
+      gap-4
+      mb-8
+      ">
+
+
+        <div>
+
+          <h2 className="
+          text-3xl
+          font-extrabold
+          text-orange-600
+          ">
+            📞 Contact & Business Hours
+          </h2>
+
+
+          <p className="text-gray-500 mt-2">
+            Manage restaurant contact information and opening hours.
+          </p>
+
+        </div>
+
+
 
         {!isEditing && (
+
           <button
             type="button"
             onClick={() => setIsEditing(true)}
-            className="bg-(--color-primary) text-(--color-primary-content) px-5 py-2 rounded-lg"
+            className="
+            px-6
+            py-3
+            rounded-xl
+            bg-gradient-to-r
+            from-orange-500
+            to-red-500
+            text-white
+            font-bold
+            shadow-lg
+            hover:scale-105
+            transition
+            "
           >
-            Edit Profile
+            ✏️ Edit Details
           </button>
+
         )}
+
+
       </div>
 
+
+
+
+
       <fieldset disabled={!isEditing}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="text-sm font-medium">Contact Email</label>
-            <input
-              type="email"
+
+
+        {/* Contact Card */}
+
+        <div className="
+        bg-white
+        rounded-3xl
+        shadow-lg
+        p-6
+        border
+        border-orange-100
+        ">
+
+
+          <div className="flex items-center gap-3 mb-6">
+
+
+            <div className="
+            w-12
+            h-12
+            rounded-full
+            bg-orange-100
+            flex
+            items-center
+            justify-center
+            text-2xl
+            ">
+              📱
+            </div>
+
+
+            <div>
+
+              <h3 className="text-xl font-bold">
+                Contact Information
+              </h3>
+
+
+              <p className="text-sm text-gray-500">
+                Customer support details
+              </p>
+
+            </div>
+
+
+          </div>
+
+
+
+
+
+          <div className="
+          grid
+          grid-cols-1
+          md:grid-cols-2
+          gap-5
+          ">
+
+
+
+            <InputField
+              label="📧 Contact Email"
               name="contactEmail"
               value={formData.contactEmail}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
-              required
+              type="email"
+              placeholder="restaurant@gmail.com"
             />
-          </div>
 
-          <div>
-            <label className="text-sm font-medium">Contact Phone</label>
-            <input
-              type="tel"
+
+
+            <InputField
+              label="📞 Contact Phone"
               name="contactPhone"
               value={formData.contactPhone}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
-              required
+              type="tel"
+              placeholder="+91 9876543210"
             />
-          </div>
 
-          <div>
-            <label className="text-sm font-medium">Opening Time</label>
-            <input
-              type="time"
+
+
+            <InputField
+              label="🌅 Opening Time"
               name="openingTime"
               value={formData.openingTime}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="text-sm font-medium">Closing Time</label>
-            <input
               type="time"
+            />
+
+
+
+            <InputField
+              label="🌙 Closing Time"
               name="closingTime"
               value={formData.closingTime}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
-              required
+              type="time"
             />
+
+
           </div>
+
+
         </div>
 
-        <h4 className="font-bold mt-6 mb-4">Social Media Links</h4>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <input
-            type="url"
-            name="facebookUrl"
-            value={formData.facebookUrl}
-            onChange={handleChange}
-            placeholder="Facebook URL"
-            className="px-3 py-2 border rounded"
-          />
 
-          <input
-            type="url"
-            name="instagramUrl"
-            value={formData.instagramUrl}
-            onChange={handleChange}
-            placeholder="Instagram URL"
-            className="px-3 py-2 border rounded"
-          />
 
-          <input
-            type="url"
-            name="twitterUrl"
-            value={formData.twitterUrl}
-            onChange={handleChange}
-            placeholder="Twitter URL"
-            className="px-3 py-2 border rounded"
-          />
+
+
+        {/* Social Media */}
+
+        <div className="
+        mt-6
+        bg-white
+        rounded-3xl
+        shadow-lg
+        p-6
+        border
+        border-blue-100
+        ">
+
+
+          <h3 className="text-xl font-bold mb-5">
+            🌐 Social Media Links
+          </h3>
+
+
+
+          <div className="
+          grid
+          grid-cols-1
+          md:grid-cols-3
+          gap-5
+          ">
+
+
+            <InputField
+              label="🔵 Facebook"
+              name="facebookUrl"
+              value={formData.facebookUrl}
+              onChange={handleChange}
+              placeholder="Facebook URL"
+            />
+
+
+
+            <InputField
+              label="📸 Instagram"
+              name="instagramUrl"
+              value={formData.instagramUrl}
+              onChange={handleChange}
+              placeholder="Instagram URL"
+            />
+
+
+
+            <InputField
+              label="🐦 Twitter / X"
+              name="twitterUrl"
+              value={formData.twitterUrl}
+              onChange={handleChange}
+              placeholder="Twitter URL"
+            />
+
+
+          </div>
+
+
         </div>
+
+
       </fieldset>
 
+
+
+
+
       {isEditing && (
-        <div className="flex justify-end gap-3 mt-6">
+
+        <div className="
+        flex
+        justify-end
+        gap-4
+        mt-8
+        ">
+
+
           <button
             type="button"
             onClick={handleCancel}
-            className="bg-gray-200 px-4 py-2 rounded"
+            className="
+            px-6
+            py-3
+            rounded-xl
+            bg-gray-200
+            font-semibold
+            hover:bg-gray-300
+            "
           >
-            Cancel
+            ❌ Cancel
           </button>
+
+
+
 
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-(--color-primary) text-(--color-primary-content) px-4 py-2 rounded flex items-center gap-2"
+            className="
+            px-7
+            py-3
+            rounded-xl
+            bg-gradient-to-r
+            from-green-500
+            to-emerald-600
+            text-white
+            font-bold
+            shadow-lg
+            hover:scale-105
+            transition
+            flex
+            items-center
+            gap-3
+            "
           >
-            {isLoading && <img src={runningLoader} className="w-5 h-5" />}
-            Save Contact & Hours
+
+            {isLoading && (
+              <img
+                src={runningLoader}
+                className="w-5 h-5"
+              />
+            )}
+
+            💾 Save Contact & Hours
+
           </button>
+
+
         </div>
+
       )}
+
+
+
     </form>
+
   );
 };
+
+
+
+// Reusable Input Component
+
+const InputField = ({
+  label,
+  name,
+  value,
+  onChange,
+  type = "url",
+  placeholder = "",
+}) => (
+
+  <div>
+
+    <label className="
+    block
+    mb-2
+    font-semibold
+    text-gray-700
+    ">
+      {label}
+    </label>
+
+
+    <input
+      type={type}
+      name={name}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      className="
+      w-full
+      rounded-xl
+      border
+      border-orange-200
+      px-4
+      py-3
+      bg-orange-50
+      focus:bg-white
+      focus:ring-2
+      focus:ring-orange-400
+      outline-none
+      transition
+      "
+    />
+
+  </div>
+
+);
+
+
 
 export default ContactAndHours;

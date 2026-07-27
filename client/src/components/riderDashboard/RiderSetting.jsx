@@ -1,8 +1,13 @@
 import React, { useState } from "react";
-import { MdEdit, MdOutlineLockReset, MdOutlineAddAPhoto } from "react-icons/md";
+import {
+  MdEdit,
+  MdOutlineLockReset,
+  MdOutlineAddAPhoto,
+} from "react-icons/md";
+import toast from "react-hot-toast";
+
 import { useAuth } from "../../context/AuthContext";
 import api from "../../config/api.config.js";
-import toast from "react-hot-toast";
 import PasswordChangeModal from "../commomModals/PasswordChangeModal.jsx";
 
 const RiderSetting = () => {
@@ -53,13 +58,15 @@ const RiderSetting = () => {
         payload.append("displayPic", profilePic);
       }
 
-     const response = await api.put("/user/edit-profile", payload);
+      const response = await api.put("/user/edit-profile", payload);
 
-      setUser(response.data.data);
+      const updatedUser = response.data.data;
+
+      setUser(updatedUser);
 
       sessionStorage.setItem(
         "cravingUser",
-        JSON.stringify(response.data.data)
+        JSON.stringify(updatedUser)
       );
 
       setEditingProfile(false);
@@ -89,153 +96,259 @@ const RiderSetting = () => {
   };
 
   return (
-    <>
-      <div className="overflow-y-auto h-full p-6 space-y-6">
-        <div className="bg-(--color-base-100) rounded-2xl shadow-xl overflow-hidden border border-(--color-base-300)">
-          <div className="h-32 bg-linear-to-r from-(--color-primary) to-(--color-secondary) relative">
-            <div className="absolute top-4 right-4">
-              {!editingProfile ? (
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setEditingProfile(true)}
-                    className="flex items-center gap-2 bg-white text-(--color-primary) px-4 py-2 rounded-lg text-sm font-bold"
-                  >
-                    <MdEdit />
-                    Edit Profile
-                  </button>
+  <>
+    <div className="min-h-full overflow-y-auto bg-gray-50 p-4 sm:p-6 lg:p-8">
+      <div className="max-w-5xl mx-auto bg-white rounded-3xl border border-gray-200 overflow-hidden">
+
+        <div className="relative bg-[var(--primary)] px-5 py-8 sm:px-8 sm:py-10">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">
+              Rider Profile
+            </h1>
+            <p className="text-sm text-white/70 mt-1">
+              Manage your personal information
+            </p>
+          </div>
+
+          <div className="mt-5 sm:absolute sm:right-6 sm:top-6 flex flex-wrap gap-3">
+            {!editingProfile ? (
+              <>
+                <button
+                  onClick={() => setEditingProfile(true)}
+                  className="
+                    flex items-center gap-2
+                    px-4 py-2.5 rounded-xl
+                    bg-[var(--accent)]
+                    text-white
+                    font-medium
+                    hover:opacity-90
+                    transition
+                  "
+                >
+                  <MdEdit />
+                  Edit
+                </button>
+
+                <button
+                  onClick={() => setIsPasswordChangeModalOpen(true)}
+                  className="
+                    flex items-center gap-2
+                    px-4 py-2.5 rounded-xl
+                    border border-white/40
+                    text-white
+                    hover:bg-white/10
+                    transition
+                  "
+                >
+                  <MdOutlineLockReset />
+                  Password
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={handleCancelProfile}
+                  disabled={isLoading}
+                  className="
+                    px-4 py-2.5 rounded-xl
+                    bg-white/10
+                    text-white
+                    hover:bg-white/20
+                  "
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={handleSaveProfile}
+                  disabled={isLoading}
+                  className="
+                    px-4 py-2.5 rounded-xl
+                    bg-[var(--accent)]
+                    text-white
+                    font-medium
+                  "
+                >
+                  {isLoading ? "Saving..." : "Save"}
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+
+        <div className="p-5 sm:p-8">
+
+          <div className="flex flex-col md:flex-row gap-8">
+
+            <div className="flex justify-center md:block">
+              <div className="relative w-32 h-32 sm:w-36 sm:h-36 rounded-full bg-white p-1 border shadow-lg">
+
+                <img
+                  src={
+                    profilePicPreview ||
+                    user?.photo?.url ||
+                    "https://via.placeholder.com/150"
+                  }
+                  alt="Profile"
+                  className="w-full h-full rounded-full object-cover"
+                />
+
+                {editingProfile && (
+                  <>
+                    <label
+                      htmlFor="profilePic"
+                      className="
+                        absolute bottom-1 right-1
+                        w-10 h-10
+                        rounded-full
+                        bg-[var(--accent)]
+                        text-white
+                        flex items-center justify-center
+                        cursor-pointer
+                      "
+                    >
+                      <MdOutlineAddAPhoto />
+                    </label>
+
+                    <input
+                      id="profilePic"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleProfilePicChange}
+                    />
+                  </>
+                )}
+
+              </div>
+            </div>
+
+
+            <div className="flex-1">
+
+              <h2 className="text-2xl sm:text-3xl font-bold text-[var(--primary)]">
+                {user?.fullName || "Rider"}
+              </h2>
+
+              <p className="text-gray-500 mt-1 mb-6">
+                Update your account information below.
+              </p>
+
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Full Name
+                  </label>
+
+                  <input
+                    type="text"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleProfileChange}
+                    disabled={!editingProfile}
+                    className="
+                      mt-2 w-full px-4 py-3 rounded-xl
+                      border border-gray-200
+                      bg-gray-50
+                      outline-none
+                      focus:border-[var(--accent)]
+                      disabled:text-gray-500
+                    "
+                  />
+                </div>
+
+
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Email
+                  </label>
+
+                  <input
+                    type="email"
+                    value={formData.email}
+                    disabled
+                    className="
+                      mt-2 w-full px-4 py-3 rounded-xl
+                      border border-gray-200
+                      bg-gray-100
+                      text-gray-500
+                    "
+                  />
+                </div>
+
+
+                <div className="md:col-span-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Phone Number
+                  </label>
+
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleProfileChange}
+                    disabled={!editingProfile}
+                    className="
+                      mt-2 w-full px-4 py-3 rounded-xl
+                      border border-gray-200
+                      bg-gray-50
+                      outline-none
+                      focus:border-[var(--accent)]
+                      disabled:text-gray-500
+                    "
+                  />
+                </div>
+
+              </div>
+
+
+              {editingProfile && (
+                <div className="flex flex-col sm:flex-row justify-end gap-3 mt-8">
 
                   <button
-                    onClick={() => setIsPasswordChangeModalOpen(true)}
-                    className="flex items-center gap-2 bg-white text-(--color-primary) px-4 py-2 rounded-lg text-sm font-bold"
-                  >
-                    <MdOutlineLockReset />
-                    Change Password
-                  </button>
-                </div>
-              ) : (
-                <div className="flex gap-2">
-                  <button
                     onClick={handleCancelProfile}
-                    className="bg-white/20 text-white px-4 py-2 rounded-lg"
-                    disabled={isLoading}
+                    className="
+                      px-6 py-3 rounded-xl
+                      bg-gray-100
+                      text-gray-700
+                    "
                   >
                     Cancel
                   </button>
 
                   <button
                     onClick={handleSaveProfile}
-                    className="bg-white text-(--color-primary) px-4 py-2 rounded-lg font-bold"
-                    disabled={isLoading}
+                    className="
+                      px-6 py-3 rounded-xl
+                      bg-[var(--accent)]
+                      text-white
+                      font-medium
+                    "
                   >
                     {isLoading ? "Saving..." : "Save Changes"}
                   </button>
+
                 </div>
               )}
-            </div>
-          </div>
 
-          <div className="px-8 pb-8">
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="-mt-16 relative">
-                <div className="w-32 h-32 rounded-full p-1 bg-white shadow-lg">
-                  <img
-                    src={
-                      profilePicPreview ||
-                      user?.photo?.url ||
-                      "https://via.placeholder.com/150"
-                    }
-                    alt="Profile"
-                    className="w-full h-full rounded-full object-cover"
-                  />
-
-                  {editingProfile && (
-                    <>
-                      <label
-                        htmlFor="profilePic"
-                        className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center text-white cursor-pointer"
-                      >
-                        <MdOutlineAddAPhoto className="text-3xl" />
-                      </label>
-
-                      <input
-                        id="profilePic"
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleProfilePicChange}
-                      />
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <div className="w-full mt-4">
-                <h3 className="text-2xl font-bold">
-                  {user?.fullName || "Rider Profile"}
-                </h3>
-
-                <p className="text-sm opacity-60 mb-6">
-                  Manage your personal information and settings
-                </p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="text-sm font-semibold">
-                      Full Name
-                    </label>
-
-                    <input
-                      type="text"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleProfileChange}
-                      disabled={!editingProfile}
-                      className="w-full px-4 py-3 bg-(--color-base-200) rounded-xl"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-semibold">
-                      Email
-                    </label>
-
-                    <input
-                      type="email"
-                      value={formData.email}
-                      disabled
-                      className="w-full px-4 py-3 bg-(--color-base-200) rounded-xl"
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="text-sm font-semibold">
-                      Phone
-                    </label>
-
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleProfileChange}
-                      disabled={!editingProfile}
-                      className="w-full px-4 py-3 bg-(--color-base-200) rounded-xl"
-                    />
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {isPasswordChangeModalOpen && (
-        <PasswordChangeModal
-          open={isPasswordChangeModalOpen}
-          onClose={() => setIsPasswordChangeModalOpen(false)}
-        />
-      )}
-    </>
-  );
+      </div>
+    </div>
+
+    {isPasswordChangeModalOpen && (
+      <PasswordChangeModal
+        open={isPasswordChangeModalOpen}
+        onClose={() => setIsPasswordChangeModalOpen(false)}
+      />
+    )}
+  </>
+);
 };
 
 export default RiderSetting;

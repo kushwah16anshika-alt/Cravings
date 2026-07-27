@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-:root {
+/* :root {
   --primary: #001bb7;
   --primary-text: #dfdff8;
   --secondary: #0046ff;
@@ -63,6 +63,82 @@
   --light-gray: #e5e7eb;
   --dark-gray: #374151;
 
+  --black: #000000;
+  --white: #ffffff;
+} */
+
+
+:root {
+  /* Primary Brand */
+  --primary: #0f172a;
+  --primary-text: #f8fafc;
+  --secondary: #1e3a8a;
+  --accent: #f97316;
+
+  /* Status Colors */
+  --success: #22c55e;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --info: #38bdf8;
+
+  /* Backgrounds */
+  --background: #0b1120;
+  --surface: #111827;
+  --card: #1e293b;
+  --border: #334155;
+
+  /* Text */
+  --text: #f8fafc;
+  --text-light: #cbd5e1;
+  --text-dark: #ffffff;
+
+  /* Blue Shades */
+  --blue: #2563eb;
+  --light-blue: #60a5fa;
+  --dark-blue: #0f172a;
+
+  /* Orange Shades */
+  --orange: #f97316;
+  --light-orange: #fb923c;
+  --dark-orange: #c2410c;
+
+  /* Green Shades */
+  --green: #22c55e;
+  --light-green: #4ade80;
+  --dark-green: #166534;
+
+  /* Red Shades */
+  --red: #ef4444;
+  --light-red: #f87171;
+  --dark-red: #991b1b;
+
+  /* Yellow Shades */
+  --yellow: #facc15;
+  --light-yellow: #fde047;
+  --dark-yellow: #a16207;
+
+  /* Purple Shades */
+  --purple: #8b5cf6;
+  --light-purple: #c4b5fd;
+  --dark-purple: #5b21b6;
+
+  /* Pink Shades */
+  --pink: #ec4899;
+  --light-pink: #f9a8d4;
+  --dark-pink: #9d174d;
+
+  /* Extra Colors */
+  --teal: #14b8a6;
+  --cyan: #06b6d4;
+  --indigo: #4f46e5;
+  --lime: #84cc16;
+
+  /* Gray Scale */
+  --gray: #94a3b8;
+  --light-gray: #cbd5e1;
+  --dark-gray: #1e293b;
+
+  /* Black & White */
   --black: #000000;
   --white: #ffffff;
 }
