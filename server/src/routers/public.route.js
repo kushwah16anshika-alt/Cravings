@@ -2,22 +2,19 @@ import express from "express";
 
 import {
   ContactUsForm,
-  // FeedbackForm,
-  GetRestaurants,
+  GetAllRestaurants,
   GetRestaurantDetails,
 } from "../controllers/public.controller.js";
 
 const router = express.Router();
 
 // Contact Us
-router.post("/Contactus", ContactUsForm);
-
-// // Feedback
-// router.post("/feedback", FeedbackForm);
+router.post("/contact-us", ContactUsForm);
 
 // Get All Restaurants
-router.get("/restaurants", GetRestaurants);
+router.get("/restaurants", GetAllRestaurants);
 
+// Get Restaurant Details
 router.get("/restaurant-detail/:restaurantId", GetRestaurantDetails);
 
 export default router;
