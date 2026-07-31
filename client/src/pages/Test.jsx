@@ -1,6 +1,6 @@
 import React from "react";
 const sample = {
-    "managerId": "6a4e63e1962482906d47814c",
+    "managerId": "6a50d4fd950851f8e69c03e6",
     "restaurantName": "Manohar Dairy & Restaurant Vidhya Nagar",
     "address": "",
     "city": "",

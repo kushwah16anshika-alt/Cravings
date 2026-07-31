@@ -930,17 +930,13 @@
 
 
 
-import React, { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
-import api from "../../config/api.config.js";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-import {
-  MdAdd,
-  MdSearch,
-  MdFastfood,
-} from "react-icons/md";
-
+import { MdFastfood, MdSearch } from "react-icons/md";
+import { FaAward } from "react-icons/fa";
+import { AiTwotoneLike } from "react-icons/ai";
+import { IoMdAddCircleOutline } from "react-icons/io";
 import {
   LuPencilLine,
   LuTrash2,
@@ -948,11 +944,14 @@ import {
   LuChevronDown,
 } from "react-icons/lu";
 
-import { FaAward } from "react-icons/fa";
-import { AiTwotoneLike } from "react-icons/ai";
+import { useAuth } from "../../context/AuthContext";
+import api from "../../config/api.config";
+
+import Loader from "../../assets/runningLoader.gif";
 
 import ConfirmModal from "./menuItems/ConfirmModal";
 import AddNewItemModal from "./menuItems/AddNewItemModal";
+import EditOrViewItem from "./menuItems/EditOrViewItem";
 
 const statusChipStyles = {
   available:
@@ -960,7 +959,7 @@ const statusChipStyles = {
   unavailable:
     "bg-amber-100 text-amber-700 border border-amber-300",
   discontinued:
-    "bg-red-100 text-red-700 border border-red-300",
+    "bg-rose-100 text-rose-700 border border-rose-300",
 };
 
 const statusLabels = {
@@ -972,23 +971,15 @@ const statusLabels = {
 const RestaurantMenu = () => {
   const { user } = useAuth();
 
-  const [loading, setLoading] = useState(true);
-
   const [menuItems, setMenuItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
 
   const [search, setSearch] = useState("");
 
-  const [isAdding, setIsAdding] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [modalMode, setModalMode] = useState(null);
 
-  const [formData, setFormData] = useState({
-    itemName: "",
-    description: "",
-    price: "",
-    category: "",
-    foodType: "Vegetarian",
-    image: null,
-  });
+  const [isLoading, setIsLoading] = useState(true);
 
   const [isAddNewItemModalOpen, setIsAddNewItemModalOpen] =
     useState(false);
@@ -999,25 +990,21 @@ const RestaurantMenu = () => {
   const [isControlsModalOpen, setIsControlsModalOpen] =
     useState(false);
 
-  const [selectedItem, setSelectedItem] = useState(null);
-
-  const [modalMode, setModalMode] = useState("");
-
   // ======================================
-  // Fetch Menu
+  // Fetch Menu Items
   // ======================================
-
-  useEffect(() => {
-    fetchMenuItems();
-  }, [user?._id]);
 
   const fetchMenuItems = async () => {
     if (!user?._id) return;
 
     try {
-      setLoading(true);
+      setIsLoading(true);
 
-      const response = await api.get(`/menu/${user._id}`);
+      const response = await api.get(`/menu/${user._id}`, {
+        params: {
+          t: Date.now(),
+        },
+      });
 
       if (response.data.success) {
         setMenuItems(response.data.data);
@@ -1026,12 +1013,20 @@ const RestaurantMenu = () => {
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
-          "Failed to load menu items."
+          "Failed to fetch menu items."
       );
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user?._id) {
+      queueMicrotask(() => {
+        fetchMenuItems();
+      });
+    }
+  }, [user?._id]);
 
   // ======================================
   // Search
@@ -1056,490 +1051,380 @@ const RestaurantMenu = () => {
   }, [search, menuItems]);
 
   // ======================================
-  // Form Change
-  // ======================================
-
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-
-    if (files) {
-      setFormData({
-        ...formData,
-        [name]: files[0],
-      });
-      return;
-    }
-
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  // ======================================
-  // Add Item
-  // ======================================
-
-  const handleAddItem = async (e) => {
-    e.preventDefault();
-
-    try {
-      const data = new FormData();
-
-      Object.keys(formData).forEach((key) => {
-        data.append(key, formData[key]);
-      });
-
-      data.append("restaurantId", user._id);
-
-      const response = await api.post(
-        "/menu/create",
-        data,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      if (response.data.success) {
-        toast.success("Menu Item Added");
-
-        fetchMenuItems();
-
-        setFormData({
-          itemName: "",
-          description: "",
-          price: "",
-          category: "",
-          foodType: "Vegetarian",
-          image: null,
-        });
-
-        setIsAdding(false);
-        setIsAddNewItemModalOpen(false);
-      }
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to add menu item."
-      );
-    }
-  };
-
-  // ======================================
   // Update Status
   // ======================================
 
-  const handleStatusChange = async (id, status) => {
+  const handleStatusChange = async (itemId, status) => {
     try {
       const response = await api.put(
-        `/menu/status/${id}`,
+        `/menu/status/${itemId}`,
         {
           status,
         }
       );
 
       if (response.data.success) {
-        toast.success("Status Updated");
-        fetchMenuItems();
+        toast.success(
+          response.data.message || "Status Updated"
+        );
+
+        await fetchMenuItems();
       }
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
-          "Failed to update status."
+          "Unable to update item status."
       );
     }
   };
 
   // ======================================
-  // Modal Functions
+  // Loading
   // ======================================
 
-  const openEdit = (item) => {
-    setSelectedItem(item);
-    setModalMode("edit");
-    setIsEditViewItemModalOpen(true);
-  };
-
-  const openView = (item) => {
-    setSelectedItem(item);
-    setModalMode("view");
-    setIsEditViewItemModalOpen(true);
-  };
-
-  const openDelete = (item) => {
-    setSelectedItem(item);
-    setModalMode("delete");
-    setIsControlsModalOpen(true);
-  };
-
-  const openTopRated = (item) => {
-    setSelectedItem(item);
-    setModalMode("topRated");
-    setIsControlsModalOpen(true);
-  };
-
-  const openRecommended = (item) => {
-    setSelectedItem(item);
-    setModalMode("recommended");
-    setIsControlsModalOpen(true);
-  };
-
-  const openNewItem = (item) => {
-    setSelectedItem(item);
-    setModalMode("new");
-    setIsControlsModalOpen(true);
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full py-20">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-(--color-primary) border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-4 text-(--color-neutral)">
-            Loading Menu...
-          </p>
-        </div>
-      </div>
-    );
-  }
+ if (isLoading) {
   return (
-  <>
-    <div className="overflow-y-auto h-full">
+    <div className="flex items-center justify-center h-full w-full">
+      <img
+        src={Loader}
+        alt="Loading..."
+        className="w-20 h-20 object-contain"
+      />
+    </div>
+  );
+}
+  return (
+    <>
+          <div className="overflow-y-auto h-full">
+        {/* Header */}
 
-      {/* Header */}
+        <div className="flex justify-between items-center px-1 mb-6">
+          <div>
+            <h2 className="text-2xl font-bold">
+              Menu Management
+            </h2>
 
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-
-        <div>
-          <h2 className="text-2xl font-bold">
-            Menu Management
-          </h2>
-
-          <p className="text-sm text-(--color-neutral)">
-            {filteredItems.length} Items Available
-          </p>
-        </div>
-
-        <div className="flex gap-3 flex-wrap">
-
-          <div className="relative">
-
-            <MdSearch
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-(--color-neutral)"
-            />
-
-            <input
-              type="text"
-              placeholder="Search menu..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 pr-4 py-2 w-64 rounded-xl border border-(--color-secondary) bg-(--color-base-100) focus:outline-none focus:border-(--color-primary)"
-            />
-
-          </div>
-
-          <button
-            onClick={() => setIsAddNewItemModalOpen(true)}
-            className="flex items-center gap-2 px-5 py-2 rounded-xl bg-(--color-primary) text-white font-semibold hover:opacity-90 transition"
-          >
-            <MdAdd size={20} />
-            Add Item
-          </button>
-
-        </div>
-
-      </div>
-
-      {/* Table */}
-
-      <div className="bg-(--color-base-200) rounded-2xl border border-(--color-secondary) overflow-hidden">
-
-        {filteredItems.length === 0 ? (
-
-          <div className="flex flex-col items-center justify-center py-20 text-(--color-neutral)">
-
-            <MdFastfood
-              size={60}
-              className="text-(--color-primary) mb-4"
-            />
-
-            <h3 className="text-xl font-semibold">
-              No Menu Items Found
-            </h3>
-
-            <p className="text-sm mt-2">
-              Start by adding your first delicious item.
+            <p className="text-sm text-(--color-neutral)">
+              {filteredItems.length} Items Available
             </p>
-
           </div>
 
-        ) : (
+          <div className="flex gap-4 items-center">
+            {/* Search */}
 
-          <>
+            <div className="relative">
+              <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-(--color-neutral)" />
 
-            {/* Table Header */}
-
-            <div className="grid grid-cols-12 gap-4 px-6 py-4 font-semibold text-(--color-primary) border-b border-(--color-secondary)">
-
-              <div className="col-span-4">
-                Item
-              </div>
-
-              <div className="col-span-2 text-center">
-                Price
-              </div>
-
-              <div className="col-span-2">
-                Category
-              </div>
-
-              <div className="col-span-2">
-                Status
-              </div>
-
-              <div className="col-span-1">
-                Controls
-              </div>
-
-              <div className="col-span-1 text-center">
-                Actions
-              </div>
-
+              <input
+                type="text"
+                placeholder="Search menu..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-(--color-primary) rounded focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition-colors"
+              />
             </div>
 
-            {/* Menu Items */}
+            {/* Add Button */}
 
-            <div className="max-h-[65vh] overflow-y-auto">
+            <button
+              onClick={() => setIsAddNewItemModalOpen(true)}
+              className="hover:bg-(--color-primary) border border-(--color-primary) text-(--color-primary) hover:text-white px-4 py-2 rounded transition-colors flex items-center gap-2"
+            >
+              <IoMdAddCircleOutline />
+              Add New Item
+            </button>
+          </div>
+        </div>
 
-              {filteredItems.map((item) => (
+        {/* Table */}
 
-                <div
-                  key={item._id}
-                  className="grid grid-cols-12 gap-4 px-6 py-4 items-center border-b border-(--color-secondary) hover:bg-(--color-base-100) transition"
-                >
+        <div className="bg-(--color-base-200) p-4 rounded-lg border border-(--color-secondary)">
+          {/* Header */}
 
-                  {/* Item */}
+          <div className="grid grid-cols-7 gap-4 font-bold text-(--color-primary) border-b border-(--color-secondary) py-2">
+            <div className="col-span-2">
+              Item Name & Description
+            </div>
 
-                  <div className="col-span-4 flex items-center gap-4">
+            <div className="text-center">
+              Price
+            </div>
 
-                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-(--color-base-100) border border-(--color-secondary) flex items-center justify-center">
+            <div>
+              Category & Type
+            </div>
 
-                      {item.image?.url ? (
-                        <img
-                          src={item.image.url}
-                          alt={item.itemName}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <MdFastfood
-                          size={28}
-                          className="text-(--color-primary)"
-                        />
-                      )}
+            <div>
+              Status
+            </div>
 
+            <div>
+              Controls
+            </div>
+
+            <div>
+              Actions
+            </div>
+          </div>
+
+          {/* Rows */}
+
+          <div className="overflow-y-auto max-h-[65vh]">
+            {filteredItems.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-(--color-neutral)">
+                <MdFastfood
+                  size={60}
+                  className="text-(--color-primary) mb-4"
+                />
+
+                <h3 className="text-xl font-semibold">
+                  No Menu Items Found
+                </h3>
+
+                <p className="text-sm mt-2">
+                  Start by adding your first delicious item.
+                </p>
+              </div>
+            ) : (
+              <>
+                {filteredItems.map((item, index) => (
+                                    <div
+                    key={item._id || index}
+                    className="grid grid-cols-7 gap-4 border-b border-(--color-secondary) py-3 items-center"
+                  >
+                    {/* Item */}
+
+                    <div className="col-span-2 flex items-center gap-4">
+                      <div className="w-16 h-16 rounded overflow-hidden bg-(--color-base-100) border border-(--color-secondary)">
+                        {item.image?.url ? (
+                          <img
+                            src={item.image.url}
+                            alt={item.itemName}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <MdFastfood
+                              className="text-(--color-primary)"
+                              size={28}
+                            />
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="w-full">
+                        <div className="font-semibold">
+                          {item.itemName}
+                        </div>
+
+                        <div className="text-xs text-(--color-neutral) line-clamp-2">
+                          {item.description}
+                        </div>
+                      </div>
                     </div>
+
+                    {/* Price */}
+
+                    <div className="text-center font-semibold text-(--color-primary)">
+                      ₹ {Number(item.price).toFixed(2)}
+                    </div>
+
+                    {/* Category */}
 
                     <div>
+                      <div className="font-medium">
+                        {item.category}
+                      </div>
 
-                      <h4 className="font-semibold">
-                        {item.itemName}
-                      </h4>
-
-                      <p className="text-xs text-(--color-neutral) line-clamp-2">
-                        {item.description}
-                      </p>
-
+                      <div className="text-sm text-(--color-neutral)">
+                        {item.foodType}
+                      </div>
                     </div>
 
-                  </div>
+                    {/* Status */}
 
-                  {/* Price */}
+                    <div>
+                      <div className="relative inline-flex items-center">
+                        <select
+                          value={item.status}
+                          onChange={(e) =>
+                            handleStatusChange(
+                              item._id,
+                              e.target.value
+                            )
+                          }
+                          className={`appearance-none rounded-md pl-3 pr-8 py-1.5 text-xs font-semibold cursor-pointer focus:outline-none focus:ring-2 focus:ring-(--color-primary) ${
+                            statusChipStyles[item.status]
+                          }`}
+                        >
+                          <option value="available">
+                            {statusLabels.available}
+                          </option>
 
-                  <div className="col-span-2 text-center font-bold text-(--color-primary)">
-                    ₹ {Number(item.price).toFixed(2)}
-                  </div>
+                          <option value="unavailable">
+                            {statusLabels.unavailable}
+                          </option>
 
-                  {/* Category */}
+                          <option value="discontinued">
+                            {statusLabels.discontinued}
+                          </option>
+                        </select>
 
-                  <div className="col-span-2">
-
-                    <div className="font-medium">
-                      {item.category}
+                        <LuChevronDown className="pointer-events-none absolute right-2 text-xs opacity-70" />
+                      </div>
                     </div>
 
-                    <div className="text-xs text-(--color-neutral)">
-                      {item.foodType}
-                    </div>
+                    {/* Controls */}
 
-                  </div>
-
-                  {/* Status */}
-
-                  <div className="col-span-2">
-
-                    <div className="relative inline-block">
-
-                      <select
-                        value={item.status}
-                        onChange={(e) =>
-                          handleStatusChange(
-                            item._id,
-                            e.target.value
-                          )
-                        }
-                        className={`appearance-none rounded-lg pl-3 pr-8 py-2 text-sm border focus:outline-none ${
-                          statusChipStyles[item.status]
+                    <div className="flex gap-2">
+                      <button
+                        className={`${
+                          item.isTopRated
+                            ? "text-(--color-primary)"
+                            : "text-(--color-secondary)"
                         }`}
+                        title={
+                          item.isTopRated
+                            ? "Top Rated"
+                            : "Mark as Top Rated"
+                        }
+                        onClick={() => {
+                          setSelectedItem(item);
+                          setModalMode("topRated");
+                          setIsControlsModalOpen(true);
+                        }}
                       >
+                        <FaAward />
+                      </button>
 
-                        <option value="available">
-                          {statusLabels.available}
-                        </option>
+                      <button
+                        className={`${
+                          item.isRecommended
+                            ? "text-(--color-primary)"
+                            : "text-(--color-secondary)"
+                        }`}
+                        title={
+                          item.isRecommended
+                            ? "Recommended"
+                            : "Mark as Recommended"
+                        }
+                        onClick={() => {
+                          setSelectedItem(item);
+                          setModalMode("recommended");
+                          setIsControlsModalOpen(true);
+                        }}
+                      >
+                        <AiTwotoneLike />
+                      </button>
 
-                        <option value="unavailable">
-                          {statusLabels.unavailable}
-                        </option>
-
-                        <option value="discontinued">
-                          {statusLabels.discontinued}
-                        </option>
-
-                      </select>
-
-                      <LuChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
-
+                      <button
+                        className={`px-1 py-0.5 rounded text-xs border ${
+                          item.isNew
+                            ? "border-(--color-primary) text-(--color-primary)"
+                            : "border-(--color-secondary) text-(--color-secondary)"
+                        }`}
+                        title={
+                          item.isNew
+                            ? "New Item"
+                            : "Mark as New"
+                        }
+                        onClick={() => {
+                          setSelectedItem(item);
+                          setModalMode("new");
+                          setIsControlsModalOpen(true);
+                        }}
+                      >
+                        New
+                      </button>
                     </div>
 
+                    {/* Actions */}
+
+                    <div className="flex gap-2">
+                      <button
+                        className="px-2 py-1 border border-(--color-primary) text-(--color-primary) hover:bg-(--color-primary) hover:text-white rounded transition"
+                        title="Edit Item"
+                        onClick={() => {
+                          setSelectedItem(item);
+                          setModalMode("edit");
+                          setIsEditViewItemModalOpen(true);
+                        }}
+                      >
+                        <LuPencilLine />
+                      </button>
+
+                      <button
+                        className="px-2 py-1 border border-(--color-primary) text-(--color-primary) hover:bg-(--color-primary) hover:text-white rounded transition"
+                        title="View Item"
+                        onClick={() => {
+                          setSelectedItem(item);
+                          setModalMode("view");
+                          setIsEditViewItemModalOpen(true);
+                        }}
+                      >
+                        <LuEye />
+                      </button>
+
+                      <button
+                        className="px-2 py-1 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded transition"
+                        title="Delete Item"
+                        onClick={() => {
+                          setSelectedItem(item);
+                          setModalMode("delete");
+                          setIsControlsModalOpen(true);
+                        }}
+                      >
+                        <LuTrash2 />
+                      </button>
+                    </div>
                   </div>
-
-                  {/* Controls */}
-
-                  <div className="col-span-1 flex gap-2">
-
-                    <button
-                      onClick={() => openTopRated(item)}
-                      className={`${
-                        item.isTopRated
-                          ? "text-(--color-primary)"
-                          : "text-(--color-secondary)"
-                      }`}
-                    >
-                      <FaAward />
-                    </button>
-
-                    <button
-                      onClick={() => openRecommended(item)}
-                      className={`${
-                        item.isRecommended
-                          ? "text-(--color-primary)"
-                          : "text-(--color-secondary)"
-                      }`}
-                    >
-                      <AiTwotoneLike />
-                    </button>
-
-                    <button
-                      onClick={() => openNewItem(item)}
-                      className={`text-xs px-1 rounded border ${
-                        item.isNew
-                          ? "border-(--color-primary) text-(--color-primary)"
-                          : "border-(--color-secondary) text-(--color-secondary)"
-                      }`}
-                    >
-                      New
-                    </button>
-
-                  </div>
-
-                  {/* Actions */}
-
-                  <div className="col-span-1 flex justify-center gap-2">
-
-                    <button
-                      onClick={() => openEdit(item)}
-                      className="w-9 h-9 rounded-lg border border-(--color-primary) text-(--color-primary) hover:bg-(--color-primary) hover:text-white transition"
-                    >
-                      <LuPencilLine />
-                    </button>
-
-                    <button
-                      onClick={() => openView(item)}
-                      className="w-9 h-9 rounded-lg border border-(--color-primary) text-(--color-primary) hover:bg-(--color-primary) hover:text-white transition"
-                    >
-                      <LuEye />
-                    </button>
-
-                    <button
-                      onClick={() => openDelete(item)}
-                      className="w-9 h-9 rounded-lg border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition"
-                    >
-                      <LuTrash2 />
-                    </button>
-
-                  </div>
-
-                </div>
-
-              ))}
-
-            </div>
-
-          </>
-
-        )}
-
+                ))}
+              </>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
-
-          {/* Confirm Modal */}
+            {/* Confirm Modal */}
 
       {isControlsModalOpen && (
         <ConfirmModal
           isOpen={isControlsModalOpen}
+          selectedItem={selectedItem}
+          modalMode={modalMode}
           onClose={() => {
             setIsControlsModalOpen(false);
             setSelectedItem(null);
-            setModalMode("");
+            setModalMode(null);
           }}
-          selectedItem={selectedItem}
-          modalMode={modalMode}
-          refreshMenu={fetchMenuItems}
+          onActionSuccess={fetchMenuItems}
         />
       )}
 
-      {/* Add Item Modal */}
+      {/* Add New Item Modal */}
 
       {isAddNewItemModalOpen && (
         <AddNewItemModal
           isOpen={isAddNewItemModalOpen}
           onClose={() => {
             setIsAddNewItemModalOpen(false);
-            fetchMenuItems();
           }}
-          formData={formData}
-          handleChange={handleChange}
-          handleSubmit={handleAddItem}
+          onActionSuccess={fetchMenuItems}
         />
       )}
 
-      {/* Edit / View Modal */}
+      {/* Edit / View Item Modal */}
 
       {isEditViewItemModalOpen && (
-        <AddNewItemModal
+        <EditOrViewItem
           isOpen={isEditViewItemModalOpen}
+          selectedItem={selectedItem}
+          modalMode={modalMode}
           onClose={() => {
             setIsEditViewItemModalOpen(false);
             setSelectedItem(null);
-            setModalMode("");
-            fetchMenuItems();
+            setModalMode(null);
           }}
-          formData={selectedItem}
-          editMode={modalMode === "edit"}
-          viewMode={modalMode === "view"}
-          menuItem={selectedItem}
-          refreshMenu={fetchMenuItems}
+          onActionSuccess={fetchMenuItems}
         />
       )}
     </>
