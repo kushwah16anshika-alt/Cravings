@@ -70,15 +70,19 @@ router.post(
   "/update-profile",
   RestaurantAuthProtect,
   upload.fields([
-    {
-      name: "coverImage",
-      maxCount: 1,
-    },
-    {
-      name: "restaurantImage",
-      maxCount: 10,
-    },
-  ]),
+  {
+    name: "displayPic",
+    maxCount: 1,
+  },
+  {
+    name: "coverImage",
+    maxCount: 1,
+  },
+  {
+    name: "restaurantImage",
+    maxCount: 10,
+  },
+]),
   RestaurantUpdateProfile
 );
 

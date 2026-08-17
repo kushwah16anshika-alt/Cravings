@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
 import { IoMdCloseCircleOutline } from "react-icons/io";
-import { FaRegFileImage } from "react-icons/fa";
 import toast from "react-hot-toast";
-import api from "../../../config/api.config";
+import api from "../../../config/ApiConfig";
 
 const itemCategories = [
   "Appetizer",
@@ -60,11 +59,17 @@ const EditOrViewItem = ({
   onActionSuccess,
 }) => {
   const isViewMode = modalMode === "view";
-  const [formData, setFormData] = useState(getDefaultFormData(selectedItem));
+
+  const [formData, setFormData] = useState(
+    getDefaultFormData(selectedItem),
+  );
+
   const [itemImage, setItemImage] = useState(null);
+
   const [previewImage, setPreviewImage] = useState(
     selectedItem?.image?.url || null,
   );
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const modalTitle = useMemo(
@@ -74,6 +79,7 @@ const EditOrViewItem = ({
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -90,6 +96,7 @@ const EditOrViewItem = ({
       setIsSubmitting(true);
 
       const payload = new FormData();
+
       payload.append("itemName", formData.itemName);
       payload.append("description", formData.description);
       payload.append("price", formData.price);
@@ -109,7 +116,9 @@ const EditOrViewItem = ({
         payload,
       );
 
-      toast.success(response.data.message || "Menu item updated successfully");
+      toast.success(
+        response.data.message || "Menu item updated successfully",
+      );
 
       if (onActionSuccess) {
         await onActionSuccess();
@@ -119,7 +128,7 @@ const EditOrViewItem = ({
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
-          "Unable to update item details. Please try again.",
+        "Unable to update item details. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -133,6 +142,7 @@ const EditOrViewItem = ({
       <div className="bg-white p-6 rounded-lg w-full max-w-5xl max-h-[92vh] overflow-y-auto">
         <header className="flex justify-between items-center border-b border-(--color-secondary) pb-2 mb-4">
           <h2 className="text-lg font-semibold">{modalTitle}</h2>
+
           <button
             className="text-red-300 hover:text-red-500"
             onClick={onClose}
@@ -144,29 +154,43 @@ const EditOrViewItem = ({
 
         <main className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+            {/* Image */}
             <div className="text-center">
               <div className="h-52 w-52 mx-auto border-2 border-(--color-primary) rounded overflow-hidden">
-                {previewImage && (
+                {previewImage ? (
                   <img
                     src={previewImage}
                     alt="Preview"
                     className="h-full w-full object-cover"
                   />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center text-gray-400">
+                    No Image
+                  </div>
                 )}
               </div>
+
               {!isViewMode && (
                 <>
-                  <label htmlFor="editItemImage" className="cursor-pointer">
+                  <label
+                    htmlFor="editItemImage"
+                    className="cursor-pointer text-sm text-(--color-primary)"
+                  >
                     Click to Change Image
                   </label>
+
                   <input
                     type="file"
                     id="editItemImage"
                     name="itemImage"
+                    accept="image/*"
                     className="hidden"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
+
                       if (!file) return;
+
                       setItemImage(file);
                       setPreviewImage(URL.createObjectURL(file));
                     }}
@@ -175,6 +199,7 @@ const EditOrViewItem = ({
               )}
             </div>
 
+            {/* Basic Details */}
             <div className="md:col-span-2 space-y-4">
               <div>
                 <label
@@ -183,6 +208,7 @@ const EditOrViewItem = ({
                 >
                   Item Name
                 </label>
+
                 <input
                   type="text"
                   id="editItemName"
@@ -201,6 +227,7 @@ const EditOrViewItem = ({
                 >
                   Item Price
                 </label>
+
                 <input
                   type="number"
                   id="editItemPrice"
@@ -213,6 +240,7 @@ const EditOrViewItem = ({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Category */}
                 <div>
                   <label
                     className="block mb-1 font-medium"
@@ -220,6 +248,7 @@ const EditOrViewItem = ({
                   >
                     Item Category
                   </label>
+
                   <select
                     id="editItemCategory"
                     name="category"
@@ -229,6 +258,7 @@ const EditOrViewItem = ({
                     className="w-full border border-gray-300 rounded px-3 py-2 disabled:bg-gray-100"
                   >
                     <option value="">Select Category</option>
+
                     {itemCategories.map((category) => (
                       <option key={category} value={category}>
                         {category}
@@ -237,6 +267,7 @@ const EditOrViewItem = ({
                   </select>
                 </div>
 
+                {/* Food Type */}
                 <div>
                   <label
                     className="block mb-1 font-medium"
@@ -244,6 +275,7 @@ const EditOrViewItem = ({
                   >
                     Food Type
                   </label>
+
                   <select
                     id="editFoodType"
                     name="foodType"
@@ -253,6 +285,7 @@ const EditOrViewItem = ({
                     className="w-full border border-gray-300 rounded px-3 py-2 disabled:bg-gray-100"
                   >
                     <option value="">Select Food Type</option>
+
                     {foodTypes.map((type) => (
                       <option key={type} value={type}>
                         {type}
@@ -261,6 +294,7 @@ const EditOrViewItem = ({
                   </select>
                 </div>
 
+                {/* Status */}
                 <div>
                   <label
                     className="block mb-1 font-medium"
@@ -268,6 +302,7 @@ const EditOrViewItem = ({
                   >
                     Status
                   </label>
+
                   <select
                     id="editStatus"
                     name="status"
@@ -290,6 +325,7 @@ const EditOrViewItem = ({
               </div>
             </div>
 
+            {/* Description */}
             <div className="md:col-span-3">
               <label
                 className="block mb-1 font-medium"
@@ -297,6 +333,7 @@ const EditOrViewItem = ({
               >
                 Item Description
               </label>
+
               <textarea
                 id="editItemDescription"
                 name="description"
@@ -308,6 +345,7 @@ const EditOrViewItem = ({
               />
             </div>
 
+            {/* Checkboxes */}
             <div className="md:col-span-3">
               <div className="flex gap-6 items-center">
                 <label className="inline-flex items-center gap-2">
@@ -347,6 +385,7 @@ const EditOrViewItem = ({
           </div>
         </main>
 
+        {/* Footer */}
         <footer className="flex justify-end border-t border-(--color-secondary) pt-3 mt-4 gap-2">
           <button
             className="bg-(--color-secondary) disabled:bg-(--color-secondary)/60 text-(--color-secondary-content) px-4 py-2 rounded"
