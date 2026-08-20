@@ -35,6 +35,7 @@ export const EditUserProfile = async (req, res, next) => {
       return next(error);
     }
 
+    // Update profile photo
     if (newPhoto) {
       if (existingUser?.photo?.publicId) {
         await cloudinary.uploader.destroy(existingUser.photo.publicId);
@@ -45,7 +46,7 @@ export const EditUserProfile = async (req, res, next) => {
       const dataURI = `data:${newPhoto.mimetype};base64,${b64}`;
 
       const result = await cloudinary.uploader.upload(dataURI, {
-        folder: "CravingFSDs08/profile",
+        folder: "Cravings678/profile",
         width: 500,
         height: 500,
         crop: "fill",
@@ -61,9 +62,11 @@ export const EditUserProfile = async (req, res, next) => {
       existingUser.photo.publicId = result.public_id;
     }
 
+    // Update basic information
     existingUser.fullName = fullName;
     existingUser.phone = phone;
 
+    // Update optional information
     if (dob) existingUser.dob = dob;
     if (gender) existingUser.gender = gender;
     if (address) existingUser.address = address;
@@ -73,7 +76,7 @@ export const EditUserProfile = async (req, res, next) => {
 
     await existingUser.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "User Updated Sucessfully",
       data: existingUser,
     });
@@ -93,25 +96,13 @@ export const UpdateUserPassword = async (req, res, next) => {
       return next(error);
     }
 
+    // User Already Verified By Auth Protect Middleware
     const currentUser = req.user;
 
-    if (currentUser.lastPasswordChange) {
-      const hoursSinceLastChange =
-        (new Date() - new Date(currentUser.lastPasswordChange)) /
-        (1000 * 60 * 60);
-
-      if (hoursSinceLastChange < 24) {
-        const error = new Error(
-          "You can only change your password once every 24 hours"
-        );
-        error.statusCode = 400;
-        return next(error);
-      }
-    }
-
+    // Check old password
     const isPasswordMatch = await bcrypt.compare(
       oldPassword,
-      currentUser.password
+      currentUser.password,
     );
 
     if (!isPasswordMatch) {
@@ -120,18 +111,18 @@ export const UpdateUserPassword = async (req, res, next) => {
       return next(error);
     }
 
+    // Hash new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     currentUser.password = hashedPassword;
-    currentUser.lastPasswordChange = new Date();
 
+    // Save password
     await currentUser.save();
 
-    await new Promise((resolve) =>
-      setTimeout(resolve, 2000)
-    );
+    // Delay for 3 seconds before sending response
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Password updated successfully",
     });
   } catch (error) {
