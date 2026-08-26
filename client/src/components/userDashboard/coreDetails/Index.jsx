@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { MdEdit, MdOutlineAddLocationAlt } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
 import { RiLoader4Fill } from "react-icons/ri";
-import api from "../../../../config/ApiConfig";
+import api from "../../../config/api.config.js";
 import toast from "react-hot-toast";
 
 const emptyForm = {

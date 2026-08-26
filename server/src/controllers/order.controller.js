@@ -2,13 +2,28 @@ import Customer from "../models/customer.model.js";
 import Menu from "../models/menu.model.js";
 import Order from "../models/order.model.js";
 
-const getDefaultDeliveryAddress = (currentUser) => {
+const getDefaultDeliveryAddress = (currentUser, defaultAddr) => {
+  if (defaultAddr) {
+    return {
+      name: defaultAddr.name || currentUser.fullname || currentUser.fullName || "Customer",
+      address: defaultAddr.address || "Main Street",
+      city: defaultAddr.city || "City",
+      state: defaultAddr.state || "State",
+      pinCode: defaultAddr.pinCode || defaultAddr.pincode || "000000",
+      country: defaultAddr.country || "India",
+      geoLocation: {
+        lat: defaultAddr.geoLocation?.lat || "",
+        lon: defaultAddr.geoLocation?.lon || "",
+      },
+    };
+  }
+
   return {
-    name: currentUser.fullName,
-    address: "Address Line",
-    city: "City",
-    state: "State",
-    pinCode: "000000",
+    name: currentUser.fullname || currentUser.fullName || "Customer",
+    address: currentUser.address || "Main Street",
+    city: currentUser.city || "City",
+    state: currentUser.state || "State",
+    pinCode: currentUser.pincode || currentUser.pinCode || "000000",
     country: "India",
     geoLocation: {
       lat: "",
@@ -21,7 +36,10 @@ export const CreateOrder = async (req, res, next) => {
   try {
     const currentUser = req.user;
 
-    if (!currentUser || currentUser.userType !== "customer") {
+    if (
+      !currentUser ||
+      (currentUser.userType !== "user" && currentUser.userType !== "customer")
+    ) {
       const error = new Error("Only customers can create orders");
       error.statusCode = 403;
       return next(error);
@@ -39,16 +57,16 @@ export const CreateOrder = async (req, res, next) => {
       error.statusCode = 400;
       return next(error);
     }
-    console.log(currentUser);
 
-    //temp word
-    const customer =
-      (await Customer.findOne({ customerId: currentUser._id })) || currentUser;
+    let customer = await Customer.findOne({ customerId: currentUser._id });
     if (!customer) {
-      const error = new Error("Customer profile not found");
-      error.statusCode = 404;
-      return next(error);
+      customer = await Customer.create({
+        customerId: currentUser._id,
+        addressBook: [],
+      });
     }
+
+    const defaultAddr = customer.addressBook?.find((a) => a.isDefault) || customer.addressBook?.[0];
 
     const menuDoc = await Menu.findOne({ restaurantId });
     if (!menuDoc || !menuDoc.menuItems?.length) {
@@ -91,7 +109,7 @@ export const CreateOrder = async (req, res, next) => {
           deliveryCharge +
           taxAmount -
           discountAmount) *
-          100,
+          100
       ) / 100;
 
     const newOrder = await Order.create({
@@ -109,7 +127,7 @@ export const CreateOrder = async (req, res, next) => {
         finalAmount,
       },
       deliveryAddress:
-        deliveryAddress || getDefaultDeliveryAddress(currentUser),
+        deliveryAddress || getDefaultDeliveryAddress(currentUser, defaultAddr),
       paymentDetails: {
         paymentMethod: paymentMethod || "upi",
         paymentStatus: "pending",
@@ -117,7 +135,7 @@ export const CreateOrder = async (req, res, next) => {
     });
 
     res.status(201).json({
-      message: "Order created with payment pending",
+      message: "Order created successfully",
       data: newOrder,
     });
   } catch (error) {

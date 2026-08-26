@@ -65,8 +65,18 @@ const UserSchema = mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   },
 );
+
+UserSchema.virtual("fullName")
+  .get(function () {
+    return this.fullname;
+  })
+  .set(function (name) {
+    this.fullname = name;
+  });
 
 const User = mongoose.model("user", UserSchema);
 

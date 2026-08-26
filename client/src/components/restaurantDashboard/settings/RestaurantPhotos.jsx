@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { MdOutlineAddAPhoto } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
-import api from "../../../config/ApiConfig";
+import api from "../../../config/api.config.js";
 import toast from "react-hot-toast";
 import { RiLoader4Fill } from "react-icons/ri";
 

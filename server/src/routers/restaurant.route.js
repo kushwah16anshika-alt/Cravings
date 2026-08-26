@@ -1,55 +1,11 @@
-// import express from "express";
-// import multer from "multer";
-// import {
-//   RestaurantUpdateProfile,
-//   RestaurantGetData,
-//   toggleRestaurantStatus,
-// } from "../controllers/restaurant.controller.js";
-// import { RestaurantAuthProtect } from "../middlewares/auth.middleware.js";
-
-// const upload = multer();
-// const router = express.Router();
-
-// router.post(
-//   "/update-profile",
-//   RestaurantAuthProtect,
-//   upload.fields([
-//     {
-//       name: "coverImage",
-//       maxCount: 1,
-//     },
-//     {
-//       name: "restaurantImage",
-//       maxCount: 10,
-//     },
-//   ]),
-//   RestaurantUpdateProfile,
-// );
-
-// router.get(
-//   "/get-resturant-data",
-//   RestaurantAuthProtect,
-//   RestaurantGetData
-// );
-
-
-// router.patch(
-//   "/toggle-status",
-//   RestaurantAuthProtect,
-//   toggleRestaurantStatus
-// );
-
-// export default router;
-
 import express from "express";
 import multer from "multer";
 
 import {
-  RestaurantUpdateProfile,
+  // RestaurantUpdateProfile,
   RestaurantGetData,
-  getRestaurantProfile,
-  toggleRestaurantStatus,
   RestaurantUpdateInfo,
+  OpenRestaurant,
   RestaurantUpdateLegalInfo,
   RestaurantAddMenuItem,
   RestaurantMenuItems,
@@ -57,6 +13,11 @@ import {
   RestaurantUpdateMenuItemStatus,
   RestaurantToggleMenuItemControl,
   RestaurantDeleteMenuItem,
+  RestaurantUpdateAddress,
+  RestaurantUpdateBankingDocuments,
+  RestaurantUpdateSocialMediaLinks,
+  RestaurantUpdateCoverPhoto,
+  RestaurantUpdateRestaurantImages,
 } from "../controllers/restaurant.controller.js";
 
 import { RestaurantAuthProtect } from "../middlewares/auth.middleware.js";
@@ -64,38 +25,19 @@ import { RestaurantAuthProtect } from "../middlewares/auth.middleware.js";
 const upload = multer();
 const router = express.Router();
 
-
 // Restaurant Profile
-router.post(
-  "/update-profile",
-  RestaurantAuthProtect,
-  upload.fields([
-  {
-    name: "displayPic",
-    maxCount: 1,
-  },
-  {
-    name: "coverImage",
-    maxCount: 1,
-  },
-  {
-    name: "restaurantImage",
-    maxCount: 10,
-  },
-]),
-  RestaurantUpdateProfile
-);
+// router.post(
+//   "/update-profile",
+//   RestaurantAuthProtect,
+//   upload.single("coverImage"),
+//   upload.array("restaurantImage", 10),
+//   RestaurantUpdateProfile,
+// );
 
 router.get(
   "/get-resturant-data",
   RestaurantAuthProtect,
   RestaurantGetData
-);
-
-router.get(
-  "/profile",
-  RestaurantAuthProtect,
-  getRestaurantProfile
 );
 
 router.put(
@@ -104,20 +46,20 @@ router.put(
   RestaurantUpdateInfo
 );
 
+router.patch(
+  "/change-open-status/:openStatus",
+  RestaurantAuthProtect,
+  OpenRestaurant
+);
+
 router.put(
   "/update-legal-info",
   RestaurantAuthProtect,
   RestaurantUpdateLegalInfo
 );
 
-router.patch(
-  "/toggle-status",
-  RestaurantAuthProtect,
-  toggleRestaurantStatus
-);
-
-
 // Menu Routes
+
 router.get(
   "/menu-items",
   RestaurantAuthProtect,
@@ -154,6 +96,40 @@ router.delete(
   "/menu-item/:itemId",
   RestaurantAuthProtect,
   RestaurantDeleteMenuItem
+);
+
+// Core Details Routes
+
+router.put(
+  "/update-address",
+  RestaurantAuthProtect,
+  RestaurantUpdateAddress
+);
+
+router.put(
+  "/update-banking-documents",
+  RestaurantAuthProtect,
+  RestaurantUpdateBankingDocuments
+);
+
+router.put(
+  "/update-social-media-links",
+  RestaurantAuthProtect,
+  RestaurantUpdateSocialMediaLinks
+);
+
+router.put(
+  "/update-cover-photo",
+  RestaurantAuthProtect,
+  upload.single("coverImage"),
+  RestaurantUpdateCoverPhoto
+);
+
+router.put(
+  "/update-restaurant-images",
+  RestaurantAuthProtect,
+  upload.array("restaurantImages", 8),
+  RestaurantUpdateRestaurantImages
 );
 
 export default router;

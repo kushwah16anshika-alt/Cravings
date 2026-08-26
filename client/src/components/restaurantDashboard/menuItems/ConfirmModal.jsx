@@ -1,7 +1,7 @@
 import React from "react";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 import toast from "react-hot-toast";
-import api from "../../../config/ApiConfig";
+import api from "../../../config/api.config.js";
 
 const modalConfig = {
   delete: {

@@ -7,99 +7,138 @@ const Footer = () => {
   const navigate = useNavigate();
   const currentYear = new Date().getFullYear();
 
-  if (location.toLowerCase().includes("dashboard")) return null;
+  // Hide footer on dashboard pages
+  if (location.toLowerCase().includes("dashboard")) {
+    return null;
+  }
 
   return (
-    <footer className="bg-(--color-neutral) text-(--color-neutral-content) py-8">
-      <div className="max-w-7xl mx-auto px-4">
-        <p className="text-sm text-center mb-8">
-          --- Your favorite food delivery platform connecting customers with
-          restaurants and riders. ---
-        </p>
+    <footer className="bg-slate-950 text-white border-t border-slate-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Top Tagline */}
+        <div className="text-center mb-10">
+          <p className="text-sm md:text-base text-slate-400 max-w-2xl mx-auto">
+            Your favorite food delivery platform connecting food lovers with top restaurants and swift riders.
+          </p>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-8">
-          <div>
-            <img
-              src={logoCircle}
-              alt="Cravings Logo"
-              className="w-32 h-32"
-            />
+        {/* Footer Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 mb-10">
+          {/* Logo & Brand */}
+          <div className="flex flex-col items-start">
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-orange-500/20 blur-xl"></div>
+              <img
+                src={logoCircle}
+                alt="Cravings Logo"
+                className="relative w-24 h-24 object-contain"
+              />
+            </div>
+            <p className="text-xs text-slate-400 mt-2">
+              Fresh flavors delivered straight to your doorstep.
+            </p>
           </div>
 
+          {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2">
-              <li onClick={() => navigate("/")} className="text-sm cursor-pointer hover:text-(--color-primary)">
-                Home
+            <h4 className="text-sm font-bold uppercase tracking-wider text-slate-200 mb-4">
+              Quick Links
+            </h4>
+            <ul className="space-y-2 text-sm text-slate-400">
+              <li>
+                <Link to="/" className="hover:text-(--color-primary) transition">
+                  Home
+                </Link>
               </li>
-              <li onClick={() => navigate("/about")} className="text-sm cursor-pointer hover:text-(--color-primary)">
-                About
+              <li>
+                <Link to="/order-now" className="hover:text-(--color-primary) transition">
+                  Order Now
+                </Link>
               </li>
-              <li onClick={() => navigate("/order-now")} className="text-sm cursor-pointer hover:text-(--color-primary)">
-                Order Now
+              <li>
+                <Link to="/contact" className="hover:text-(--color-primary) transition">
+                  Contact Us
+                </Link>
               </li>
             </ul>
           </div>
 
+          {/* For Restaurants */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">For Restaurants</h4>
-            <ul className="space-y-2">
-              <li onClick={() => navigate("/register/restaurant")} className="text-sm cursor-pointer hover:text-(--color-primary)">
-                Partner With Us
+            <h4 className="text-sm font-bold uppercase tracking-wider text-slate-200 mb-4">
+              Restaurants
+            </h4>
+            <ul className="space-y-2 text-sm text-slate-400">
+              <li>
+                <Link to="/register/restaurant" className="hover:text-(--color-primary) transition">
+                  Partner with Us
+                </Link>
               </li>
-              <li onClick={() => navigate("/restaurant-dashboard")} className="text-sm cursor-pointer hover:text-(--color-primary)">
-                Restaurant Dashboard
+              <li>
+                <Link to="/restaurant-dashboard" className="hover:text-(--color-primary) transition">
+                  Restaurant Dashboard
+                </Link>
               </li>
             </ul>
           </div>
 
+          {/* For Riders */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">For Riders</h4>
-            <ul className="space-y-2">
-              <li onClick={() => navigate("/register/rider")} className="text-sm cursor-pointer hover:text-(--color-primary)">
-                Become a Rider
+            <h4 className="text-sm font-bold uppercase tracking-wider text-slate-200 mb-4">
+              Delivery
+            </h4>
+            <ul className="space-y-2 text-sm text-slate-400">
+              <li>
+                <Link to="/register/rider" className="hover:text-(--color-primary) transition">
+                  Become a Rider
+                </Link>
               </li>
-              <li onClick={() => navigate("/rider-dashboard")} className="text-sm cursor-pointer hover:text-(--color-primary)">
-                Rider Dashboard
+              <li>
+                <Link to="/rider-dashboard" className="hover:text-(--color-primary) transition">
+                  Rider Portal
+                </Link>
               </li>
             </ul>
           </div>
 
+          {/* Help & Feedback */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">Feedback & Support</h4>
-            <ul className="space-y-2">
-              <li onClick={() => navigate("/feedback")} className="text-sm cursor-pointer hover:text-(--color-primary)">
-                Submit Feedback
+            <h4 className="text-sm font-bold uppercase tracking-wider text-slate-200 mb-4">
+              Support
+            </h4>
+            <ul className="space-y-2 text-sm text-slate-400">
+              <li>
+                <Link to="/feedback" className="hover:text-(--color-primary) transition">
+                  Submit Feedback
+                </Link>
               </li>
-              <li onClick={() => navigate("/help-center")} className="text-sm cursor-pointer hover:text-(--color-primary)">
-                Help Center
-              </li>
-              <li onClick={() => navigate("/contact")} className="text-sm cursor-pointer hover:text-(--color-primary)">
-                Contact Us
+              <li>
+                <Link to="/help-center" className="hover:text-(--color-primary) transition">
+                  Help Center & FAQs
+                </Link>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-white/20 my-8"></div>
+        <div className="border-t border-slate-800 my-8"></div>
 
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm mb-4 md:mb-0">
+        {/* Bottom Bar */}
+        <div className="flex flex-col md:flex-row justify-between items-center text-xs text-slate-500">
+          <p className="mb-4 md:mb-0">
             &copy; {currentYear} Cravings. All rights reserved.
           </p>
 
           <div className="flex gap-6">
-            <Link to="/privacy-policy" className="text-sm hover:text-(--color-primary)">
+            <span className="hover:text-slate-400 transition cursor-pointer">
               Privacy Policy
-            </Link>
-
-            <Link to="/terms-of-service" className="text-sm hover:text-(--color-primary)">
+            </span>
+            <span className="hover:text-slate-400 transition cursor-pointer">
               Terms of Service
-            </Link>
-
-            <Link to="/site-map" className="text-sm hover:text-(--color-primary)">
-              Site Map
-            </Link>
+            </span>
+            <span className="hover:text-slate-400 transition cursor-pointer">
+              Security
+            </span>
           </div>
         </div>
       </div>

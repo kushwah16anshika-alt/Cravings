@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { FaStar } from "react-icons/fa";
+import { RiLoader4Fill } from "react-icons/ri";
 import api from "../config/api.config.js";
+import feedbackBgImg from "../assets/images/FeedbackPage.jpeg";
 
 const Feedback = () => {
   const [formData, setFormData] = useState({
@@ -72,7 +74,7 @@ const Feedback = () => {
     try {
       const response = await api.post("/public/feedback", {
         ...formData,
-        email: formData.email.toLowerCase(),
+        email: formData.email.toLowerCase().trim(),
         rating: Number(formData.rating),
       });
 
@@ -95,194 +97,153 @@ const Feedback = () => {
   };
 
   const inputClass = (field) =>
-    `
-  w-full
-  rounded-xl
-  border
-  px-4
-  py-3
-  bg-slate-900/70
-  text-white
-  placeholder-slate-400
-  outline-none
-  focus:border-orange-400
-  transition
-  ${errors[field] ? "border-red-500" : "border-slate-600"}
-  `;
+    `w-full rounded-xl border px-4 py-3 bg-slate-900/80 text-white placeholder-slate-400 outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm ${
+      errors[field] ? "border-red-500" : "border-slate-700"
+    }`;
 
   return (
     <div
-      className="
-min-h-screen
-relative
-flex
-items-center
-justify-center
-bg-cover
-bg-center
-px-6
-py-16
-"
+      className="min-h-screen relative flex items-center justify-center bg-cover bg-center px-6 py-16"
       style={{
-        backgroundImage: "url('/FeedbackPage.jpeg')",
+        backgroundImage: `url(${feedbackBgImg})`,
       }}
     >
-      <div
-        className="
-absolute
-inset-0
-bg-black/70
-"
-      />
+      <div className="absolute inset-0 bg-slate-950/80" />
 
-      <div
-        className="
-relative
-z-10
-w-full
-max-w-xl
-rounded-3xl
-bg-white/10
-backdrop-blur-xl
-border
-border-white/20
-p-6
-md:p-10
-shadow-2xl
-"
-      >
-        <h1
-          className="
-text-4xl
-font-black
-text-center
-text-orange-400
-"
-        >
-          Share Feedback
-        </h1>
+      <div className="relative z-10 w-full max-w-xl rounded-3xl bg-slate-900/90 backdrop-blur-2xl border border-white/10 p-6 md:p-10 shadow-2xl">
+        <div className="text-center mb-8">
+          <span className="inline-block px-3 py-1 text-xs font-bold uppercase tracking-wider bg-(--color-primary)/20 text-(--color-primary) border border-(--color-primary)/30 rounded-full mb-3">
+            We Value Your Voice
+          </span>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-white">
+            Share Your Feedback
+          </h1>
+          <p className="text-slate-400 text-sm mt-2">
+            Help us improve your dining and ordering experience.
+          </p>
+        </div>
 
-        <p
-          className="
-text-center
-text-slate-300
-mt-3
-mb-8
-"
-        >
-          Help us improve your Cravings experience.
-        </p>
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <input
-            type="text"
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleInputChange}
-            placeholder="Enter your full name"
-            className={inputClass("fullName")}
-          />
-
-          {errors.fullName && (
-            <p className="text-red-400 text-sm">{errors.fullName}</p>
-          )}
-
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            placeholder="Enter your email"
-            className={inputClass("email")}
-          />
-
-          {errors.email && (
-            <p className="text-red-400 text-sm">{errors.email}</p>
-          )}
-
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleInputChange}
-            className={inputClass("category")}
-          >
-            <option value="">Select Feedback Category</option>
-
-            {categories.map((category) => (
-              <option key={category} value={category} className="text-black">
-                {category}
-              </option>
-            ))}
-          </select>
-
-          {errors.category && (
-            <p className="text-red-400 text-sm">{errors.category}</p>
-          )}
-
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <p className="text-white mb-2">Overall Rating</p>
-
-            <div className="flex gap-3">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      rating: star,
-                    }))
-                  }
-                  className="
-text-3xl
-transition
-"
-                >
-                  <FaStar
-                    className={
-                      Number(formData.rating) >= star
-                        ? "text-yellow-400"
-                        : "text-slate-500"
-                    }
-                  />
-                </button>
-              ))}
-            </div>
-
-            {errors.rating && (
-              <p className="text-red-400 text-sm mt-2">{errors.rating}</p>
+            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+              Full Name
+            </label>
+            <input
+              type="text"
+              name="fullName"
+              placeholder="e.g. Alex Johnson"
+              value={formData.fullName}
+              onChange={handleInputChange}
+              className={inputClass("fullName")}
+            />
+            {errors.fullName && (
+              <p className="text-red-400 text-xs mt-1">{errors.fullName}</p>
             )}
           </div>
 
-          <textarea
-            name="message"
-            value={formData.message}
-            onChange={handleInputChange}
-            placeholder="Tell us about your experience..."
-            rows="5"
-            className={inputClass("message") + " resize-none"}
-          />
+          <div>
+            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+              Email Address
+            </label>
+            <input
+              type="email"
+              name="email"
+              placeholder="alex@example.com"
+              value={formData.email}
+              onChange={handleInputChange}
+              className={inputClass("email")}
+            />
+            {errors.email && (
+              <p className="text-red-400 text-xs mt-1">{errors.email}</p>
+            )}
+          </div>
 
-          {errors.message && (
-            <p className="text-red-400 text-sm">{errors.message}</p>
-          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                Category
+              </label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleInputChange}
+                className={inputClass("category")}
+              >
+                <option value="" className="bg-slate-900">
+                  Select Category
+                </option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat} className="bg-slate-900">
+                    {cat}
+                  </option>
+                ))}
+              </select>
+              {errors.category && (
+                <p className="text-red-400 text-xs mt-1">{errors.category}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                Rating
+              </label>
+              <div className="flex items-center space-x-2 pt-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    type="button"
+                    key={star}
+                    onClick={() => {
+                      setFormData((p) => ({ ...p, rating: String(star) }));
+                      if (errors.rating) setErrors((p) => ({ ...p, rating: "" }));
+                    }}
+                    className="p-1 focus:outline-none transition transform hover:scale-125"
+                  >
+                    <FaStar
+                      className={`text-2xl ${
+                        Number(formData.rating) >= star
+                          ? "text-yellow-400"
+                          : "text-slate-600"
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+              {errors.rating && (
+                <p className="text-red-400 text-xs mt-1">{errors.rating}</p>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+              Your Message
+            </label>
+            <textarea
+              name="message"
+              rows={4}
+              placeholder="Tell us what you loved or how we can do better..."
+              value={formData.message}
+              onChange={handleInputChange}
+              className={`${inputClass("message")} resize-none`}
+            />
+            {errors.message && (
+              <p className="text-red-400 text-xs mt-1">{errors.message}</p>
+            )}
+          </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="
-w-full
-rounded-xl
-bg-orange-500
-py-3
-font-bold
-text-white
-hover:bg-orange-600
-transition
-disabled:opacity-50
-"
+            className="w-full py-3.5 px-6 rounded-xl font-bold text-white bg-(--color-primary) hover:bg-(--color-primary-focus) active:scale-[0.98] transition flex items-center justify-center space-x-2 shadow-lg shadow-(--color-primary)/30 disabled:opacity-50"
           >
-            {loading ? "Submitting..." : "Submit Feedback"}
+            {loading ? (
+              <>
+                <RiLoader4Fill className="animate-spin text-xl" />
+                <span>Submitting Feedback...</span>
+              </>
+            ) : (
+              <span>Submit Feedback</span>
+            )}
           </button>
         </form>
       </div>

@@ -17,13 +17,17 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
     useCart();
   const [showConflictModal, setShowConflictModal] = useState(false);
 
+  const isCustomer = isLogin && user && (role === "user" || role === "customer");
   const isUnavailable = item.status === "unavailable";
-  const itemCount =
-    isLogin && user && role === "customer" ? getItemQuantity(item._id) : 0;
+  const itemCount = isCustomer ? getItemQuantity(item._id) : 0;
 
   const handleAdd = () => {
-    if (!isLogin || !user || role !== "customer") {
-      toast.error("Please log as Customer to add items to your cart.");
+    if (!isLogin || !user) {
+      toast.error("Please login to add items to your cart.");
+      return;
+    }
+    if (role !== "user" && role !== "customer") {
+      toast.error("Please login as a customer to add items to your cart.");
       return;
     }
     if (isUnavailable) return;

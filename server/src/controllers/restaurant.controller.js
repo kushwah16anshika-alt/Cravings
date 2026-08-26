@@ -453,10 +453,11 @@ export const RestaurantUpdateLegalInfo = async (
       return next(error);
     }
 
-    existingRestaurant.legal = {
-      legalName,
-      companyType,
-    };
+    if (!existingRestaurant.documents) {
+      existingRestaurant.documents = {};
+    }
+    existingRestaurant.documents.legalName = legalName;
+    existingRestaurant.documents.companyType = companyType;
 
     await existingRestaurant.save();
 
@@ -501,11 +502,10 @@ export const RestaurantAddMenuItem = async (
       !description ||
       !price ||
       !category ||
-      !foodType ||
-      !status
+      !foodType
     ) {
       const error = new Error(
-        "All fields are required"
+        "All required fields must be filled (name, description, price, category, food type)"
       );
       error.statusCode = 400;
       return next(error);
@@ -519,41 +519,50 @@ export const RestaurantAddMenuItem = async (
       return next(error);
     }
 
-    const existingRestaurant = await Restaurant.findOne({
+    let existingRestaurant = await Restaurant.findOne({
       managerId: currentUser._id,
     });
 
     if (!existingRestaurant) {
-      const error = new Error(
-        "Restaurant Not Found"
-      );
-      error.statusCode = 404;
-      return next(error);
+      existingRestaurant = await Restaurant.create({
+        managerId: currentUser._id,
+        restaurantName: currentUser.fullname ? `${currentUser.fullname}'s Kitchen` : "My Restaurant",
+        contactDetails: {
+          email: currentUser.email || "",
+          phone: currentUser.phone || "",
+        },
+      });
     }
 
+    const uploadLocation = `restaurant/${currentUser.phone || currentUser._id}/menuItems`;
     const itemImage = await UploadSingleImage(
       itemImageFromFE,
-      `restaurant/${currentUser.phone}/menuItems`
+      uploadLocation
     );
 
-    const existingMenuItem = await Menu.findOne({
+    const toBool = (val) => val === true || val === "true";
+    const parsedPrice = Number(price) || 0;
+
+    const menuItemData = {
+      itemName: itemName.trim(),
+      description: description.trim(),
+      price: parsedPrice,
+      category: category.trim(),
+      foodType: foodType.trim(),
+      status: status || "available",
+      isTopRated: toBool(isTopRated),
+      isRecommended: toBool(isRecommended),
+      isNew: toBool(isNew),
+      isDeleted: toBool(isDeleted),
+      image: itemImage,
+    };
+
+    let existingMenuItem = await Menu.findOne({
       restaurantId: existingRestaurant._id,
     });
 
     if (existingMenuItem) {
-      existingMenuItem.menuItems.push({
-        itemName,
-        description,
-        price,
-        category,
-        foodType,
-        status,
-        isTopRated,
-        isRecommended,
-        isNew,
-        isDeleted,
-        image: itemImage,
-      });
+      existingMenuItem.menuItems.push(menuItemData);
 
       await existingMenuItem.save();
 
@@ -565,21 +574,7 @@ export const RestaurantAddMenuItem = async (
 
     const newMenuItem = await Menu.create({
       restaurantId: existingRestaurant._id,
-      menuItems: [
-        {
-          itemName,
-          description,
-          price,
-          category,
-          foodType,
-          status,
-          isTopRated,
-          isRecommended,
-          isNew,
-          isDeleted,
-          image: itemImage,
-        },
-      ],
+      menuItems: [menuItemData],
     });
 
     return res.status(201).json({
@@ -587,7 +582,7 @@ export const RestaurantAddMenuItem = async (
       data: newMenuItem,
     });
   } catch (error) {
-    console.log(error.message);
+    console.log("RestaurantAddMenuItem error:", error.message);
     next(error);
   }
 };
@@ -595,49 +590,81 @@ export const RestaurantAddMenuItem = async (
 // =========================================
 // Get All Menu Items
 // =========================================
-export const RestaurantMenuItems = async (
-  req,
-  res,
-  next
-) => {
+export const RestaurantMenuItems = async (req, res, next) => {
   try {
+    console.log("========== GET MENU ITEMS ==========");
+
+    // 1. Check logged-in user
     const currentUser = req.user;
 
+    console.log("Current User ID:", currentUser?._id);
+    console.log("Current User Type:", currentUser?.userType);
+
+    if (!currentUser) {
+      const error = new Error("User not authenticated");
+      error.statusCode = 401;
+      return next(error);
+    }
+
+    // 2. Find restaurant
     const existingRestaurant = await Restaurant.findOne({
       managerId: currentUser._id,
     });
 
+    console.log("Restaurant:", existingRestaurant);
+
     if (!existingRestaurant) {
-      const error = new Error(
-        "Restaurant Not Found"
-      );
-      error.statusCode = 404;
-      return next(error);
+      return res.status(200).json({
+        message: "No menu items found",
+        data: [],
+      });
     }
 
-    const existingMenuItem = await Menu.findOne({
+    console.log("Restaurant ID:", existingRestaurant._id);
+
+    // 3. Find menu
+    const existingMenu = await Menu.findOne({
       restaurantId: existingRestaurant._id,
     });
 
-    if (!existingMenuItem) {
-      const error = new Error(
-        "Menu Items Not Found"
-      );
-      error.statusCode = 404;
+    console.log("Menu:", existingMenu);
+
+    // Restaurant has no menu yet
+    if (!existingMenu) {
+      return res.status(200).json({
+        message: "No menu items found",
+        data: [],
+      });
+    }
+
+    // 4. Check menuItems
+    console.log("Menu Items:", existingMenu.menuItems);
+
+    if (!Array.isArray(existingMenu.menuItems)) {
+      const error = new Error("menuItems is not an array");
+      error.statusCode = 500;
       return next(error);
     }
 
-    const activeMenuItems =
-      existingMenuItem.menuItems.filter(
-        (item) => !item.isDeleted
-      );
+    // 5. Remove deleted items
+    const activeMenuItems = existingMenu.menuItems.filter(
+      (item) => !item.isDeleted
+    );
 
+    console.log("Active Menu Items:", activeMenuItems);
+
+    // 6. Send response
     return res.status(200).json({
       message: "Menu items fetched successfully",
       data: activeMenuItems,
     });
+
   } catch (error) {
-    console.log(error.message);
+    console.error("RestaurantMenuItems ERROR:");
+    console.error(error);
+    console.error("Message:", error.message);
+    console.error("Stack:", error.stack);
+
     next(error);
   }
 };

@@ -6,12 +6,15 @@ import { sendOTPEmail } from "../utils/email.service.js";
 
 export const RegisterUser = async (req, res, next) => {
   try {
-    const { fullname, email, password, phone, gender, dob, userType } =
-      req.body;
+    const rawFullname = req.body.fullname || req.body.fullName;
+    const rawEmail = req.body.email;
+    const { password, phone, gender, dob } = req.body;
+    let userType = req.body.userType || "user";
+    if (userType === "customer") userType = "user";
 
     if (
-      !fullname ||
-      !email ||
+      !rawFullname ||
+      !rawEmail ||
       !password ||
       !phone ||
       !gender ||
@@ -22,6 +25,9 @@ export const RegisterUser = async (req, res, next) => {
       error.statusCode = 400;
       return next(error);
     }
+
+    const email = rawEmail.toLowerCase().trim();
+    const fullname = rawFullname.trim();
 
     const existingUser = await User.findOne({ email });
 
@@ -65,14 +71,16 @@ export const RegisterUser = async (req, res, next) => {
 
 export const LoginUser = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const rawEmail = req.body.email;
+    const { password } = req.body;
 
-    if (!email || !password) {
+    if (!rawEmail || !password) {
       const error = new Error("All fields Required");
       error.statusCode = 400;
       return next(error);
     }
 
+    const email = rawEmail.toLowerCase().trim();
     const existingUser = await User.findOne({ email });
 
     if (!existingUser) {
@@ -121,14 +129,15 @@ export const LogoutUser = async (req, res, next) => {
 
 export const SendOtp = async (req, res, next) => {
   try {
-    const { email } = req.body;
+    const rawEmail = req.body.email;
 
-    if (!email) {
+    if (!rawEmail) {
       const error = new Error("Email is required");
       error.statusCode = 400;
       return next(error);
     }
 
+    const email = rawEmail.toLowerCase().trim();
     const existingUser = await User.findOne({ email });
 
     if (!existingUser) {
@@ -161,7 +170,8 @@ export const SendOtp = async (req, res, next) => {
     });
 
     // Send OTP through email
-    await sendOTPEmail(email, newOTP, existingUser.fullName);
+    const recipientName = existingUser.fullname || existingUser.fullName || "User";
+    await sendOTPEmail(email, newOTP, recipientName);
 
     res.status(200).json({
       message: `OTP sent on '${email}'`,

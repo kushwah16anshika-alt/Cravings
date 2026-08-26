@@ -20,20 +20,21 @@ const OrderSchema = mongoose.Schema(
       required: false,
     },
 
-    orderItems: [
-      {
-        itemId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "menuItem",
-          required: true,
+    orderItems: {
+      type: [
+        {
+          itemId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "menuItem",
+            required: true,
+          },
+          quantity: {
+            type: Number,
+            required: true,
+          },
         },
-
-        quantity: {
-          type: Number,
-          required: true,
-        },
-      },
-    ],
+      ],
+    },
 
     orderStatus: {
       type: String,
@@ -61,101 +62,112 @@ const OrderSchema = mongoose.Schema(
     },
 
     billDetails: {
-      totalAmount: {
-        type: Number,
-        required: true,
-      },
-
-      platformFee: {
-        type: Number,
-        required: true,
-      },
-
-      convenienceFee: {
-        type: Number,
-        required: true,
-      },
-
-      taxAmount: {
-        type: Number,
-        required: true,
-      },
-
-      deliveryCharge: {
-        type: Number,
-        required: true,
-      },
-
-      discountAmount: {
-        type: Number,
-        required: true,
-      },
-
-      finalAmount: {
-        type: Number,
-        required: true,
+      type: {
+        totalAmount: {
+          type: Number,
+          required: true,
+        },
+        platformFee: {
+          type: Number,
+          required: true,
+        },
+        convenienceFee: {
+          type: Number,
+          required: true,
+        },
+        taxAmount: {
+          type: Number,
+          required: true,
+        },
+        deliveryCharge: {
+          type: Number,
+          required: true,
+        },
+        discountAmount: {
+          type: Number,
+          required: true,
+        },
+        finalAmount: {
+          type: Number,
+          required: true,
+        },
       },
     },
 
     deliveryAddress: {
-      name: {
-        type: String,
-        required: true,
-      },
-
-      address: {
-        type: String,
-        required: true,
-      },
-
-      city: {
-        type: String,
-        required: true,
-      },
-
-      state: {
-        type: String,
-        required: true,
-      },
-
-      pinCode: {
-        type: String,
-        required: true,
-      },
-
-      country: {
-        type: String,
-        required: true,
-      },
-
-      geoLocation: {
-        lat: {
+      type: {
+        name: {
           type: String,
+          required: true,
         },
-
-        lon: {
+        address: {
           type: String,
+          required: true,
+        },
+        city: {
+          type: String,
+          required: true,
+        },
+        state: {
+          type: String,
+          required: true,
+        },
+        pinCode: {
+          type: String,
+          required: true,
+        },
+        country: {
+          type: String,
+          required: true,
+        },
+        geoLocation: {
+          type: {
+            lat: {
+              type: String,
+            },
+            lon: {
+              type: String,
+            },
+          },
         },
       },
     },
 
     paymentDetails: {
-      paymentMethod: {
-        type: String,
-        enum: ["card", "upi"],
-        required: true,
-      },
+      type: {
+        paymentMethod: {
+          type: String,
+          enum: ["card", "upi"],
+          required: true,
+        },
 
-      paymentStatus: {
-        type: String,
-        enum: ["pending", "completed", "failed"],
-        default: "pending",
+        paymentStatus: {
+          type: String,
+          enum: ["pending", "completed", "failed"],
+          default: "pending",
+        },
+
+        razorpayOrderId: {
+          type: String,
+        },
+
+        razorpayPaymentId: {
+          type: String,
+        },
+
+        razorpaySignature: {
+          type: String,
+        },
+
+        paidAt: {
+          type: Date,
+        },
       },
     },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 const Order = mongoose.model("order", OrderSchema);

@@ -1,6 +1,6 @@
 import React from "react";
-import Information from "./settings/customerInformation/Index";
-import AddressBook from "./settings/coreDetails/Index";
+import Information from "./customerInformation/Index";
+import AddressBook from "./coreDetails/Index";
 
 const CustomerSetting = () => {
   return (

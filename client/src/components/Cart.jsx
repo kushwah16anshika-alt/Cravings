@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
-import api from "../config/ApiConfig";
+import api from "../config/api.config.js";
 import toast from "react-hot-toast";
 import { foodTypeDot } from "./publicRestaurantDetails/helpers";
 import {
@@ -57,8 +57,8 @@ const Cart = () => {
       return;
     }
 
-    if (role !== "customer") {
-      toast.error("Only customer can place order");
+    if (role !== "user" && role !== "customer") {
+      toast.error("Only customers can place orders");
       return;
     }
 
@@ -87,6 +87,21 @@ const Cart = () => {
         orderId: appOrderId,
       });
       const paymentData = paymentOrderRes?.data?.data;
+
+      // In demo mode (when Razorpay credentials are not added to server/.env)
+      if (paymentData?.isDemo) {
+        await api.post("/payment/verify", {
+          orderId: appOrderId,
+          razorpay_order_id: paymentData.razorpayOrderId,
+          razorpay_payment_id: `pay_demo_${Date.now()}`,
+          razorpay_signature: "demo_signature",
+        });
+
+        toast.success("Order placed successfully!");
+        clearCart();
+        navigate("/customer-dashboard");
+        return;
+      }
 
       // 4. Load the Razorpay JS SDK
       const loaded = await loadRazorpayScript();

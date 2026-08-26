@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import api from "../../../../config/ApiConfig";
+import api from "../../../../config/api.config.js";
 import toast from "react-hot-toast";
 
 const RestaurantSocialMediaLinks = () => {

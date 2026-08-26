@@ -1,62 +1,4 @@
-// import React from "react";
-// import { useLocation, useNavigate } from "react-router-dom";
-// import { useAuth } from "../../context/AuthContext";
-// import RestaurantSidebar from "../../components/restaurantDashboard/RestaurantSidebar";
-// import RestaurantOverview from "../../components/restaurantDashboard/RestaurantOverview";
-// import RestaurantMenu from "../../components/restaurantDashboard/RestaurantMenu";
-// import RestaurantOrders from "../../components/restaurantDashboard/RestaurantOrders";
-// import RestaurantSetting from "../../components/restaurantDashboard/RestaurantSetting";
-
-// const RestaurantDashboard = () => {
-//   const { isLogin, role } = useAuth();
-//   const navigate = useNavigate();
-
-//   const active = useLocation().state?.activeTab;
-//   const [activeTab, setActiveTab] = React.useState(active || "overview");
-
-//   if (!isLogin || role !== "restaurant") {
-//     return (
-//       <div className="h-[92vh] bg-[url('/foodTable.webp')] bg-cover bg-center">
-//         <div className="h-full backdrop-blur-lg flex flex-col items-center justify-center">
-//           <h1 className="text-2xl font-bold text-(--color-neutral-content)">
-//             Access Denied. Please log in as a Restaurant Manager to view this page.
-//           </h1>
-
-//           <button
-//             onClick={() => navigate("/login")}
-//             className="mt-4 px-4 py-2 bg-(--color-primary) text-white rounded-md"
-//           >
-//             Go to Login
-//           </button>
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="h-[91vh] flex gap-2 p-2 overflow-hidden">
-//       <div className="w-3/17 bg-(--color-base-200) p-4 rounded-lg shadow-md h-full overflow-y-auto hidden md:block">
-//         <RestaurantSidebar
-//           activeTab={activeTab}
-//           setActiveTab={setActiveTab}
-//         />
-//       </div>
-
-//       <div className="flex-1 bg-(--color-base-100) p-4 rounded-lg shadow-md h-full overflow-y-auto">
-//         {activeTab === "overview" && <RestaurantOverview />}
-//         {activeTab === "menu" && <RestaurantMenu />}
-//         {activeTab === "orders" && <RestaurantOrders />}
-//         {activeTab === "settings" && <RestaurantSetting />}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default RestaurantDashboard;
-
-
-
-import React from "react";
+import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import RestaurantSidebar from "../../components/restaurantDashboard/RestaurantSidebar";
@@ -64,26 +6,33 @@ import RestaurantOverview from "../../components/restaurantDashboard/RestaurantO
 import RestaurantMenu from "../../components/restaurantDashboard/RestaurantMenu";
 import RestaurantOrders from "../../components/restaurantDashboard/RestaurantOrders";
 import RestaurantSetting from "../../components/restaurantDashboard/RestaurantSetting";
+import foodTableImg from "../../assets/foodTable.webp";
 
 const RestaurantDashboard = () => {
   const { isLogin, role } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const active = useLocation().state?.activeTab;
-  const [activeTab, setActiveTab] = React.useState(active || "menu");
+  const [activeTab, setActiveTab] = useState(
+    location.state?.activeTab || "menu"
+  );
 
   if (!isLogin || role !== "restaurant") {
     return (
-      <div className="h-[92vh] bg-[url('/foodTable.webp')] bg-cover bg-center">
-        <div className="h-full backdrop-blur-lg flex flex-col items-center justify-center">
-          <h1 className="text-2xl font-bold text-(--color-neutral-content)">
-            Access Denied. Please log in as a Restaurant Manager to view this
-            page.
+      <div
+        className="min-h-[85vh] bg-cover bg-center flex items-center justify-center p-6"
+        style={{ backgroundImage: `url(${foodTableImg})` }}
+      >
+        <div className="p-8 rounded-3xl bg-slate-900/90 backdrop-blur-xl border border-white/10 text-center max-w-md shadow-2xl">
+          <h1 className="text-2xl font-bold text-white mb-2">
+            Access Denied
           </h1>
-
+          <p className="text-slate-400 text-sm mb-6">
+            Please log in as a Restaurant Manager to view the restaurant partner portal.
+          </p>
           <button
             onClick={() => navigate("/login")}
-            className="mt-4 px-4 py-2 bg-(--color-primary) text-white rounded-md"
+            className="px-6 py-2.5 bg-(--color-primary) text-white font-semibold rounded-xl hover:bg-(--color-primary-focus) transition shadow-md"
           >
             Go to Login
           </button>
@@ -93,23 +42,23 @@ const RestaurantDashboard = () => {
   }
 
   return (
-    <>
-      <div className="h-[91vh] flex gap-2 p-2">
-        <div className="w-3/17 bg-(--color-base-200) p-4 rounded-lg shadow-md h-full">
-          <RestaurantSidebar
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-          />
-        </div>
-
-        <div className="w-14/17 bg-(--color-base-100) p-4 rounded-lg shadow-md h-full">
-          {activeTab === "overview" && <RestaurantOverview />}
-          {activeTab === "orders" && <RestaurantOrders />}
-          {activeTab === "settings" && <RestaurantSetting />}
-          {activeTab === "menu" && <RestaurantMenu />}
-        </div>
+    <div className="min-h-[calc(100vh-80px)] flex flex-col md:flex-row gap-4 p-4 max-w-7xl mx-auto">
+      {/* Sidebar */}
+      <div className="w-full md:w-64 lg:w-72 bg-(--color-base-100) p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex-shrink-0">
+        <RestaurantSidebar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
       </div>
-    </>
+
+      {/* Main Content Area */}
+      <div className="flex-1 bg-(--color-base-100) p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-y-auto">
+        {activeTab === "overview" && <RestaurantOverview />}
+        {activeTab === "orders" && <RestaurantOrders />}
+        {activeTab === "settings" && <RestaurantSetting />}
+        {activeTab === "menu" && <RestaurantMenu />}
+      </div>
+    </div>
   );
 };
 

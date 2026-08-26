@@ -30,16 +30,27 @@ const MenuSchema = mongoose.Schema(
           required: true,
         },
 
+        foodType: {
+          type: String,
+          default: "Vegetarian",
+        },
+
         image: {
           url: {
             type: String,
-            required: true,
+            default: "",
           },
 
           publicId: {
             type: String,
-            required: false,
+            default: "",
           },
+        },
+
+        status: {
+          type: String,
+          enum: ["available", "unavailable", "discontinued"],
+          default: "available",
         },
 
         isAvailable: {
@@ -58,6 +69,11 @@ const MenuSchema = mongoose.Schema(
         },
 
         isNew: {
+          type: Boolean,
+          default: false,
+        },
+
+        isDeleted: {
           type: Boolean,
           default: false,
         },

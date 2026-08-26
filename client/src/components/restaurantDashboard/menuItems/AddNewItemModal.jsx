@@ -1,6 +1,6 @@
 import React from "react";
 import { IoMdCloseCircleOutline } from "react-icons/io";
-import api from "../../../config/ApiConfig";
+import api from "../../../config/api.config.js";
 import toast from "react-hot-toast";
 import { FaRegFileImage } from "react-icons/fa";
 

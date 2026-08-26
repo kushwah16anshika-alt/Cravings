@@ -1,144 +1,120 @@
 @import "tailwindcss";
 
-/* :root {
-  --primary: #001bb7;
-  --primary-text: #dfdff8;
-  --secondary: #0046ff;
-  --accent: #ff8040;
-  --success: #16a34a;
-  --error: #dc2626;
-  --warning: #f59e0b;
-  --background: #f5f1dc;
-  --text: #111827;
+@layer base {
+  :root {
+    /* Brand Theme Colors */
+    --color-primary: #ff4b2b;
+    --color-primary-focus: #e03a1b;
+    --color-primary-content: #ffffff;
 
-  --success: #16a34a;
-  --error: #dc2626;
-  --warning: #f59e0b;
-  --info: #0ea5e9;
+    --color-secondary: #ff7438;
+    --color-secondary-focus: #e65c20;
+    --color-secondary-content: #ffffff;
 
-  --background: #f5f1dc;
-  --surface: #ffffff;
-  --card: #f8fafc;
-  --border: #d1d5db;
+    --color-accent: #f59e0b;
+    --color-accent-content: #ffffff;
 
-  --text: #111827;
-  --text-light: #6b7280;
-  --text-dark: #030712;
+    --color-neutral: #1e293b;
+    --color-neutral-focus: #0f172a;
+    --color-neutral-content: #f8fafc;
 
-  --blue: #2563eb;
-  --light-blue: #60a5fa;
-  --dark-blue: #1e3a8a;
+    --color-base-100: #ffffff;
+    --color-base-200: #f8fafc;
+    --color-base-300: #e2e8f0;
+    --color-base-content: #0f172a;
 
-  --green: #22c55e;
-  --light-green: #86efac;
-  --dark-green: #166534;
+    --color-info: #3b82f6;
+    --color-info-content: #ffffff;
+    --color-success: #10b981;
+    --color-success-content: #ffffff;
+    --color-warning: #f59e0b;
+    --color-warning-content: #ffffff;
+    --color-error: #ef4444;
+    --color-error-content: #ffffff;
 
-  --red: #ef4444;
-  --light-red: #fca5a5;
-  --dark-red: #991b1b;
+    /* Legacy Fallbacks */
+    --primary: #ff4b2b;
+    --primary-text: #ffffff;
+    --secondary: #ff7438;
+    --accent: #f59e0b;
+    --success: #10b981;
+    --error: #ef4444;
+    --warning: #f59e0b;
+    --info: #3b82f6;
+    --background: #f8fafc;
+    --surface: #ffffff;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --text-light: #64748b;
+    --text-dark: #020617;
+  }
 
-  --yellow: #eab308;
-  --light-yellow: #fde68a;
-  --dark-yellow: #a16207;
+  body {
+    background-color: var(--color-base-200);
+    color: var(--color-base-content);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-  --orange: #f97316;
-  --light-orange: #fdba74;
-  --dark-orange: #c2410c;
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-base-200);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}
 
-  --purple: #9333ea;
-  --light-purple: #d8b4fe;
-  --dark-purple: #581c87;
+/* Glassmorphism & Modern Utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
 
-  --pink: #ec4899;
-  --light-pink: #f9a8d4;
-  --dark-pink: #9d174d;
+.glass-panel-dark {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-  --teal: #14b8a6;
-  --cyan: #06b6d4;
+.glow-primary {
+  box-shadow: 0 4px 20px -2px rgba(255, 75, 43, 0.35);
+}
 
-  --indigo: #4f46e5;
-  --lime: #84cc16;
+.glow-subtle {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+}
 
-  --gray: #6b7280;
-  --light-gray: #e5e7eb;
-  --dark-gray: #374151;
+/* Animations */
+@keyframes pulseSubtle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.02); }
+}
 
-  --black: #000000;
-  --white: #ffffff;
-} */
+.animate-pulse-subtle {
+  animation: pulseSubtle 3s ease-in-out infinite;
+}
 
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
 
-:root {
-  /* Primary Brand */
-  --primary: #0f172a;
-  --primary-text: #f8fafc;
-  --secondary: #1e3a8a;
-  --accent: #f97316;
-
-  /* Status Colors */
-  --success: #22c55e;
-  --error: #ef4444;
-  --warning: #f59e0b;
-  --info: #38bdf8;
-
-  /* Backgrounds */
-  --background: #0b1120;
-  --surface: #111827;
-  --card: #1e293b;
-  --border: #334155;
-
-  /* Text */
-  --text: #f8fafc;
-  --text-light: #cbd5e1;
-  --text-dark: #ffffff;
-
-  /* Blue Shades */
-  --blue: #2563eb;
-  --light-blue: #60a5fa;
-  --dark-blue: #0f172a;
-
-  /* Orange Shades */
-  --orange: #f97316;
-  --light-orange: #fb923c;
-  --dark-orange: #c2410c;
-
-  /* Green Shades */
-  --green: #22c55e;
-  --light-green: #4ade80;
-  --dark-green: #166534;
-
-  /* Red Shades */
-  --red: #ef4444;
-  --light-red: #f87171;
-  --dark-red: #991b1b;
-
-  /* Yellow Shades */
-  --yellow: #facc15;
-  --light-yellow: #fde047;
-  --dark-yellow: #a16207;
-
-  /* Purple Shades */
-  --purple: #8b5cf6;
-  --light-purple: #c4b5fd;
-  --dark-purple: #5b21b6;
-
-  /* Pink Shades */
-  --pink: #ec4899;
-  --light-pink: #f9a8d4;
-  --dark-pink: #9d174d;
-
-  /* Extra Colors */
-  --teal: #14b8a6;
-  --cyan: #06b6d4;
-  --indigo: #4f46e5;
-  --lime: #84cc16;
-
-  /* Gray Scale */
-  --gray: #94a3b8;
-  --light-gray: #cbd5e1;
-  --dark-gray: #1e293b;
-
-  /* Black & White */
-  --black: #000000;
-  --white: #ffffff;
+.animate-float {
+  animation: float 4s ease-in-out infinite;
 }

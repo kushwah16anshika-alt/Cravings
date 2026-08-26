@@ -1,181 +1,9 @@
-// import React, { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import foodBgImg from "../assets/images/fresh-gourmet-meal-beef-taco-salad-plate-generated-by-ai.jpg";
-
-// const ContactUs = () => {
-//   const navigate = useNavigate();
-
-//   const [contactData, setContactData] = useState({
-//     fullName: "",
-//     email: "",
-//     phone: "",
-//     subject: "",
-//     message: "",
-//   });
-
-//   const [validateError, setValidateError] = useState("");
-//   const [successMessage, setSuccessMessage] = useState("");
-
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-
-//     setContactData((prev) => ({
-//       ...prev,
-//       [name]: value,
-//     }));
-//   };
-
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-
-//     if (
-//       !contactData.fullName ||
-//       !contactData.email ||
-//       !contactData.phone ||
-//       !contactData.subject ||
-//       !contactData.message
-//     ) {
-//       setValidateError("All fields are required.");
-//       return;
-//     }
-
-//     setValidateError("");
-
-//     const payload = {
-//       fullName: contactData.fullName,
-//       email: contactData.email.toLowerCase(),
-//       phone: contactData.phone,
-//       subject: contactData.subject,
-//       message: contactData.message,
-//     };
-
-//     console.log("Contact Form Submitted:", payload);
-
-//     setSuccessMessage(
-//       "Thank you for contacting us! We'll get back to you soon."
-//     );
-
-//     setContactData({
-//       fullName: "",
-//       email: "",
-//       phone: "",
-//       subject: "",
-//       message: "",
-//     });
-
-//     setTimeout(() => {
-//       setSuccessMessage("");
-//     }, 3000);
-//   };
-
-//   return (
-//     <div
-//       className="min-h-screen bg-cover bg-center relative flex items-center"
-//       style={{ backgroundImage: `url(${foodBgImg})` }}
-//     >
-//       <div className="absolute inset-0 bg-black/50"></div>
-
-//       <div className="relative w-full flex justify-start px-6 md:px-16">
-//         <div className="w-full max-w-md bg-white/90 backdrop-blur-md rounded-3xl shadow-xl p-6 md:p-10">
-//           <h2 className="text-3xl font-bold text-center text-orange-500">
-//             Contact Us
-//           </h2>
-
-//           <p className="text-center mt-2 text-gray-700">
-//             Have a question? We'd love to hear from you.
-//           </p>
-
-//           <form onSubmit={handleSubmit} className="mt-6">
-//             <input
-//               type="text"
-//               name="fullName"
-//               value={contactData.fullName}
-//               onChange={handleChange}
-//               placeholder="Enter your full name"
-//               className="my-3 w-full border p-2 rounded focus:outline-orange-400"
-//             />
-
-//             <input
-//               type="email"
-//               name="email"
-//               value={contactData.email}
-//               onChange={handleChange}
-//               placeholder="Enter your email"
-//               className="my-3 w-full border p-2 rounded focus:outline-orange-400"
-//             />
-
-//             <input
-//               type="tel"
-//               name="phone"
-//               value={contactData.phone}
-//               onChange={handleChange}
-//               placeholder="Enter your phone number"
-//               className="my-3 w-full border p-2 rounded focus:outline-orange-400"
-//             />
-
-//             <input
-//               type="text"
-//               name="subject"
-//               value={contactData.subject}
-//               onChange={handleChange}
-//               placeholder="Subject"
-//               className="my-3 w-full border p-2 rounded focus:outline-orange-400"
-//             />
-
-//             <textarea
-//               name="message"
-//               value={contactData.message}
-//               onChange={handleChange}
-//               placeholder="Write your message..."
-//               className="my-3 w-full border p-2 rounded h-24 focus:outline-orange-400"
-//             />
-
-//             {validateError && (
-//               <p className="text-red-500 text-sm">{validateError}</p>
-//             )}
-
-//             {successMessage && (
-//               <p className="text-green-500 text-sm">{successMessage}</p>
-//             )}
-
-//             <button
-//               type="submit"
-//               className="w-full mt-4 bg-orange-500 text-white py-3 rounded hover:bg-orange-600 transition"
-//             >
-//               Send Message
-//             </button>
-//           </form>
-
-//           <div className="mt-6 text-center">
-//             <p className="text-sm">
-//               Want to order delicious food?{" "}
-//               <button
-//                 onClick={() => navigate("/login")}
-//                 className="text-orange-500 hover:underline font-semibold"
-//               >
-//                 Login
-//               </button>
-//               {" | "}
-//               <button
-//                 onClick={() => navigate("/register")}
-//                 className="text-orange-500 hover:underline font-semibold"
-//               >
-//                 Register
-//               </button>
-//             </p>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ContactUs;
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
-
+import { RiLoader4Fill } from "react-icons/ri";
+import toast from "react-hot-toast";
+import api from "../config/api.config.js";
 import foodBgImg from "../assets/images/fresh-gourmet-meal-beef-taco-salad-plate-generated-by-ai.jpg";
 
 const ContactUs = () => {
@@ -189,19 +17,17 @@ const ContactUs = () => {
     message: "",
   });
 
-  const [validateError, setValidateError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setContactData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (
@@ -211,377 +37,195 @@ const ContactUs = () => {
       !contactData.subject ||
       !contactData.message
     ) {
-      setValidateError("All fields are required.");
+      toast.error("All fields are required.");
       return;
     }
 
-    setValidateError("");
+    try {
+      setIsLoading(true);
 
-    const payload = {
-      fullName: contactData.fullName,
+      const payload = {
+        fullName: contactData.fullName.trim(),
+        email: contactData.email.toLowerCase().trim(),
+        phone: contactData.phone.trim(),
+        subject: contactData.subject.trim(),
+        message: contactData.message.trim(),
+      };
 
-      email: contactData.email.toLowerCase(),
+      const response = await api.post("/public/contact-us", payload);
 
-      phone: contactData.phone,
+      toast.success(
+        response.data.message || "Thank you for contacting us! We will reach out soon."
+      );
 
-      subject: contactData.subject,
-
-      message: contactData.message,
-    };
-
-    console.log("Contact Form Submitted:", payload);
-
-    setSuccessMessage(
-      "Thank you for contacting us! We'll get back to you soon.",
-    );
-
-    setContactData({
-      fullName: "",
-      email: "",
-      phone: "",
-      subject: "",
-      message: "",
-    });
-
-    setTimeout(() => {
-      setSuccessMessage("");
-    }, 3000);
+      setContactData({
+        fullName: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: "",
+      });
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to submit message. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div
-      className="
-        min-h-screen
-        relative
-        flex
-        items-center
-        justify-center
-        bg-cover
-        bg-center
-        px-6
-        py-16
-      "
+      className="min-h-screen relative flex items-center justify-center bg-cover bg-center px-6 py-16"
       style={{
         backgroundImage: `url(${foodBgImg})`,
       }}
     >
-      {/* Background Overlay */}
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-slate-950/80" />
 
-      <div
-        className="
-          absolute
-          inset-0
-          bg-slate-950/80
-        "
-      />
-
-      <div
-        className="
-          relative
-          z-10
-          grid
-          w-full
-          max-w-6xl
-          gap-10
-          lg:grid-cols-2
-          items-center
-        "
-      >
+      <div className="relative z-10 grid w-full max-w-6xl gap-10 lg:grid-cols-2 items-center">
         {/* Left Content */}
-
         <div className="text-white space-y-6">
-          <h1
-            className="
-              text-5xl
-              md:text-6xl
-              font-black
-              leading-tight
-            "
-          >
-            Contact
-            <span
-              className="
-                block
-                text-orange-400
-              "
-            >
-              Cravings
-            </span>
+          <span className="inline-block px-4 py-1.5 text-xs font-bold tracking-wider uppercase bg-(--color-primary)/20 text-(--color-primary) border border-(--color-primary)/30 rounded-full">
+            Get In Touch
+          </span>
+          <h1 className="text-4xl md:text-5xl font-black leading-tight text-white">
+            We'd love to hear from you.
           </h1>
-
-          <p
-            className="
-              max-w-lg
-              text-lg
-              text-slate-300
-            "
-          >
-            Have questions about orders, restaurants, delivery or partnerships?
-            We would love to hear from you.
+          <p className="text-slate-300 text-base md:text-lg max-w-lg leading-relaxed">
+            Have questions about an order, restaurant partnership, or delivery? Reach out to our team anytime.
           </p>
 
-          <div className="space-y-4">
-            <div
-              className="
-                flex
-                items-center
-                gap-4
-                rounded-xl
-                border
-                border-slate-700
-                bg-slate-900/60
-                p-4
-              "
-            >
-              <FaPhoneAlt className="text-orange-400 text-xl" />
-
+          <div className="space-y-4 pt-4">
+            <div className="flex items-center space-x-4 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md">
+              <div className="w-12 h-12 rounded-xl bg-(--color-primary)/20 flex items-center justify-center text-(--color-primary)">
+                <FaPhoneAlt className="text-xl" />
+              </div>
               <div>
-                <h3 className="font-bold">Phone</h3>
-
-                <p className="text-slate-400">+91 9876543210</p>
+                <p className="text-xs text-slate-400 font-medium">Call Us Directly</p>
+                <p className="text-white font-semibold">+91 98765 43210</p>
               </div>
             </div>
 
-            <div
-              className="
-                flex
-                items-center
-                gap-4
-                rounded-xl
-                border
-                border-slate-700
-                bg-slate-900/60
-                p-4
-              "
-            >
-              <FaEnvelope className="text-orange-400 text-xl" />
-
+            <div className="flex items-center space-x-4 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md">
+              <div className="w-12 h-12 rounded-xl bg-(--color-primary)/20 flex items-center justify-center text-(--color-primary)">
+                <FaEnvelope className="text-xl" />
+              </div>
               <div>
-                <h3 className="font-bold">Email</h3>
-
-                <p className="text-slate-400">support@cravings.com</p>
+                <p className="text-xs text-slate-400 font-medium">Email Support</p>
+                <p className="text-white font-semibold">support@cravings.com</p>
               </div>
             </div>
 
-            <div
-              className="
-                flex
-                items-center
-                gap-4
-                rounded-xl
-                border
-                border-slate-700
-                bg-slate-900/60
-                p-4
-              "
-            >
-              <FaMapMarkerAlt className="text-orange-400 text-xl" />
-
+            <div className="flex items-center space-x-4 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md">
+              <div className="w-12 h-12 rounded-xl bg-(--color-primary)/20 flex items-center justify-center text-(--color-primary)">
+                <FaMapMarkerAlt className="text-xl" />
+              </div>
               <div>
-                <h3 className="font-bold">Address</h3>
-
-                <p className="text-slate-400">India</p>
+                <p className="text-xs text-slate-400 font-medium">Headquarters</p>
+                <p className="text-white font-semibold">Tech City, Bangalore, India</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Contact Form */}
-
-        <div
-          className="
-            rounded-3xl
-            border
-            border-slate-700
-            bg-white/10
-            backdrop-blur-xl
-            p-6
-            md:p-10
-            shadow-2xl
-          "
-        >
-          <h2
-            className="
-              text-center
-              text-3xl
-              font-bold
-              text-white
-            "
-          >
-            Contact Us
+        {/* Right Form Card */}
+        <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+            Send us a Message
           </h2>
-
-          <p
-            className="
-              mt-2
-              text-center
-              text-slate-300
-            "
-          >
-            Have a question? We'd love to hear from you.
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+            Fill out the form below and we will respond within 24 hours.
           </p>
 
-          <form onSubmit={handleSubmit} className="mt-6">
-            <input
-              type="text"
-              name="fullName"
-              value={contactData.fullName}
-              onChange={handleChange}
-              placeholder="Enter your full name"
-              className="
-                my-3
-                w-full
-                rounded-xl
-                border
-                border-slate-600
-                bg-slate-900/70
-                px-4
-                py-3
-                text-white
-                outline-none
-                focus:border-orange-400
-              "
-            />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                Full Name
+              </label>
+              <input
+                type="text"
+                name="fullName"
+                value={contactData.fullName}
+                onChange={handleChange}
+                placeholder="John Doe"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm"
+              />
+            </div>
 
-            <input
-              type="email"
-              name="email"
-              value={contactData.email}
-              onChange={handleChange}
-              placeholder="Enter your email"
-              className="
-                my-3
-                w-full
-                rounded-xl
-                border
-                border-slate-600
-                bg-slate-900/70
-                px-4
-                py-3
-                text-white
-                outline-none
-                focus:border-orange-400
-              "
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={contactData.email}
+                  onChange={handleChange}
+                  placeholder="john@example.com"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={contactData.phone}
+                  onChange={handleChange}
+                  placeholder="9876543210"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm"
+                />
+              </div>
+            </div>
 
-            <input
-              type="tel"
-              name="phone"
-              value={contactData.phone}
-              onChange={handleChange}
-              placeholder="Enter your phone number"
-              className="
-                my-3
-                w-full
-                rounded-xl
-                border
-                border-slate-600
-                bg-slate-900/70
-                px-4
-                py-3
-                text-white
-                outline-none
-                focus:border-orange-400
-              "
-            />
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                Subject
+              </label>
+              <input
+                type="text"
+                name="subject"
+                value={contactData.subject}
+                onChange={handleChange}
+                placeholder="How can we help?"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm"
+              />
+            </div>
 
-            <input
-              type="text"
-              name="subject"
-              value={contactData.subject}
-              onChange={handleChange}
-              placeholder="Subject"
-              className="
-                my-3
-                w-full
-                rounded-xl
-                border
-                border-slate-600
-                bg-slate-900/70
-                px-4
-                py-3
-                text-white
-                outline-none
-                focus:border-orange-400
-              "
-            />
-
-            <textarea
-              name="message"
-              value={contactData.message}
-              onChange={handleChange}
-              placeholder="Write your message..."
-              className="
-                my-3
-                h-28
-                w-full
-                resize-none
-                rounded-xl
-                border
-                border-slate-600
-                bg-slate-900/70
-                px-4
-                py-3
-                text-white
-                outline-none
-                focus:border-orange-400
-              "
-            />
-
-            {validateError && (
-              <p className="text-red-400 text-sm">{validateError}</p>
-            )}
-
-            {successMessage && (
-              <p className="text-green-400 text-sm">{successMessage}</p>
-            )}
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                Message
+              </label>
+              <textarea
+                name="message"
+                value={contactData.message}
+                onChange={handleChange}
+                rows={4}
+                placeholder="Write your thoughts or issues here..."
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm resize-none"
+              />
+            </div>
 
             <button
               type="submit"
-              className="
-                mt-4
-                w-full
-                rounded-xl
-                bg-orange-500
-                py-3
-                font-bold
-                text-white
-                transition
-                hover:bg-orange-600
-              "
+              disabled={isLoading}
+              className="w-full py-3.5 px-6 rounded-xl font-bold text-white bg-(--color-primary) hover:bg-(--color-primary-focus) active:scale-[0.98] transition flex items-center justify-center space-x-2 shadow-lg shadow-(--color-primary)/30 disabled:opacity-50"
             >
-              Send Message
+              {isLoading ? (
+                <>
+                  <RiLoader4Fill className="animate-spin text-xl" />
+                  <span>Sending Message...</span>
+                </>
+              ) : (
+                <span>Send Message</span>
+              )}
             </button>
           </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-slate-300">
-              Want to order delicious food?
-              <button
-                onClick={() => navigate("/login")}
-                className="
-                  mx-2
-                  font-semibold
-                  text-orange-400
-                  hover:underline
-                "
-              >
-                Login
-              </button>
-              |
-              <button
-                onClick={() => navigate("/register")}
-                className="
-                  mx-2
-                  font-semibold
-                  text-orange-400
-                  hover:underline
-                "
-              >
-                Register
-              </button>
-            </p>
-          </div>
         </div>
       </div>
     </div>

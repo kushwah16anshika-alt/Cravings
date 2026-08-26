@@ -15,104 +15,106 @@ const RestaurantSchema = mongoose.Schema(
 
     address: {
       type: String,
-      required: true,
+      default: "",
     },
 
     city: {
       type: String,
-      required: true,
+      default: "",
     },
 
     state: {
       type: String,
-      required: true,
+      default: "",
     },
 
     pinCode: {
       type: String,
-      required: true,
+      default: "",
     },
 
     country: {
       type: String,
-      required: true,
+      default: "India",
     },
 
     geoLocation: {
       lat: {
         type: String,
+        default: "",
       },
 
       lon: {
         type: String,
+        default: "",
       },
     },
 
     documents: {
       legalName: {
         type: String,
-        required: true,
+        default: "",
       },
 
       companyType: {
         type: String,
-        required: true,
+        default: "",
       },
 
       gstCertificate: {
         type: String,
-        required: true,
+        default: "",
       },
 
       fssaiCertificate: {
         type: String,
-        required: true,
+        default: "",
       },
 
       panCard: {
         type: String,
-        required: true,
+        default: "",
       },
     },
 
     financialDetails: {
       bankName: {
         type: String,
-        required: true,
+        default: "",
       },
 
       accountNumber: {
         type: String,
-        required: true,
+        default: "",
       },
 
       ifscCode: {
         type: String,
-        required: true,
+        default: "",
       },
     },
 
     contactDetails: {
       email: {
         type: String,
-        required: true,
+        default: "",
       },
 
       phone: {
         type: String,
-        required: true,
+        default: "",
       },
     },
 
     servingHours: {
       openingTime: {
         type: String,
-        required: true,
+        default: "09:00",
       },
 
       closingTime: {
         type: String,
-        required: true,
+        default: "22:00",
       },
     },
 
@@ -124,7 +126,7 @@ const RestaurantSchema = mongoose.Schema(
     status: {
       type: String,
       enum: ["active", "inactive", "blocked"],
-      default: "inactive",
+      default: "active",
     },
 
     averageRating: {
@@ -135,7 +137,6 @@ const RestaurantSchema = mongoose.Schema(
     cuisineTypes: [
       {
         type: String,
-        required: true,
       },
     ],
 
@@ -143,12 +144,12 @@ const RestaurantSchema = mongoose.Schema(
       {
         url: {
           type: String,
-          required: true,
+          default: "",
         },
 
         publicId: {
           type: String,
-          required: true,
+          default: "",
         },
       },
     ],
@@ -156,36 +157,35 @@ const RestaurantSchema = mongoose.Schema(
     coverImage: {
       url: {
         type: String,
-        required: true,
+        default: "",
       },
-
       publicId: {
         type: String,
-        required: true,
+        default: "",
       },
     },
 
     description: {
       type: String,
-      required: true,
+      default: "",
     },
 
     restaurantType: {
       type: String,
       enum: ["veg", "non-veg", "jain", "vegan", "both"],
-      required: true,
+      default: "both",
     },
 
     socialMediaLinks: [
       {
         platform: {
           type: String,
-          required: true,
+          default: "",
         },
 
         url: {
           type: String,
-          required: true,
+          default: "",
         },
       },
     ],

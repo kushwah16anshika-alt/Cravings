@@ -41,7 +41,7 @@ const PresonalInformation = () => {
       payload.append("displayPic", profilePic);
 
       const response = await api.post(
-        "/restaurant/update-profile",
+        "/common/edit-profile",
         payload,
         {
           headers: {
