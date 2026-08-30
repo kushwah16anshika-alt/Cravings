@@ -25,8 +25,15 @@ const OrderSchema = mongoose.Schema(
         {
           itemId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "menuItem",
             required: true,
+          },
+          itemName: {
+            type: String,
+            default: "",
+          },
+          price: {
+            type: Number,
+            default: 0,
           },
           quantity: {
             type: Number,
