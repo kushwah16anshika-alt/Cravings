@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -10,16 +10,18 @@ import {
   IoTrashOutline,
   IoArrowBack,
   IoStorefrontOutline,
+  IoAdd,
+  IoRemove,
+  IoShieldCheckmarkOutline,
+  IoTicketOutline,
 } from "react-icons/io5";
-import {
-  IoIosAddCircleOutline,
-  IoIosRemoveCircleOutline,
-} from "react-icons/io";
-import { MdOutlineRestaurantMenu } from "react-icons/md";
-import { useState } from "react";
+import { MdOutlineRestaurantMenu, MdArrowForward } from "react-icons/md";
 
 const Cart = () => {
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [appliedPromo, setAppliedPromo] = useState(null);
+
   const {
     cart,
     totalItems,
@@ -29,17 +31,16 @@ const Cart = () => {
     removeItem,
     clearCart,
   } = useCart();
+
   const { isLogin, role, user } = useAuth();
   const navigate = useNavigate();
 
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
-      // Already loaded (e.g. user opened checkout before)
       if (window.Razorpay) {
         resolve(true);
         return;
       }
-
       const script = document.createElement("script");
       script.src = "https://checkout.razorpay.com/v1/checkout.js";
       script.async = true;
@@ -49,28 +50,38 @@ const Cart = () => {
     });
   };
 
+  const handleApplyPromo = (e) => {
+    e.preventDefault();
+    if (!promoCode.trim()) return;
+    if (promoCode.toUpperCase() === "CAMPUS20" || promoCode.toUpperCase() === "CRAVINGS") {
+      setAppliedPromo({ code: promoCode.toUpperCase(), discount: 20 });
+      toast.success("Promo code applied! ₹20 discount added.");
+    } else {
+      toast.error("Invalid promo code. Try 'CAMPUS20'");
+    }
+  };
+
   const handlePlaceOrder = async () => {
-    // 1. Gaurd Check
     if (!isLogin) {
-      toast.error("Please login first");
+      toast.error("Please login to place your order");
       navigate("/login");
       return;
     }
 
     if (role !== "user" && role !== "customer") {
-      toast.error("Only customers can place orders");
+      toast.error("Only student/customer accounts can place food orders");
       return;
     }
 
     if (!cart?.items?.length) {
-      toast.error("Cart is empty");
+      toast.error("Your cart is empty");
       return;
     }
 
     try {
       setIsPlacingOrder(true);
 
-      // 2. Create the app-level order in our database
+      // 1. Create order in DB
       const createOrderRes = await api.post("/order/create", {
         restaurantId: cart.restaurantId,
         paymentMethod: "upi",
@@ -81,8 +92,7 @@ const Cart = () => {
       });
       const appOrderId = createOrderRes?.data?.data?._id;
 
-      // 3. Ask our backend to create a Razorpay order
-      //    Backend talks to Razorpay API → returns razorpayOrderId + amount
+      // 2. Request backend order creation
       const paymentOrderRes = await api.post("/payment/create-order", {
         orderId: appOrderId,
       });
@@ -97,35 +107,28 @@ const Cart = () => {
           razorpay_signature: "demo_signature",
         });
 
-        toast.success("Order placed successfully!");
+        toast.success("🎉 Order placed successfully!");
         clearCart();
         navigate("/customer-dashboard");
         return;
       }
 
-      // 4. Load the Razorpay JS SDK
+      // 3. Load Razorpay JS SDK
       const loaded = await loadRazorpayScript();
       if (!loaded) {
-        toast.error("Razorpay SDK failed to load");
+        toast.error("Payment gateway failed to load. Please check your connection.");
         return;
       }
 
-      // 5. Open the Razorpay checkout popup
+      // 4. Open Razorpay modal
       const options = {
-        key: paymentData.key, // Your Key ID
-        amount: paymentData.amount, // In paise (already set by backend)
-        currency: paymentData.currency, // "INR"
-        name: "Cravings",
-        description: "Food Order Payment",
-        order_id: paymentData.razorpayOrderId, // The Razorpay order ID (not our DB ID)
-
-        // 6. Called by Razorpay when payment SUCCEEDS
+        key: paymentData.key,
+        amount: paymentData.amount,
+        currency: paymentData.currency,
+        name: "Cravings Food Delivery",
+        description: `Order from ${cart.restaurantName}`,
+        order_id: paymentData.razorpayOrderId,
         handler: async function (response) {
-          // response contains:
-          //   razorpay_order_id   - the Razorpay order ID
-          //   razorpay_payment_id - the payment transaction ID
-          //   razorpay_signature  - HMAC signature to verify on backend
-
           try {
             await api.post("/payment/verify", {
               orderId: appOrderId,
@@ -134,216 +137,291 @@ const Cart = () => {
               razorpay_signature: response.razorpay_signature,
             });
 
-            toast.success("Payment successful!");
+            toast.success("🎉 Payment verified and order confirmed!");
             clearCart();
             navigate("/customer-dashboard");
           } catch (err) {
             toast.error(
-              err.response?.data?.message || "Payment verification failed",
+              err.response?.data?.message || "Payment verification failed"
             );
           }
         },
-
         prefill: {
-          // Pre-fill customer details (optional)
-          name: user.fullName,
+          name: user.fullName || user.fullname,
           email: user.email,
         },
-
-        theme: { color: "#c2410c" }, // Brand color
-
+        theme: { color: "#ea580c" },
         modal: {
           ondismiss: () => toast.error("Payment cancelled"),
         },
       };
 
       const rzp = new window.Razorpay(options);
-
-      // Called when payment FAILS inside the popup
       rzp.on("payment.failed", function (response) {
         toast.error(`Payment failed: ${response.error.description}`);
       });
-
-      rzp.open(); // Open the popup!
+      rzp.open();
     } catch (error) {
-      toast.error(error.response?.data?.message || "Something went wrong");
+      toast.error(error.response?.data?.message || "Something went wrong while placing order");
     } finally {
       setIsPlacingOrder(false);
     }
   };
 
-  if (!cart.items.length) {
+  const discount = appliedPromo?.discount || 0;
+  const platformFee = 5;
+  const deliveryFee = 0;
+  const tax = Math.round(totalPrice * 0.05 * 100) / 100;
+  const finalTotal = Math.max(0, totalPrice + platformFee + deliveryFee + tax - discount);
+
+  if (!cart?.items?.length) {
     return (
-      <div className="min-h-screen bg-(--color-base-200) flex flex-col items-center justify-center gap-6 px-4">
-        <div className="w-24 h-24 rounded-full bg-(--color-base-300) flex items-center justify-center">
-          <IoCartOutline className="text-5xl text-(--color-secondary)" />
+      <div className="min-h-[80vh] flex flex-col items-center justify-center p-6 text-center">
+        <div className="relative mb-4">
+          <div className="h-28 w-28 rounded-full bg-orange-100/80 flex items-center justify-center text-5xl shadow-inner animate-float">
+            🛒
+          </div>
+          <span className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-orange-600 text-white font-black text-sm shadow-md">
+            0
+          </span>
         </div>
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-(--color-base-content) mb-1">
-            Your cart is empty
-          </h2>
-          <p className="text-sm text-(--color-secondary)">
-            Add items from a restaurant to get started
-          </p>
-        </div>
+
+        <h2 className="font-heading text-2xl sm:text-3xl font-black text-slate-900 mb-2">
+          Your cart is feeling light
+        </h2>
+        <p className="text-sm text-slate-500 max-w-sm mb-6">
+          Explore the best campus kitchens, add delicious meals, and satisfy your cravings in minutes.
+        </p>
+
         <Link
           to="/order-now"
-          className="px-6 py-2 bg-(--color-primary) text-(--color-primary-content) rounded-xl font-semibold text-sm hover:opacity-90 transition"
+          className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 px-7 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-orange-600/30 hover:from-orange-500 hover:to-amber-500 active:scale-95 transition"
         >
-          Browse Restaurants
+          <span>Explore Restaurants</span>
+          <MdArrowForward size={18} />
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-(--color-base-200)">
-      <div className="max-w-4xl mx-auto px-4 md:px-8 py-8">
+    <div className="min-h-screen bg-[#fcfaf7] pb-24 pt-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
-          <button
-            onClick={() => navigate(-1)}
-            className="p-2 rounded-full hover:bg-(--color-base-300) transition text-(--color-base-content)"
-          >
-            <IoArrowBack className="text-xl" />
-          </button>
-          <div>
-            <h1 className="text-2xl font-bold text-(--color-base-content) flex items-center gap-2">
-              <IoCartOutline />
-              Your Cart
-            </h1>
-            <p className="text-sm text-(--color-secondary) flex items-center gap-1 mt-0.5">
-              <IoStorefrontOutline />
-              {cart.restaurantName}
-            </p>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-xs hover:bg-slate-50 active:scale-95 transition"
+            >
+              <IoArrowBack size={20} />
+            </button>
+            <div>
+              <h1 className="font-heading text-2xl sm:text-3xl font-black text-slate-900 flex items-center gap-2">
+                <span>Checkout & Order</span>
+              </h1>
+              <p className="text-xs sm:text-sm font-bold text-orange-600 flex items-center gap-1.5 mt-0.5">
+                <IoStorefrontOutline />
+                <span>Ordering from: <strong>{cart.restaurantName}</strong></span>
+              </p>
+            </div>
           </div>
+
+          <button
+            onClick={clearCart}
+            className="flex items-center gap-1 text-xs font-extrabold text-red-600 hover:text-red-700 bg-red-50 px-3 py-1.5 rounded-xl border border-red-100 transition"
+          >
+            <IoTrashOutline size={15} />
+            <span>Empty Cart</span>
+          </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
-          {/* Items List */}
-          <div className="space-y-3">
-            {cart.items.map((item) => (
-              <div
-                key={item._id}
-                className="bg-(--color-base-100) rounded-xl p-4 border border-(--color-base-300) flex gap-4 items-center"
-              >
-                {/* Image */}
-                <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0 bg-(--color-base-300)">
-                  {item.image?.url ? (
-                    <img
-                      src={item.image.url}
-                      alt={item.itemName}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <MdOutlineRestaurantMenu className="text-2xl text-(--color-secondary) opacity-40" />
-                    </div>
-                  )}
-                </div>
+        {/* 2-Column Split */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left: Cart Items List */}
+          <div className="lg:col-span-7 space-y-4">
+            <div className="rounded-3xl bg-white border border-slate-200/80 p-5 sm:p-6 shadow-xs space-y-4">
+              <h3 className="font-heading text-base font-black text-slate-900">
+                Selected Items ({totalItems})
+              </h3>
 
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5 mb-0.5">
-                    <span
-                      className={`w-2.5 h-2.5 rounded-full border border-white shrink-0 ${foodTypeDot(item.foodType)}`}
-                    />
-                    <h3 className="text-sm font-semibold text-(--color-base-content) truncate">
-                      {item.itemName}
-                    </h3>
-                  </div>
-                  <p className="text-xs text-(--color-secondary) mb-1">
-                    {item.category}
-                  </p>
-                  <p className="text-sm font-bold text-(--color-primary)">
-                    ₹{(item.price * item.quantity).toFixed(2)}
-                    <span className="ml-1 text-xs font-normal text-(--color-secondary)">
-                      (₹{item.price} × {item.quantity})
-                    </span>
-                  </p>
-                </div>
+              <div className="divide-y divide-slate-100">
+                {cart.items.map((item) => (
+                  <div key={item._id} className="py-4 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
+                    {/* Image & Title */}
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      <div className="relative h-16 w-16 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-100">
+                        {item.image?.url ? (
+                          <img
+                            src={item.image.url}
+                            alt={item.itemName}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center bg-orange-50 text-orange-400">
+                            <MdOutlineRestaurantMenu size={24} />
+                          </div>
+                        )}
+                        <span
+                          className={`absolute top-1 left-1 w-2.5 h-2.5 rounded-full border border-white ${foodTypeDot(
+                            item.foodType
+                          )}`}
+                        />
+                      </div>
 
-                {/* Controls */}
-                <div className="flex items-center gap-2 shrink-0">
-                  <div className="flex items-center border border-(--color-base-300) rounded-full divide-(--color-base-300) divide-x">
-                    <button
-                      onClick={() => decreaseItem(item._id)}
-                      className="px-1.5 py-0.5 text-(--color-primary) rounded-l-full hover:bg-(--color-primary) hover:text-(--color-primary-content) transition"
-                    >
-                      <IoIosRemoveCircleOutline className="text-xl" />
-                    </button>
-                    <div className="text-(--color-primary) flex justify-center items-center text-sm font-semibold px-2 py-0.5 min-w-7">
-                      {item.quantity}
+                      <div className="min-w-0">
+                        <h4 className="font-heading text-sm font-extrabold text-slate-900 truncate">
+                          {item.itemName}
+                        </h4>
+                        <p className="text-xs font-bold text-slate-400">
+                          ₹{item.price} each
+                        </p>
+                      </div>
                     </div>
-                    <button
-                      onClick={() => increaseItem(item._id)}
-                      className="px-1.5 py-0.5 text-(--color-primary) rounded-r-full hover:bg-(--color-primary) hover:text-(--color-primary-content) transition"
-                    >
-                      <IoIosAddCircleOutline className="text-xl" />
-                    </button>
+
+                    {/* Counter & Price */}
+                    <div className="flex items-center gap-4 flex-shrink-0">
+                      <div className="flex items-center gap-1.5 rounded-xl bg-orange-50 p-1 border border-orange-100">
+                        <button
+                          onClick={() => decreaseItem(item._id)}
+                          className="flex h-6 w-6 items-center justify-center rounded-lg bg-white text-orange-700 shadow-xs hover:bg-orange-600 hover:text-white transition active:scale-90"
+                        >
+                          <IoRemove size={14} />
+                        </button>
+                        <span className="font-heading font-black text-xs min-w-4 text-center text-slate-900">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => increaseItem(item._id)}
+                          className="flex h-6 w-6 items-center justify-center rounded-lg bg-white text-orange-700 shadow-xs hover:bg-orange-600 hover:text-white transition active:scale-90"
+                        >
+                          <IoAdd size={14} />
+                        </button>
+                      </div>
+
+                      <div className="text-right min-w-16">
+                        <p className="font-heading text-sm font-black text-slate-900">
+                          ₹{(item.price * item.quantity).toFixed(2)}
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={() => removeItem(item._id)}
+                        className="text-slate-400 hover:text-red-500 p-1 transition"
+                        title="Remove"
+                      >
+                        <IoTrashOutline size={16} />
+                      </button>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => removeItem(item._id)}
-                    className="p-1.5 rounded-full hover:bg-red-50 text-(--color-secondary) hover:text-red-500 transition"
-                    title="Remove item"
-                  >
-                    <IoTrashOutline className="text-lg" />
-                  </button>
-                </div>
+                ))}
               </div>
-            ))}
+            </div>
 
-            {/* Clear cart */}
-            <div className="flex justify-end pt-1">
-              <button
-                onClick={clearCart}
-                className="text-xs text-red-500 hover:underline flex items-center gap-1"
+            {/* Add more items link */}
+            <div className="flex items-center justify-between p-4 rounded-2xl bg-orange-50/70 border border-orange-100 text-xs font-bold text-slate-700">
+              <span>Want something else from {cart.restaurantName}?</span>
+              <Link
+                to={`/restaurant-details/${cart.restaurantId}`}
+                className="text-orange-600 hover:underline font-black flex items-center gap-0.5"
               >
-                <IoTrashOutline />
-                Clear entire cart
-              </button>
+                <span>Add More Dishes</span>
+                <MdArrowForward />
+              </Link>
             </div>
           </div>
 
-          {/* Order Summary */}
-          <div className="bg-(--color-base-100) rounded-xl border border-(--color-base-300) p-5 sticky top-20">
-            <h2 className="text-base font-bold text-(--color-base-content) mb-4">
-              Order Summary
-            </h2>
+          {/* Right: Bill Details & Payment */}
+          <div className="lg:col-span-5 space-y-4 sticky top-24">
+            {/* Promo Code Card */}
+            <div className="rounded-3xl bg-white border border-slate-200/80 p-5 shadow-xs">
+              <form onSubmit={handleApplyPromo} className="flex gap-2">
+                <div className="relative flex-1">
+                  <IoTicketOutline className="absolute left-3.5 top-1/2 -translate-y-1/2 text-orange-600 text-base" />
+                  <input
+                    type="text"
+                    value={promoCode}
+                    onChange={(e) => setPromoCode(e.target.value)}
+                    placeholder="Enter coupon (e.g. CAMPUS20)"
+                    className="w-full pl-9 pr-3 py-2.5 text-xs font-bold uppercase rounded-2xl bg-slate-50 border border-slate-200 focus:outline-hidden focus:border-orange-500"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="rounded-2xl bg-slate-900 px-4 py-2.5 text-xs font-extrabold text-white hover:bg-slate-800 active:scale-95 transition"
+                >
+                  Apply
+                </button>
+              </form>
 
-            <div className="space-y-2 text-sm mb-4">
-              <div className="flex justify-between text-(--color-secondary)">
-                <span>Items ({totalItems})</span>
-                <span>₹{totalPrice.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-(--color-secondary)">
-                <span>Delivery fee</span>
-                <span className="text-green-600 font-medium">FREE</span>
-              </div>
-              <div className="border-t border-(--color-base-300) my-2" />
-              <div className="flex justify-between font-bold text-(--color-base-content) text-base">
-                <span>Total</span>
-                <span className="text-(--color-primary)">
-                  ₹{totalPrice.toFixed(2)}
-                </span>
-              </div>
+              {appliedPromo && (
+                <div className="mt-3 flex items-center justify-between text-xs bg-emerald-50 text-emerald-800 p-2.5 rounded-xl font-bold border border-emerald-100">
+                  <span>Coupon {appliedPromo.code} Applied</span>
+                  <span>-₹{appliedPromo.discount}</span>
+                </div>
+              )}
             </div>
 
-            <button
-              disabled={isPlacingOrder}
-              className="w-full py-3 bg-(--color-primary) text-(--color-primary-content) rounded-xl font-semibold text-sm hover:opacity-90 transition"
-              onClick={handlePlaceOrder}
-            >
-              {isPlacingOrder ? "Processing..." : "Place Order"}
-            </button>
+            {/* Bill Summary */}
+            <div className="rounded-3xl bg-white border border-slate-200/80 p-6 shadow-xs space-y-4">
+              <h3 className="font-heading text-base font-black text-slate-900 border-b border-slate-100 pb-3">
+                Bill Summary
+              </h3>
 
-            <Link
-              to={`/restaurant-details/${cart.restaurantId}`}
-              className="mt-3 flex items-center justify-center gap-1 text-xs text-(--color-primary) hover:underline"
-            >
-              <IoStorefrontOutline />
-              Add more items
-            </Link>
+              <div className="space-y-2.5 text-xs font-semibold text-slate-600">
+                <div className="flex justify-between">
+                  <span>Item Total ({totalItems} items)</span>
+                  <span className="font-bold text-slate-900">₹{totalPrice.toFixed(2)}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Delivery Partner Fee</span>
+                  <span className="font-extrabold text-emerald-600">FREE</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Campus Platform Fee</span>
+                  <span className="text-slate-900">₹{platformFee.toFixed(2)}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Taxes & Restaurant GST (5%)</span>
+                  <span className="text-slate-900">₹{tax.toFixed(2)}</span>
+                </div>
+
+                {discount > 0 && (
+                  <div className="flex justify-between text-emerald-600 font-extrabold">
+                    <span>Discount Applied</span>
+                    <span>-₹{discount.toFixed(2)}</span>
+                  </div>
+                )}
+
+                <div className="border-t border-dashed border-slate-200 my-2 pt-3 flex justify-between items-center text-slate-900">
+                  <div>
+                    <span className="font-heading text-base font-black">To Pay</span>
+                    <p className="text-[10px] text-slate-400 font-semibold">Inclusive of all taxes</p>
+                  </div>
+                  <span className="font-heading text-2xl font-black text-orange-600">
+                    ₹{finalTotal.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Checkout Button */}
+              <button
+                disabled={isPlacingOrder}
+                onClick={handlePlaceOrder}
+                className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-orange-600/30 hover:from-orange-500 hover:to-amber-500 active:scale-95 disabled:opacity-50 transition"
+              >
+                <IoShieldCheckmarkOutline size={18} />
+                <span>{isPlacingOrder ? "Processing Payment..." : `Pay ₹${finalTotal.toFixed(2)} & Order`}</span>
+              </button>
+
+              <p className="text-center text-[10px] text-slate-400 font-semibold flex items-center justify-center gap-1">
+                <IoShieldCheckmarkOutline className="text-emerald-500" />
+                <span>100% Secure Checkout via UPI & Cards</span>
+              </p>
+            </div>
           </div>
         </div>
       </div>

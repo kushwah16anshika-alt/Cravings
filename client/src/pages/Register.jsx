@@ -3,8 +3,19 @@ import toast from "react-hot-toast";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { RiLoader4Fill } from "react-icons/ri";
+import {
+  IoPersonOutline,
+  IoMailOutline,
+  IoCallOutline,
+  IoLockClosedOutline,
+  IoCalendarOutline,
+  IoSparkles,
+  IoStorefrontOutline,
+  IoBicycleOutline,
+} from "react-icons/io5";
+import { MdArrowForward } from "react-icons/md";
 import api from "../config/api.config.js";
-import foodTableImg from "../assets/foodTable.webp";
+import foodBg from "../assets/images/fresh-gourmet-meal-beef-taco-salad-plate-generated-by-ai.jpg";
 
 const Register = () => {
   const { userType } = useParams();
@@ -15,11 +26,11 @@ const Register = () => {
     fullname: "",
     email: "",
     phone: "",
-    gender: "",
+    gender: "male",
     dob: "",
     password: "",
     confirmPassword: "",
-    agreeTerms: false,
+    agreeTerms: true,
   });
 
   const [errors, setErrors] = useState({});
@@ -37,13 +48,6 @@ const Register = () => {
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
-  };
-
-  const handleUserTypeChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      userType: e.target.value,
-    }));
   };
 
   const validateForm = (data) => {
@@ -78,7 +82,6 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const validationErrors = validateForm(formData);
 
     if (Object.keys(validationErrors).length > 0) {
@@ -100,271 +103,284 @@ const Register = () => {
         password: formData.password,
       });
 
-      toast.success(res.data.message || "Registration successful! Please login.");
+      toast.success(res.data.message || "Registration successful! Please sign in.");
       navigate("/login");
     } catch (error) {
       toast.error(
-        error.response?.data?.message ||
-          "Unknown error occurred during registration. Please try again."
+        error.response?.data?.message || "Registration failed. Please verify your details."
       );
     } finally {
       setLoading(false);
     }
   };
 
+  const roleCards = [
+    { type: "user", label: "Student / Customer", icon: <IoPersonOutline size={18} /> },
+    { type: "restaurant", label: "Restaurant Partner", icon: <IoStorefrontOutline size={18} /> },
+    { type: "rider", label: "Delivery Partner", icon: <IoBicycleOutline size={18} /> },
+  ];
+
   return (
-    <div
-      className="min-h-screen relative flex items-center justify-center lg:justify-end bg-cover bg-center px-6 py-12 lg:pr-24"
-      style={{
-        backgroundImage: `url(${foodTableImg})`,
-      }}
-    >
-      <div className="absolute inset-0 bg-slate-950/75" />
+    <div className="min-h-[90vh] flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-[#fcfaf7]">
+      <div className="w-full max-w-5xl rounded-[36px] bg-white border border-slate-200/80 shadow-2xl shadow-orange-950/5 overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+        {/* Left Form Section */}
+        <div className="lg:col-span-7 p-8 sm:p-12">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-orange-100 px-3 py-1 text-xs font-black text-orange-700 mb-4">
+            <IoSparkles />
+            <span>Join the Food Revolution</span>
+          </div>
 
-      <div className="relative z-10 w-full max-w-lg rounded-3xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-white/20 p-8 shadow-2xl">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">
-            Create Account
+          <h1 className="font-heading text-3xl sm:text-4xl font-black text-slate-900 mb-2">
+            Create Your Account<span className="text-orange-600">.</span>
           </h1>
-          <p className="text-slate-600 dark:text-slate-400 text-sm mt-1">
-            Join Cravings as a Customer, Restaurant, or Rider
+          <p className="text-xs sm:text-sm font-medium text-slate-500 mb-6">
+            Get instant access to campus dining, live discounts, and fast delivery.
           </p>
-        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* User Type Selector */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-              Register as
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { label: "Customer", value: "user" },
-                { label: "Restaurant", value: "restaurant" },
-                { label: "Rider", value: "rider" },
-              ].map((type) => (
-                <label
-                  key={type.value}
-                  className={`flex items-center justify-center px-3 py-2 rounded-xl text-xs font-bold border cursor-pointer transition ${
-                    formData.userType === type.value
-                      ? "bg-(--color-primary) text-white border-(--color-primary) shadow-md"
-                      : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-(--color-primary)"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="userType"
-                    value={type.value}
-                    checked={formData.userType === type.value}
-                    onChange={handleUserTypeChange}
-                    className="sr-only"
-                  />
-                  {type.label}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Account Role Selector */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                I am registering as:
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {roleCards.map((rc) => {
+                  const selected = formData.userType === rc.type;
+                  return (
+                    <button
+                      key={rc.type}
+                      type="button"
+                      onClick={() => setFormData((prev) => ({ ...prev, userType: rc.type }))}
+                      className={`flex flex-col items-center justify-center p-3 rounded-2xl border text-center transition-all duration-200 ${
+                        selected
+                          ? "bg-orange-50 border-orange-500 text-orange-700 shadow-xs font-extrabold"
+                          : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 font-semibold"
+                      }`}
+                    >
+                      <span className={selected ? "text-orange-600 mb-1" : "text-slate-400 mb-1"}>
+                        {rc.icon}
+                      </span>
+                      <span className="text-[11px] leading-tight">{rc.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 2-col inputs: Name & Email */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Full Name
                 </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Full Name */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-              Full Name
-            </label>
-            <input
-              type="text"
-              name="fullname"
-              value={formData.fullname}
-              onChange={handleInputChange}
-              placeholder="e.g. Sarah Connor"
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm"
-            />
-            {errors.fullname && (
-              <p className="text-red-500 text-xs mt-1">{errors.fullname}</p>
-            )}
-          </div>
-
-          {/* Email & Phone */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="sarah@example.com"
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                Phone
-              </label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                placeholder="9876543210"
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm"
-              />
-              {errors.phone && (
-                <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Gender & DOB */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                Gender
-              </label>
-              <select
-                name="gender"
-                value={formData.gender}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm"
-              >
-                <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-              {errors.gender && (
-                <p className="text-red-500 text-xs mt-1">{errors.gender}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                Date of Birth
-              </label>
-              <input
-                type="date"
-                name="dob"
-                value={formData.dob}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm"
-              />
-              {errors.dob && (
-                <p className="text-red-500 text-xs mt-1">{errors.dob}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Passwords */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  placeholder="Min 6 characters"
-                  className="w-full px-4 py-2.5 pr-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </button>
+                <div className="relative">
+                  <IoPersonOutline className="absolute left-3.5 top-1/2 -translate-y-1/2 text-orange-600 text-base" />
+                  <input
+                    type="text"
+                    name="fullname"
+                    value={formData.fullname}
+                    onChange={handleInputChange}
+                    placeholder="Alex Morgan"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold focus:outline-hidden focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition"
+                  />
+                </div>
+                {errors.fullname && <p className="text-[11px] font-bold text-red-500 mt-1">{errors.fullname}</p>}
               </div>
-              {errors.password && (
-                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
-              )}
-            </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
-                Confirm Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  placeholder="Re-enter password"
-                  className="w-full px-4 py-2.5 pr-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                >
-                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                </button>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <IoMailOutline className="absolute left-3.5 top-1/2 -translate-y-1/2 text-orange-600 text-base" />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="alex@campus.edu"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold focus:outline-hidden focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition"
+                  />
+                </div>
+                {errors.email && <p className="text-[11px] font-bold text-red-500 mt-1">{errors.email}</p>}
               </div>
-              {errors.confirmPassword && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.confirmPassword}
-                </p>
-              )}
             </div>
-          </div>
 
-          {/* Terms & Conditions */}
-          <div>
-            <label className="flex items-center space-x-2 text-xs text-slate-600 dark:text-slate-400 cursor-pointer">
+            {/* 3-col inputs: Phone, Gender, DOB */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Phone
+                </label>
+                <div className="relative">
+                  <IoCallOutline className="absolute left-3 top-1/2 -translate-y-1/2 text-orange-600 text-base" />
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    placeholder="9876543210"
+                    className="w-full pl-9 pr-2 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-hidden focus:border-orange-500"
+                  />
+                </div>
+                {errors.phone && <p className="text-[11px] font-bold text-red-500 mt-1">{errors.phone}</p>}
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Gender
+                </label>
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-hidden focus:border-orange-500"
+                >
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Date of Birth
+                </label>
+                <input
+                  type="date"
+                  name="dob"
+                  value={formData.dob}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-hidden focus:border-orange-500"
+                />
+                {errors.dob && <p className="text-[11px] font-bold text-red-500 mt-1">{errors.dob}</p>}
+              </div>
+            </div>
+
+            {/* 2-col Password inputs */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Password
+                </label>
+                <div className="relative">
+                  <IoLockClosedOutline className="absolute left-3.5 top-1/2 -translate-y-1/2 text-orange-600 text-base" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="••••••••"
+                    className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold focus:outline-hidden focus:border-orange-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  >
+                    {showPassword ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
+                  </button>
+                </div>
+                {errors.password && <p className="text-[11px] font-bold text-red-500 mt-1">{errors.password}</p>}
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <IoLockClosedOutline className="absolute left-3.5 top-1/2 -translate-y-1/2 text-orange-600 text-base" />
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    placeholder="••••••••"
+                    className="w-full pl-10 pr-9 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold focus:outline-hidden focus:border-orange-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  >
+                    {showConfirmPassword ? <FaEyeSlash size={14} /> : <FaEye size={14} />}
+                  </button>
+                </div>
+                {errors.confirmPassword && <p className="text-[11px] font-bold text-red-500 mt-1">{errors.confirmPassword}</p>}
+              </div>
+            </div>
+
+            {/* Terms checkbox */}
+            <div className="flex items-center gap-2 pt-1">
               <input
                 type="checkbox"
+                id="agreeTerms"
                 name="agreeTerms"
                 checked={formData.agreeTerms}
                 onChange={handleInputChange}
-                className="rounded text-(--color-primary) focus:ring-(--color-primary)"
+                className="h-4 w-4 rounded accent-orange-600 cursor-pointer"
               />
-              <span>
-                I agree to the{" "}
-                <span className="text-(--color-primary) font-semibold hover:underline">
-                  Terms of Service
-                </span>{" "}
-                and Privacy Policy
-              </span>
-            </label>
-            {errors.agreeTerms && (
-              <p className="text-red-500 text-xs mt-1">{errors.agreeTerms}</p>
-            )}
+              <label htmlFor="agreeTerms" className="text-xs font-semibold text-slate-600 cursor-pointer">
+                I agree to the <span className="text-orange-600 underline">Terms of Service</span> & <span className="text-orange-600 underline">Privacy Policy</span>
+              </label>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full mt-3 flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-orange-600/30 hover:from-orange-500 hover:to-amber-500 active:scale-95 disabled:opacity-50 transition"
+            >
+              <span>{loading ? "Creating Account..." : "Create Free Account"}</span>
+              <MdArrowForward size={18} />
+            </button>
+          </form>
+
+          <div className="pt-6 mt-6 border-t border-slate-100 text-center sm:text-left">
+            <p className="text-xs font-semibold text-slate-500">
+              Already have an account?{" "}
+              <Link to="/login" className="font-extrabold text-orange-600 hover:underline">
+                Sign In
+              </Link>
+            </p>
           </div>
+        </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3.5 px-6 rounded-xl font-bold text-white bg-(--color-primary) hover:bg-(--color-primary-focus) active:scale-[0.98] transition flex items-center justify-center space-x-2 shadow-lg shadow-(--color-primary)/30 disabled:opacity-50"
-          >
-            {loading ? (
-              <>
-                <RiLoader4Fill className="animate-spin text-xl" />
-                <span>Creating Account...</span>
-              </>
-            ) : (
-              <span>Create Account</span>
-            )}
-          </button>
-        </form>
+        {/* Right Info Section */}
+        <div className="hidden lg:block lg:col-span-5 relative bg-slate-950 p-10 overflow-hidden">
+          <img
+            src={foodBg}
+            alt="Gourmet Platter"
+            className="absolute inset-0 h-full w-full object-cover opacity-50"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent" />
 
-        <p className="text-center mt-5 text-sm text-slate-600 dark:text-slate-400">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-(--color-primary) font-bold hover:underline"
-          >
-            Login here
-          </Link>
-        </p>
+          <div className="relative z-10 h-full flex flex-col justify-between text-white">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+              <span className="text-xs font-extrabold uppercase tracking-widest text-emerald-300">
+                Join 500k+ Students
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="font-heading text-3xl font-black leading-tight">
+                Unlock exclusive student perks & priority delivery.
+              </h3>
+              <ul className="space-y-2 text-xs font-semibold text-slate-300">
+                <li className="flex items-center gap-2">
+                  <span className="text-orange-400 font-bold">✓</span> No minimum order values
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-orange-400 font-bold">✓</span> Instant campus delivery under 25 mins
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-orange-400 font-bold">✓</span> Exclusive canteen discounts & combo meals
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,14 +1,12 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 import { RiLoader4Fill } from "react-icons/ri";
+import { IoSparkles, IoPaperPlaneOutline } from "react-icons/io5";
 import toast from "react-hot-toast";
 import api from "../config/api.config.js";
 import foodBgImg from "../assets/images/fresh-gourmet-meal-beef-taco-salad-plate-generated-by-ai.jpg";
 
 const ContactUs = () => {
-  const navigate = useNavigate();
-
   const [contactData, setContactData] = useState({
     fullName: "",
     email: "",
@@ -43,7 +41,6 @@ const ContactUs = () => {
 
     try {
       setIsLoading(true);
-
       const payload = {
         fullName: contactData.fullName.trim(),
         email: contactData.email.toLowerCase().trim(),
@@ -53,7 +50,6 @@ const ContactUs = () => {
       };
 
       const response = await api.post("/public/contact-us", payload);
-
       toast.success(
         response.data.message || "Thank you for contacting us! We will reach out soon."
       );
@@ -75,157 +71,157 @@ const ContactUs = () => {
   };
 
   return (
-    <div
-      className="min-h-screen relative flex items-center justify-center bg-cover bg-center px-6 py-16"
-      style={{
-        backgroundImage: `url(${foodBgImg})`,
-      }}
-    >
-      {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-slate-950/80" />
-
-      <div className="relative z-10 grid w-full max-w-6xl gap-10 lg:grid-cols-2 items-center">
-        {/* Left Content */}
-        <div className="text-white space-y-6">
-          <span className="inline-block px-4 py-1.5 text-xs font-bold tracking-wider uppercase bg-(--color-primary)/20 text-(--color-primary) border border-(--color-primary)/30 rounded-full">
-            Get In Touch
-          </span>
-          <h1 className="text-4xl md:text-5xl font-black leading-tight text-white">
-            We'd love to hear from you.
-          </h1>
-          <p className="text-slate-300 text-base md:text-lg max-w-lg leading-relaxed">
-            Have questions about an order, restaurant partnership, or delivery? Reach out to our team anytime.
-          </p>
-
-          <div className="space-y-4 pt-4">
-            <div className="flex items-center space-x-4 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md">
-              <div className="w-12 h-12 rounded-xl bg-(--color-primary)/20 flex items-center justify-center text-(--color-primary)">
-                <FaPhoneAlt className="text-xl" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-400 font-medium">Call Us Directly</p>
-                <p className="text-white font-semibold">+91 98765 43210</p>
-              </div>
+    <div className="min-h-screen bg-[#fcfaf7] py-12 sm:py-16">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          {/* Left Info Column */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-orange-100 px-3.5 py-1 text-xs font-black text-orange-700">
+              <IoSparkles />
+              <span>We're Here For You</span>
             </div>
 
-            <div className="flex items-center space-x-4 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md">
-              <div className="w-12 h-12 rounded-xl bg-(--color-primary)/20 flex items-center justify-center text-(--color-primary)">
-                <FaEnvelope className="text-xl" />
-              </div>
-              <div>
-                <p className="text-xs text-slate-400 font-medium">Email Support</p>
-                <p className="text-white font-semibold">support@cravings.com</p>
-              </div>
-            </div>
+            <h1 className="font-heading text-3xl sm:text-5xl font-black text-slate-900 leading-tight">
+              Get in Touch with Cravings<span className="text-orange-600">.</span>
+            </h1>
 
-            <div className="flex items-center space-x-4 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md">
-              <div className="w-12 h-12 rounded-xl bg-(--color-primary)/20 flex items-center justify-center text-(--color-primary)">
-                <FaMapMarkerAlt className="text-xl" />
+            <p className="text-sm font-medium text-slate-600 leading-relaxed">
+              Have questions regarding an ongoing order, canteen vendor onboarding, or campus rider support? Reach out to our 24/7 student support desk.
+            </p>
+
+            <div className="space-y-3.5 pt-2">
+              <div className="flex items-center gap-4 rounded-2xl bg-white border border-slate-200/80 p-4 shadow-xs">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-100 text-orange-600 flex-shrink-0">
+                  <FaPhoneAlt size={16} />
+                </div>
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Call Us</p>
+                  <p className="font-heading text-sm font-black text-slate-900">+91 98765 43210</p>
+                </div>
               </div>
-              <div>
-                <p className="text-xs text-slate-400 font-medium">Headquarters</p>
-                <p className="text-white font-semibold">Tech City, Bangalore, India</p>
+
+              <div className="flex items-center gap-4 rounded-2xl bg-white border border-slate-200/80 p-4 shadow-xs">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-100 text-orange-600 flex-shrink-0">
+                  <FaEnvelope size={16} />
+                </div>
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Email Support</p>
+                  <p className="font-heading text-sm font-black text-slate-900">support@cravings.com</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4 rounded-2xl bg-white border border-slate-200/80 p-4 shadow-xs">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-100 text-orange-600 flex-shrink-0">
+                  <FaMapMarkerAlt size={16} />
+                </div>
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Campus Hub</p>
+                  <p className="font-heading text-sm font-black text-slate-900">Student Innovation Centre, Campus</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Right Form Card */}
-        <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-            Send us a Message
-          </h2>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
-            Fill out the form below and we will respond within 24 hours.
-          </p>
+          {/* Right Contact Form Card */}
+          <div className="lg:col-span-7 rounded-[32px] bg-white border border-slate-200/80 p-8 sm:p-10 shadow-xl shadow-orange-950/5">
+            <h2 className="font-heading text-2xl font-black text-slate-900 mb-1">
+              Send us a Message
+            </h2>
+            <p className="text-xs sm:text-sm font-medium text-slate-500 mb-6">
+              Our campus coordination team typically responds within a few hours.
+            </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                Full Name
-              </label>
-              <input
-                type="text"
-                name="fullName"
-                value={contactData.fullName}
-                onChange={handleChange}
-                placeholder="John Doe"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                  Email
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Full Name
                 </label>
                 <input
-                  type="email"
-                  name="email"
-                  value={contactData.email}
+                  type="text"
+                  name="fullName"
+                  value={contactData.fullName}
                   onChange={handleChange}
-                  placeholder="john@example.com"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm"
+                  placeholder="Alex Morgan"
+                  className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold focus:outline-hidden focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition"
                 />
               </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={contactData.email}
+                    onChange={handleChange}
+                    placeholder="alex@campus.edu"
+                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold focus:outline-hidden focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={contactData.phone}
+                    onChange={handleChange}
+                    placeholder="9876543210"
+                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold focus:outline-hidden focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition"
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                  Phone Number
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Subject
                 </label>
                 <input
-                  type="tel"
-                  name="phone"
-                  value={contactData.phone}
+                  type="text"
+                  name="subject"
+                  value={contactData.subject}
                   onChange={handleChange}
-                  placeholder="9876543210"
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm"
+                  placeholder="Order Inquiry / Partnership request"
+                  className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold focus:outline-hidden focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition"
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                Subject
-              </label>
-              <input
-                type="text"
-                name="subject"
-                value={contactData.subject}
-                onChange={handleChange}
-                placeholder="How can we help?"
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm"
-              />
-            </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Message
+                </label>
+                <textarea
+                  name="message"
+                  value={contactData.message}
+                  onChange={handleChange}
+                  rows={4}
+                  placeholder="Explain how we can help you..."
+                  className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold focus:outline-hidden focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition resize-none"
+                />
+              </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                Message
-              </label>
-              <textarea
-                name="message"
-                value={contactData.message}
-                onChange={handleChange}
-                rows={4}
-                placeholder="Write your thoughts or issues here..."
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition text-sm resize-none"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full py-3.5 px-6 rounded-xl font-bold text-white bg-(--color-primary) hover:bg-(--color-primary-focus) active:scale-[0.98] transition flex items-center justify-center space-x-2 shadow-lg shadow-(--color-primary)/30 disabled:opacity-50"
-            >
-              {isLoading ? (
-                <>
-                  <RiLoader4Fill className="animate-spin text-xl" />
-                  <span>Sending Message...</span>
-                </>
-              ) : (
-                <span>Send Message</span>
-              )}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-orange-600/30 hover:from-orange-500 hover:to-amber-500 active:scale-95 disabled:opacity-50 transition"
+              >
+                {isLoading ? (
+                  <>
+                    <RiLoader4Fill className="animate-spin text-lg" />
+                    <span>Sending Message...</span>
+                  </>
+                ) : (
+                  <>
+                    <IoPaperPlaneOutline size={18} />
+                    <span>Send Message</span>
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

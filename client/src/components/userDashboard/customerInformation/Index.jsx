@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../../../context/AuthContext.jsx";
 import PasswordChangeModal from "../../../components/commomModals/PasswordChangeModal.jsx";
 import { MdEdit, MdOutlineAddAPhoto, MdOutlineLockReset } from "react-icons/md";
+import { IoPersonOutline, IoMailOutline, IoCallOutline } from "react-icons/io5";
 import api from "../../../config/api.config.js";
 import toast from "react-hot-toast";
 
@@ -13,7 +14,7 @@ const Index = () => {
   const [profilePic, setProfilePic] = useState(null);
   const [profilePicPreview, setProfilePicPreview] = useState(null);
   const [profileFormData, setProfileFormData] = useState({
-    fullName: user?.fullName || "",
+    fullName: user?.fullName || user?.fullname || "",
     email: user?.email || "",
     phone: user?.phone || "",
   });
@@ -30,13 +31,15 @@ const Index = () => {
       payload.append("fullName", profileFormData.fullName);
       payload.append("email", profileFormData.email.toLowerCase());
       payload.append("phone", profileFormData.phone);
-      payload.append("displayPic", profilePic);
+      if (profilePic) {
+        payload.append("displayPic", profilePic);
+      }
 
       const response = await api.put(`/common/edit-profile`, payload);
       setUser(response.data.data);
       sessionStorage.setItem("cravingUser", JSON.stringify(response.data.data));
       setEditingProfile(false);
-      toast.success("Profile updated successfully!");
+      toast.success("Profile details updated!");
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to update profile");
     } finally {
@@ -46,7 +49,7 @@ const Index = () => {
 
   const handleCancelProfile = () => {
     setProfileFormData({
-      fullName: user?.fullName || "",
+      fullName: user?.fullName || user?.fullname || "",
       email: user?.email || "",
       phone: user?.phone || "",
     });
@@ -56,116 +59,135 @@ const Index = () => {
 
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
-    setProfilePicPreview(URL.createObjectURL(file));
-    setProfilePic(file);
+    if (file) {
+      setProfilePicPreview(URL.createObjectURL(file));
+      setProfilePic(file);
+    }
   };
+
+  const userPhoto =
+    profilePicPreview ||
+    user?.photo?.url ||
+    `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(
+      profileFormData.fullName || "User"
+    )}`;
 
   return (
     <>
-      <div className="bg-(--color-base-100) rounded-lg p-3 flex items-center gap-3">
-        <div className="relative">
-          <div className="w-26 h-26">
-            <img
-              src={profilePicPreview || user?.photo?.url || "/ProfileAvatar.png"}
-              alt="Profile"
-              className="w-full h-full rounded-xl object-cover border-2 border-(--color-primary)"
-            />
+      <div className="rounded-3xl bg-white border border-slate-200/80 p-6 shadow-xs space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+          <div>
+            <h3 className="font-heading text-lg font-black text-slate-900">
+              Personal Information
+            </h3>
+            <p className="text-xs font-semibold text-slate-400">
+              Manage your profile details and security
+            </p>
           </div>
 
-          {editingProfile && (
-            <div
-              className="absolute cursor-pointer bottom-0.5 right-0.5 p-1.5 rounded-ee-xl w-fit bg-(--color-base-100)"
-              title="Change Photo"
-            >
-              <label htmlFor="customerProfilePic" className="cursor-pointer">
-                <MdOutlineAddAPhoto className="text-sm" />
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                name="profilePic"
-                id="customerProfilePic"
-                className="hidden"
-                onChange={handleProfilePicChange}
-              />
+          {!editingProfile ? (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setEditingProfile(true)}
+                className="flex items-center gap-1.5 rounded-xl bg-orange-600 px-3.5 py-2 text-xs font-black text-white hover:bg-orange-500 transition shadow-xs"
+              >
+                <MdEdit />
+                <span>Edit Profile</span>
+              </button>
+              <button
+                onClick={() => setIsPasswordChangeModalOpen(true)}
+                className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-3.5 py-2 text-xs font-black text-slate-700 hover:bg-slate-50 transition"
+              >
+                <MdOutlineLockReset size={16} />
+                <span>Change Password</span>
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleCancelProfile}
+                disabled={isLoading}
+                className="rounded-xl border border-slate-200 px-3.5 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveProfile}
+                disabled={isLoading}
+                className="rounded-xl bg-orange-600 px-4 py-2 text-xs font-black text-white shadow-xs hover:bg-orange-500 transition"
+              >
+                {isLoading ? "Saving..." : "Save Changes"}
+              </button>
             </div>
           )}
         </div>
 
-        <div className="w-full">
-          <div className="flex justify-between items-center mb-4 border-b border-(--color-secondary) pb-2">
-            <h3 className="text-sm font-semibold text-(--color-primary)">
-              Profile Information
-            </h3>
-            {!editingProfile ? (
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setEditingProfile(true)}
-                  className="flex items-center gap-2 bg-(--color-primary) text-(--color-primary-content) px-2 py-0.5 rounded text-xs"
-                >
-                  <MdEdit /> Edit
-                </button>
-                <button
-                  onClick={() => setIsPasswordChangeModalOpen(true)}
-                  className="flex items-center gap-2 border border-(--color-primary) text-(--color-primary) px-2 py-0.5 rounded text-xs hover:bg-(--color-primary) hover:text-(--color-primary-content)"
-                >
-                  <MdOutlineLockReset /> Change Password
-                </button>
-              </div>
-            ) : (
-              <div className="flex gap-2 justify-end">
-                <button
-                  onClick={handleSaveProfile}
-                  className="flex items-center gap-2 bg-(--color-primary) text-(--color-primary-content) px-2 py-0.5 rounded text-xs"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Saving..." : "Save Changes"}
-                </button>
-                <button
-                  onClick={handleCancelProfile}
-                  className="flex items-center gap-2 bg-(--color-secondary) text-(--color-secondary-content) px-2 py-0.5 rounded text-xs"
-                  disabled={isLoading}
-                >
-                  Cancel
-                </button>
-              </div>
+        <div className="flex flex-col md:flex-row items-start gap-6">
+          {/* Avatar Section */}
+          <div className="relative group">
+            <img
+              src={userPhoto}
+              alt="Profile"
+              className="h-24 w-24 rounded-2xl object-cover ring-4 ring-orange-500/20"
+            />
+            {editingProfile && (
+              <label
+                htmlFor="customerProfilePic"
+                className="absolute inset-0 bg-black/50 backdrop-blur-xs rounded-2xl flex flex-col items-center justify-center text-white cursor-pointer transition"
+              >
+                <MdOutlineAddAPhoto size={20} />
+                <span className="text-[10px] font-bold mt-1">Upload</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="customerProfilePic"
+                  className="hidden"
+                  onChange={handleProfilePicChange}
+                />
+              </label>
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="w-full">
-              <label className="text-xs font-semibold">Full Name</label>
+          {/* Form Fields */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1 w-full">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Full Name
+              </label>
               <input
                 type="text"
                 name="fullName"
                 value={profileFormData.fullName}
                 onChange={handleProfileChange}
-                className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingProfile ? "bg-white" : "bg-(--color-base-100)"} rounded`}
                 disabled={!editingProfile}
+                className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold disabled:bg-slate-100 disabled:text-slate-500 focus:outline-hidden focus:border-orange-500"
               />
             </div>
 
-            <div className="w-full">
-              <label className="text-xs font-semibold">Email</label>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Email Address
+              </label>
               <input
                 type="email"
                 name="email"
                 value={profileFormData.email}
-                onChange={handleProfileChange}
-                className={`w-full px-1.5 py-1 border border-(--color-secondary) disabled:bg-(--color-base-100) cursor-not-allowed rounded`}
                 disabled
+                className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-100 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-500 cursor-not-allowed"
               />
             </div>
 
-            <div className="w-full">
-              <label className="text-xs font-semibold">Phone</label>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Phone Number
+              </label>
               <input
                 type="tel"
                 name="phone"
                 value={profileFormData.phone}
                 onChange={handleProfileChange}
-                className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingProfile ? "bg-white" : "bg-(--color-base-100)"} rounded`}
                 disabled={!editingProfile}
+                className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold disabled:bg-slate-100 disabled:text-slate-500 focus:outline-hidden focus:border-orange-500"
               />
             </div>
           </div>

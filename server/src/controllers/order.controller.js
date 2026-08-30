@@ -91,6 +91,8 @@ export const CreateOrder = async (req, res, next) => {
       itemsAmount += Number(menuItem.price) * qty;
       normalizedOrderItems.push({
         itemId: menuItem._id,
+        itemName: menuItem.itemName || "",
+        price: Number(menuItem.price) || 0,
         quantity: qty,
       });
     }

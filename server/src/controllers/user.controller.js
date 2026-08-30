@@ -329,7 +329,6 @@ export const GetAllOrders = async (req, res, next) => {
       customerId: { $in: customerIds },
     })
       .populate("restaurantId", "restaurantName coverImage address city averageRating")
-      .populate("orderItems.itemId", "itemName price image category foodType")
       .sort({ createdAt: -1 });
 
     return res.status(200).json({
