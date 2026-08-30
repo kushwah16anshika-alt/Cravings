@@ -7,15 +7,48 @@ const LegalInformation = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [editingLegalInfo, setEditingLegalInfo] = useState(false);
 
-  const [restaurantData, setRestaurantData] = useState(
-    JSON.parse(sessionStorage.getItem("cravingRestaurant")) || [],
-  );
+  const [restaurantData, setRestaurantData] = useState(() => {
+    try {
+      const data = sessionStorage.getItem("cravingRestaurant");
+      return data ? JSON.parse(data) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  const [legalInfoFormData, setLegalInfoFormData] = useState({
+    legalName:
+      restaurantData?.documents?.legalName ||
+      restaurantData?.legal?.legalName ||
+      "",
+    companyType:
+      restaurantData?.documents?.companyType ||
+      restaurantData?.legal?.companyType ||
+      "",
+  });
+
+  React.useEffect(() => {
+    if (restaurantData && Object.keys(restaurantData).length > 0) {
+      setLegalInfoFormData({
+        legalName:
+          restaurantData?.documents?.legalName ||
+          restaurantData?.legal?.legalName ||
+          "",
+        companyType:
+          restaurantData?.documents?.companyType ||
+          restaurantData?.legal?.companyType ||
+          "",
+      });
+    }
+  }, [restaurantData]);
 
   const handleSaveLegalInfo = async () => {
-    // Implement save logic here
+    if (!legalInfoFormData.legalName || !legalInfoFormData.companyType) {
+      toast.error("Legal Name and Company Type are required");
+      return;
+    }
 
     try {
-      setEditingLegalInfo(false);
       setIsLoading(true);
 
       const res = await api.put(
@@ -23,16 +56,17 @@ const LegalInformation = () => {
         legalInfoFormData,
       );
 
-      toast.success(res.data.message);
+      toast.success(res.data.message || "Legal information updated successfully");
       setRestaurantData(res.data.data);
       sessionStorage.setItem(
         "cravingRestaurant",
         JSON.stringify(res.data.data),
       );
+      setEditingLegalInfo(false);
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
-          "Unknown error occurred updating restaurant. Please try again.",
+          "Failed to update legal information. Please try again.",
       );
     } finally {
       setIsLoading(false);
@@ -40,12 +74,18 @@ const LegalInformation = () => {
   };
 
   const handleCancelLegalInfo = () => {
+    setLegalInfoFormData({
+      legalName:
+        restaurantData?.documents?.legalName ||
+        restaurantData?.legal?.legalName ||
+        "",
+      companyType:
+        restaurantData?.documents?.companyType ||
+        restaurantData?.legal?.companyType ||
+        "",
+    });
     setEditingLegalInfo(false);
   };
-  const [legalInfoFormData, setLegalInfoFormData] = useState({
-    legalName: restaurantData.legal?.legalName || "",
-    companyType: restaurantData.legal?.companyType || "",
-  });
 
   return (
     <>
@@ -71,14 +111,14 @@ const LegalInformation = () => {
               <button
                 onClick={handleSaveLegalInfo}
                 className="flex items-center gap-2 bg-(--color-primary) text-(--color-primary-content) px-2 py-0.5 rounded text-xs"
-                disabled={!editingLegalInfo}
+                disabled={isLoading}
               >
                 {isLoading ? "Saving..." : "Save Changes"}
               </button>
               <button
                 onClick={handleCancelLegalInfo}
                 className="flex items-center gap-2 bg-(--color-secondary) text-(--color-secondary-content) px-2 py-0.5 rounded text-xs"
-                disabled={!editingLegalInfo}
+                disabled={isLoading}
               >
                 Cancel
               </button>

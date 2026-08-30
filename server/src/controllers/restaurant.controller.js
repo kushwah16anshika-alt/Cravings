@@ -176,10 +176,9 @@ export const RestaurantUpdateProfile = async (req, res, next) => {
 
         const keptImageUrls = keptImages.map((img) => img.url);
 
-        const imagesToDelete =
-          existingRestaurant.restaurantImage.filter(
-            (img) => !keptImageUrls.includes(img.url)
-          );
+        const imagesToDelete = (
+          existingRestaurant.restaurantImage || []
+        ).filter((img) => img && !keptImageUrls.includes(img.url));
 
         if (imagesToDelete.length > 0) {
           await deleteMultipleImages(imagesToDelete);

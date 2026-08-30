@@ -86,13 +86,18 @@ const OrderNow = () => {
     return restaurants.filter((restaurant) => {
       const name = restaurant.restaurantName?.toLowerCase() || "";
       const description = restaurant.description?.toLowerCase() || "";
-      const city = restaurant.address?.city?.toLowerCase() || "";
+      const city = (
+        restaurant.city ||
+        (typeof restaurant.address === "object" ? restaurant.address?.city : restaurant.address) ||
+        ""
+      ).toLowerCase();
 
       let cuisines = [];
-      if (Array.isArray(restaurant.cuisineType)) {
-        cuisines = restaurant.cuisineType;
-      } else if (typeof restaurant.cuisineType === "string") {
-        cuisines = restaurant.cuisineType.split(",").map((s) => s.trim());
+      const rawCuisines = restaurant.cuisineTypes || restaurant.cuisineType || [];
+      if (Array.isArray(rawCuisines)) {
+        cuisines = rawCuisines;
+      } else if (typeof rawCuisines === "string") {
+        cuisines = rawCuisines.split(",").map((s) => s.trim());
       }
       const cuisineStr = cuisines.join(" ").toLowerCase();
 
@@ -107,7 +112,7 @@ const OrderNow = () => {
       const matchesType =
         selectedType === "all" ||
         restaurant.restaurantType?.toLowerCase() === selectedType ||
-        (selectedType === "veg" && restaurant.isPureVeg);
+        (selectedType === "veg" && (restaurant.isPureVeg || restaurant.restaurantType === "veg"));
 
       const matchesOpen = !showOpenOnly || restaurant.isOpen;
       const matchesRating = minRating === 0 || (restaurant.averageRating || 4.2) >= minRating;
@@ -246,15 +251,19 @@ const OrderNow = () => {
               const isFav = savedFavorites.includes(restaurant._id);
               const coverUrl =
                 restaurant.coverImage?.url ||
+                restaurant.restaurantImage?.[0]?.url ||
                 restaurant.images?.[0]?.url ||
                 "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80";
 
               let cuisines = [];
-              if (Array.isArray(restaurant.cuisineType)) {
-                cuisines = restaurant.cuisineType;
-              } else if (typeof restaurant.cuisineType === "string") {
-                cuisines = restaurant.cuisineType.split(",").map((s) => s.trim());
+              const rawCuisines = restaurant.cuisineTypes || restaurant.cuisineType || [];
+              if (Array.isArray(rawCuisines)) {
+                cuisines = rawCuisines;
+              } else if (typeof rawCuisines === "string") {
+                cuisines = rawCuisines.split(",").map((s) => s.trim());
               }
+
+              const isPureVeg = restaurant.isPureVeg || restaurant.restaurantType === "veg";
 
               return (
                 <div
@@ -279,11 +288,11 @@ const OrderNow = () => {
                       <div className="flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-extrabold backdrop-blur-md shadow-xs">
                         <span
                           className={`h-2 w-2 rounded-full ${
-                            restaurant.isPureVeg ? "bg-emerald-500" : "bg-orange-500"
+                            isPureVeg ? "bg-emerald-500" : "bg-orange-500"
                           }`}
                         />
-                        <span className={restaurant.isPureVeg ? "text-emerald-700" : "text-slate-800"}>
-                          {restaurant.isPureVeg ? "Pure Veg" : "Multi-Cuisine"}
+                        <span className={isPureVeg ? "text-emerald-700" : "text-slate-800"}>
+                          {isPureVeg ? "Pure Veg" : "Multi-Cuisine"}
                         </span>
                       </div>
 
@@ -340,7 +349,13 @@ const OrderNow = () => {
                     <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-slate-500">
                       <span className="flex items-center gap-1">
                         <IoLocationOutline size={14} className="text-orange-600" />
-                        <span>{restaurant.address?.city || "Campus Main"}</span>
+                        <span>
+                          {restaurant.city ||
+                            (typeof restaurant.address === "object"
+                              ? restaurant.address?.city
+                              : restaurant.address) ||
+                            "Campus Main"}
+                        </span>
                       </span>
 
                       <span className="text-orange-600 font-extrabold group-hover:translate-x-1 transition-transform flex items-center gap-0.5">

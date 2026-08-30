@@ -19,10 +19,21 @@ const PresonalInformation = () => {
   const [profilePic, setProfilePic] = useState(null);
   const [profilePicPreview, setProfilePicPreview] = useState(null);
   const [profileFormData, setProfileFormData] = useState({
-    fullName: user?.fullName || "",
+    fullName: user?.fullName || user?.fullname || "",
     email: user?.email || "",
     phone: user?.phone || "",
   });
+
+  // Sync state if user loads after mount
+  React.useEffect(() => {
+    if (user) {
+      setProfileFormData({
+        fullName: user.fullName || user.fullname || "",
+        email: user.email || "",
+        phone: user.phone || "",
+      });
+    }
+  }, [user]);
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -38,9 +49,11 @@ const PresonalInformation = () => {
       payload.append("email", profileFormData.email.toLowerCase());
       payload.append("phone", profileFormData.phone);
 
-      payload.append("displayPic", profilePic);
+      if (profilePic) {
+        payload.append("displayPic", profilePic);
+      }
 
-      const response = await api.post(
+      const response = await api.put(
         "/common/edit-profile",
         payload,
         {
@@ -63,19 +76,25 @@ const PresonalInformation = () => {
 
   const handleCancelProfile = () => {
     setProfileFormData({
-      fullName: user.fullName,
-      email: user.email,
-      phone: user.phone,
+      fullName: user?.fullName || user?.fullname || "",
+      email: user?.email || "",
+      phone: user?.phone || "",
     });
     setProfilePicPreview(null);
+    setProfilePic(null);
     setEditingProfile(false);
   };
 
   const handleProfilePicChange = (e) => {
-    const file = e.target.files[0];
-    setProfilePicPreview(URL.createObjectURL(file));
-    setProfilePic(file);
+    const file = e.target.files?.[0];
+    if (file) {
+      setProfilePicPreview(URL.createObjectURL(file));
+      setProfilePic(file);
+    }
   };
+
+  const defaultAvatar =
+    "https://res.cloudinary.com/dpl3xwf1z/image/upload/v1783776802/circleLogo_z7icie.png";
 
   return (
     <>
@@ -84,9 +103,12 @@ const PresonalInformation = () => {
         <div className="relative">
           <div className="w-26 h-26">
             <img
-              src={profilePicPreview || user.photo.url}
+              src={profilePicPreview || user?.photo?.url || defaultAvatar}
               alt="Profile"
               className="w-full h-full rounded-xl object-cover border-2 border-(--color-primary)"
+              onError={(e) => {
+                e.target.src = defaultAvatar;
+              }}
             />
           </div>
 

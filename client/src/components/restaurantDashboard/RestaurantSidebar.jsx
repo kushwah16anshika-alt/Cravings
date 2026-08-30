@@ -67,7 +67,7 @@ const RestaurantSidebar = ({ activeTab, setActiveTab }) => {
             <h3 className="font-heading text-sm font-black text-slate-900 truncate">
               {userName}
             </h3>
-            <span className="inline-block text-[10px] font-black uppercase tracking-wider text-orange-700 bg-orange-100 px-2 py-0.2 rounded-full">
+            <span className="inline-block text-[10px] font-black uppercase tracking-wider text-orange-700 bg-orange-100 px-2 py-0.5 rounded-full">
               Partner Hub
             </span>
           </div>

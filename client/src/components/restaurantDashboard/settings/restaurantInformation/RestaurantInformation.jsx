@@ -11,20 +11,44 @@ const RestaurantInformation = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Restaurant handlers
-  const [restaurantData, setRestaurantData] = useState(
-    JSON.parse(sessionStorage.getItem("cravingRestaurant")) || [],
-  );
+  const [restaurantData, setRestaurantData] = useState(() => {
+    try {
+      const data = sessionStorage.getItem("cravingRestaurant");
+      return data ? JSON.parse(data) : {};
+    } catch {
+      return {};
+    }
+  });
   const [editingRestaurant, setEditingRestaurant] = useState(false);
   const [restaurantFormData, setRestaurantFormData] = useState({
     restaurantName: restaurantData?.restaurantName || "",
     description: restaurantData?.description || "",
     restaurantType: restaurantData?.restaurantType || "",
-    cuisineTypes: restaurantData?.cuisineTypes?.join(", ") || "",
+    cuisineTypes: Array.isArray(restaurantData?.cuisineTypes)
+      ? restaurantData.cuisineTypes.join(", ")
+      : restaurantData?.cuisineTypes || "",
     contactEmail: restaurantData?.contactDetails?.email || "",
     contactPhone: restaurantData?.contactDetails?.phone || "",
     openingTime: restaurantData?.servingHours?.openingTime || "",
     closingTime: restaurantData?.servingHours?.closingTime || "",
   });
+
+  useEffect(() => {
+    if (restaurantData && Object.keys(restaurantData).length > 0) {
+      setRestaurantFormData({
+        restaurantName: restaurantData?.restaurantName || "",
+        description: restaurantData?.description || "",
+        restaurantType: restaurantData?.restaurantType || "",
+        cuisineTypes: Array.isArray(restaurantData?.cuisineTypes)
+          ? restaurantData.cuisineTypes.join(", ")
+          : restaurantData?.cuisineTypes || "",
+        contactEmail: restaurantData?.contactDetails?.email || "",
+        contactPhone: restaurantData?.contactDetails?.phone || "",
+        openingTime: restaurantData?.servingHours?.openingTime || "",
+        closingTime: restaurantData?.servingHours?.closingTime || "",
+      });
+    }
+  }, [restaurantData]);
 
   const handleRestaurantChange = (e) => {
     const { name, value, type, checked } = e.target;
