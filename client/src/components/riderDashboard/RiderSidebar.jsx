@@ -1,230 +1,181 @@
-// import React from "react";
-// import { MdDashboard } from "react-icons/md";
-// import { FaShoppingCart, FaUserCircle } from "react-icons/fa";
-// import { IoMdSettings } from "react-icons/io";
-
-// const RiderSidebar = ({ activeTab, setActiveTab }) => {
-//   const tabs = [
-//     {
-//       name: "Overview",
-//       value: "overview",
-//       icon: <MdDashboard size={20} />,
-//     },
-//     {
-//       name: "Orders",
-//       value: "orders",
-//       icon: <FaShoppingCart size={18} />,
-//     },
-//     {
-//       name: "Profile",
-//       value: "profile",
-//       icon: <FaUserCircle size={18} />,
-//     },
-//   ];
-
-//   const settingsTab = {
-//     name: "Settings",
-//     value: "settings",
-//     icon: <IoMdSettings size={20} />,
-//   };
-
-//   const renderTab = (tab) => (
-//     <li
-//       key={tab.value}
-//       onClick={() => setActiveTab(tab.value)}
-//       className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 ${
-//         activeTab === tab.value
-//           ? "bg-[var(--primary)] text-white shadow-md"
-//           : "text-gray-700 hover:bg-orange-50 hover:text-[var(--accent)]"
-//       }`}
-//     >
-//       <span>{tab.icon}</span>
-//       <span className="font-medium">{tab.name}</span>
-//     </li>
-//   );
-
-//   return (
-//     <aside className="h-full flex flex-col bg-white rounded-3xl shadow-xl border border-gray-200 p-6">
-//       <div className="pb-6 border-b border-gray-200">
-//         <h2 className="text-2xl font-bold text-[var(--primary)] text-center">
-//           Rider Panel
-//         </h2>
-
-//         <p className="text-sm text-gray-500 text-center mt-1">
-//           Dashboard
-//         </p>
-//       </div>
-
-//       <ul className="flex-1 mt-6 space-y-3">
-//         {tabs.map(renderTab)}
-//       </ul>
-
-//       <div className="pt-6 border-t border-gray-200">
-//         <ul>{renderTab(settingsTab)}</ul>
-//       </div>
-//     </aside>
-//   );
-// };
-
-// export default RiderSidebar;
-
-
-import React from "react";
-import { MdDashboard } from "react-icons/md";
-import { FaShoppingCart, FaUserCircle } from "react-icons/fa";
-import { IoMdSettings } from "react-icons/io";
+import React, { useState } from "react";
+import {
+  MdOutlineDashboard,
+  MdOutlineShoppingBag,
+  MdOutlineTwoWheeler,
+  MdOutlineSettings,
+} from "react-icons/md";
+import { HiOutlineLogout } from "react-icons/hi";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import api from "../../config/api.config";
+import toast from "react-hot-toast";
 
 const RiderSidebar = ({ activeTab, setActiveTab }) => {
-  const { user } = useAuth();
+  const { user, setUser, setIsLogin, setRole } = useAuth();
+  const navigate = useNavigate();
+  const [isOnline, setIsOnline] = useState(true);
 
   const tabs = [
     {
       name: "Overview",
       value: "overview",
-      icon: <MdDashboard size={20} />,
+      icon: <MdOutlineDashboard size={18} />,
     },
     {
-      name: "Orders",
+      name: "Orders & Deliveries",
       value: "orders",
-      icon: <FaShoppingCart size={18} />,
+      icon: <MdOutlineShoppingBag size={18} />,
+      count: 3,
     },
     {
-      name: "Profile",
+      name: "Vehicle & Verification",
       value: "profile",
-      icon: <FaUserCircle size={18} />,
+      icon: <MdOutlineTwoWheeler size={18} />,
     },
     {
-      name: "Settings",
+      name: "Account Settings",
       value: "settings",
-      icon: <IoMdSettings size={20} />,
+      icon: <MdOutlineSettings size={18} />,
     },
   ];
 
+  const handleLogout = async () => {
+    try {
+      const res = await api.get("/auth/logout");
+      toast.success(res.data?.message || "Logged out successfully");
+      sessionStorage.removeItem("cravingUser");
+      setUser(null);
+      setIsLogin(false);
+      setRole(null);
+      navigate("/");
+    } catch {
+      toast.error("Logout failed");
+    }
+  };
+
+  const toggleAvailability = () => {
+    const nextState = !isOnline;
+    setIsOnline(nextState);
+    if (nextState) {
+      toast.success("Status: Online. Ready for orders.");
+    } else {
+      toast("Status: Offline. Orders paused.", { icon: "⏸️" });
+    }
+  };
+
+  const userName = user?.fullName || user?.fullname || "Campus Rider";
+  const userAvatar =
+    user?.photo?.url ||
+    "https://res.cloudinary.com/dpl3xwf1z/image/upload/v1783776802/circleLogo_z7icie.png";
+
   return (
-    <aside className="h-full bg-white rounded-3xl shadow-xl flex flex-col overflow-hidden">
+    <aside className="h-full flex flex-col justify-between space-y-6">
+      <div className="space-y-5">
+        {/* Minimal Rider Profile Header */}
+        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+          <div className="flex items-center gap-3">
+            <div className="relative flex-shrink-0">
+              <img
+                src={userAvatar}
+                alt={userName}
+                className="h-11 w-11 rounded-xl object-cover border border-slate-200 bg-white"
+                onError={(e) => {
+                  e.target.src =
+                    "https://res.cloudinary.com/dpl3xwf1z/image/upload/v1783776802/circleLogo_z7icie.png";
+                }}
+              />
+              <span
+                className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white ${
+                  isOnline ? "bg-emerald-500" : "bg-slate-400"
+                }`}
+              />
+            </div>
 
-      {/* Header */}
+            <div className="min-w-0 flex-1">
+              <h3 className="font-heading text-sm font-bold text-slate-900 truncate">
+                {userName}
+              </h3>
+              <p className="text-[11px] text-slate-500 font-medium truncate">
+                Delivery Partner
+              </p>
+            </div>
+          </div>
 
-      <div className="bg-orange-500 rounded-t-3xl px-6 py-8 text-center">
+          {/* Minimal Status Toggle */}
+          <div className="mt-3 pt-2.5 border-t border-slate-200/70 flex items-center justify-between">
+            <span className="text-[11px] font-medium text-slate-600 flex items-center gap-1.5">
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  isOnline ? "bg-emerald-500" : "bg-slate-400"
+                }`}
+              />
+              <span>{isOnline ? "Online" : "Offline"}</span>
+            </span>
 
-        <img
-          src={
-            user?.photo?.url ||
-            "https://via.placeholder.com/100"
-          }
-          alt="Profile"
-          className="
-          w-20 h-20
-          rounded-full
-          border-4
-          border-white
-          object-cover
-          mx-auto
-          shadow-lg
-          "
-        />
-
-        <h2 className="mt-4 text-xl font-bold text-white">
-          {user?.fullName || "Rider"}
-        </h2>
-
-        <p className="text-orange-100 text-sm">
-          Delivery Partner
-        </p>
-
-      </div>
-
-
-      {/* Navigation */}
-
-      <div className="flex-1 p-5">
-
-        <ul className="space-y-3">
-
-          {tabs.map((tab) => (
-
-            <li
-              key={tab.value}
-              onClick={() => setActiveTab(tab.value)}
-              className={`
-              relative
-              flex
-              items-center
-              gap-4
-              px-5
-              py-4
-              rounded-2xl
-              cursor-pointer
-              transition-all
-              duration-300
-
-              ${
-                activeTab === tab.value
-                ?
-                "bg-orange-500 text-white shadow-lg shadow-orange-200"
-                :
-                "text-gray-700 hover:bg-orange-50 hover:text-orange-500"
-              }
-
-              `}
+            <button
+              onClick={toggleAvailability}
+              className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition ${
+                isOnline
+                  ? "bg-slate-200/80 text-slate-700 hover:bg-slate-300"
+                  : "bg-orange-600 text-white hover:bg-orange-500"
+              }`}
             >
-
-              {
-                activeTab === tab.value && (
-                  <span
-                    className="
-                    absolute
-                    left-0
-                    top-3
-                    bottom-3
-                    w-1
-                    rounded-r-full
-                    bg-white
-                    "
-                  />
-                )
-              }
-
-
-              <span>
-                {tab.icon}
-              </span>
-
-
-              <span className="font-medium">
-                {tab.name}
-              </span>
-
-
-            </li>
-
-          ))}
-
-        </ul>
-
-      </div>
-
-
-      {/* Footer */}
-
-      <div className="px-6 py-5 border-t border-gray-200">
-
-        <div className="text-center text-xs text-gray-400">
-
-          <p className="tracking-[0.3em]">
-            CRAVINGS RIDER
-          </p>
-
-          <p className="mt-2">
-            Version 1.0
-          </p>
-
+              {isOnline ? "Go Offline" : "Go Online"}
+            </button>
+          </div>
         </div>
 
+        {/* Navigation Links */}
+        <div className="space-y-1">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2 mb-1">
+            Menu
+          </p>
+
+          {tabs.map((tab) => {
+            const active = activeTab === tab.value;
+            return (
+              <button
+                key={tab.value}
+                onClick={() => setActiveTab(tab.value)}
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-150 text-left ${
+                  active
+                    ? "bg-orange-50 text-orange-600 font-bold border border-orange-200/70"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className={active ? "text-orange-600" : "text-slate-400"}>
+                    {tab.icon}
+                  </span>
+                  <span>{tab.name}</span>
+                </div>
+
+                {tab.count !== undefined && (
+                  <span
+                    className={`text-[10px] font-bold px-2 py-0.2 rounded-full ${
+                      active
+                        ? "bg-orange-600 text-white"
+                        : "bg-slate-200 text-slate-600"
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-
+      {/* Logout */}
+      <button
+        onClick={handleLogout}
+        className="w-full flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 transition border border-slate-200"
+      >
+        <HiOutlineLogout size={16} />
+        <span>Sign Out</span>
+      </button>
     </aside>
   );
 };

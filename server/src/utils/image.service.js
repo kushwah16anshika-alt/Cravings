@@ -1,17 +1,20 @@
 import cloudinary from "../config/cloudinary.config.js";
 
-export const uploadMultipleImages = async (Images, storageLocation, options = {}) => {
+export const uploadMultipleImages = async (Images, storageLocation = "cravings/uploads", options = {}) => {
   try {
-    if (!Images || !Array.isArray(Images) || Images.length === 0) {
-      return [];
-    }
-
-    const validImages = Images.filter((img) => img && img.buffer);
+    if (!Images) return [];
+    const list = Array.isArray(Images) ? Images : [Images];
+    const validImages = list.filter((img) => img && (img.buffer || typeof img === "string"));
     if (validImages.length === 0) return [];
 
     const uploadPromises = validImages.map(async (image) => {
-      const b64 = Buffer.from(image.buffer).toString("base64");
-      const dataURI = `data:${image.mimetype || "image/jpeg"};base64,${b64}`;
+      let dataURI = "";
+      if (image.buffer) {
+        const b64 = Buffer.from(image.buffer).toString("base64");
+        dataURI = `data:${image.mimetype || "image/jpeg"};base64,${b64}`;
+      } else if (typeof image === "string") {
+        dataURI = image;
+      }
 
       const uploadConfig = {
         folder: storageLocation,
@@ -34,14 +37,18 @@ export const uploadMultipleImages = async (Images, storageLocation, options = {}
   }
 };
 
-export const uploadSingleImage = async (image, storageLocation, options = {}) => {
+export const uploadSingleImage = async (image, storageLocation = "cravings/uploads", options = {}) => {
   try {
-    if (!image || !image.buffer) {
+    if (!image) return null;
+    let dataURI = "";
+    if (image.buffer) {
+      const b64 = Buffer.from(image.buffer).toString("base64");
+      dataURI = `data:${image.mimetype || "image/jpeg"};base64,${b64}`;
+    } else if (typeof image === "string") {
+      dataURI = image;
+    } else {
       return null;
     }
-
-    const b64 = Buffer.from(image.buffer).toString("base64");
-    const dataURI = `data:${image.mimetype || "image/jpeg"};base64,${b64}`;
 
     const uploadConfig = {
       folder: storageLocation,
@@ -66,7 +73,12 @@ export const UploadSingleImage = uploadSingleImage;
 export const deleteSingleImage = async (image) => {
   try {
     if (!image) return;
-    const publicId = typeof image === "string" ? image : image.publicId;
+    let publicId = "";
+    if (typeof image === "string") {
+      publicId = image;
+    } else if (typeof image === "object") {
+      publicId = image.publicId || image.public_id || "";
+    }
     if (!publicId || typeof publicId !== "string" || publicId.trim() === "") {
       return;
     }
@@ -78,17 +90,23 @@ export const deleteSingleImage = async (image) => {
 
 export const deleteMultipleImages = async (Images) => {
   try {
-    if (!Array.isArray(Images) || Images.length === 0) return;
+    if (!Images) return;
+    const list = Array.isArray(Images) ? Images : [Images];
+    if (list.length === 0) return;
 
-    const validImages = Images
-      .map((img) => (typeof img === "string" ? img : img?.publicId))
-      .filter((id) => id && typeof id === "string" && id.trim() !== "");
+    const validIds = list
+      .map((img) => {
+        if (!img) return "";
+        if (typeof img === "string") return img.trim();
+        return (img.publicId || img.public_id || "").trim();
+      })
+      .filter((id) => id !== "");
 
-    if (validImages.length === 0) return;
+    if (validIds.length === 0) return;
 
-    const deletePromises = validImages.map(async (publicId) => {
+    const deletePromises = validIds.map(async (publicId) => {
       try {
-        await cloudinary.uploader.destroy(publicId.trim());
+        await cloudinary.uploader.destroy(publicId);
       } catch (err) {
         console.log(`Failed to delete Cloudinary image ${publicId}:`, err.message);
       }
@@ -98,4 +116,5 @@ export const deleteMultipleImages = async (Images) => {
   } catch (error) {
     console.log("deleteMultipleImages error:", error.message);
   }
-};
+};
+

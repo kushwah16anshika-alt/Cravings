@@ -79,7 +79,6 @@ app.listen(port, async () => {
     console.log("Cloudinary Connected :");
     console.log(result);
   } catch (error) {
-    console.log(error.message);
-    process.exit(1);
+    console.warn("Cloudinary Connection Warning:", error.message);
   }
 });

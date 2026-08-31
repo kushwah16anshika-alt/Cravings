@@ -1,5 +1,80 @@
 import mongoose from "mongoose";
 
+const MenuItemSchema = mongoose.Schema(
+  {
+    itemName: {
+      type: String,
+      required: true,
+    },
+
+    description: {
+      type: String,
+      required: true,
+    },
+
+    price: {
+      type: Number,
+      required: true,
+    },
+
+    category: {
+      type: String,
+      required: true,
+    },
+
+    foodType: {
+      type: String,
+      default: "Vegetarian",
+    },
+
+    image: {
+      url: {
+        type: String,
+        default: "",
+      },
+
+      publicId: {
+        type: String,
+        default: "",
+      },
+    },
+
+    status: {
+      type: String,
+      enum: ["available", "unavailable", "discontinued"],
+      default: "available",
+    },
+
+    isAvailable: {
+      type: Boolean,
+      default: true,
+    },
+
+    isTopRated: {
+      type: Boolean,
+      default: false,
+    },
+
+    isRecommended: {
+      type: Boolean,
+      default: false,
+    },
+
+    isNew: {
+      type: Boolean,
+      default: false,
+    },
+
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    suppressReservedKeysWarning: true,
+  }
+);
+
 const MenuSchema = mongoose.Schema(
   {
     restaurantId: {
@@ -8,77 +83,7 @@ const MenuSchema = mongoose.Schema(
       required: true,
     },
 
-    menuItems: [
-      {
-        itemName: {
-          type: String,
-          required: true,
-        },
-
-        description: {
-          type: String,
-          required: true,
-        },
-
-        price: {
-          type: Number,
-          required: true,
-        },
-
-        category: {
-          type: String,
-          required: true,
-        },
-
-        foodType: {
-          type: String,
-          default: "Vegetarian",
-        },
-
-        image: {
-          url: {
-            type: String,
-            default: "",
-          },
-
-          publicId: {
-            type: String,
-            default: "",
-          },
-        },
-
-        status: {
-          type: String,
-          enum: ["available", "unavailable", "discontinued"],
-          default: "available",
-        },
-
-        isAvailable: {
-          type: Boolean,
-          default: true,
-        },
-
-        isTopRated: {
-          type: Boolean,
-          default: false,
-        },
-
-        isRecommended: {
-          type: Boolean,
-          default: false,
-        },
-
-        isNew: {
-          type: Boolean,
-          default: false,
-        },
-
-        isDeleted: {
-          type: Boolean,
-          default: false,
-        },
-      },
-    ],
+    menuItems: [MenuItemSchema],
   },
   {
     timestamps: true,
@@ -88,4 +93,4 @@ const MenuSchema = mongoose.Schema(
 
 const Menu = mongoose.model("menu", MenuSchema);
 
-export default Menu;
+export default Menu;
