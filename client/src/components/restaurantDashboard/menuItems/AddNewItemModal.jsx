@@ -86,6 +86,11 @@ const AddNewItemModal = ({ isOpen, onClose, onActionSuccess }) => {
       return;
     }
 
+    if (!itemImage) {
+      toast.error("Please upload an item image.");
+      return;
+    }
+
     try {
       setIsLoading(true);
 
