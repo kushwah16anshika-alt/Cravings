@@ -13,12 +13,9 @@ import Menu from "../models/menu.model.js";
 export const RestaurantGetData = async (req, res, next) => {
   try {
     const currentUser = req.user;
-    const managerId = req.query.id;
+    const managerId = req.query.id || currentUser._id;
 
-    console.log("Current User:", currentUser);
-    console.log("Manager ID:", managerId);
-
-    if (currentUser._id.toString() !== managerId) {
+    if (currentUser._id.toString() !== managerId.toString()) {
       const error = new Error("Unauthorized Access");
       error.statusCode = 401;
       return next(error);
@@ -811,7 +808,7 @@ export const RestaurantUpdateMenuItem = async (
       const updatedImage =
         await UploadSingleImage(
           itemImageFromFE,
-          `restaurant/${currentUser.phone}/menuItems`
+          `restaurant/${currentUser.phone || currentUser._id}/menuItems`
         );
 
       menuItem.image = updatedImage;
@@ -1242,7 +1239,7 @@ export const RestaurantUpdateCoverPhoto =
       const coverImage =
         await UploadSingleImage(
           coverImageFromFE,
-          `restaurant/${currentUser.phone}/coverPhoto`
+          `restaurant/${currentUser.phone || currentUser._id}/coverPhoto`
         );
 
       existingRestaurant.coverImage =
@@ -1307,7 +1304,7 @@ export const RestaurantUpdateRestaurantImages =
       const restaurantImages =
         await uploadMultipleImages(
           restaurantImagesFromFE,
-          `restaurant/${currentUser.phone}/restaurantPhotos`
+          `restaurant/${currentUser.phone || currentUser._id}/restaurantPhotos`
         );
 
       existingRestaurant.restaurantImage =
