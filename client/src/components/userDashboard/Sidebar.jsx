@@ -18,24 +18,24 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 
   const mainTabs = [
     {
-      name: "Dashboard Overview",
+      name: "Overview",
       value: "overview",
-      icon: <MdOutlineDashboard size={20} />,
+      icon: <MdOutlineDashboard size={18} />,
     },
     {
-      name: "My Orders & History",
+      name: "Orders & History",
       value: "orders",
-      icon: <MdOutlineShoppingBag size={20} />,
+      icon: <MdOutlineShoppingBag size={18} />,
     },
     {
       name: "Saved & Wishlist",
       value: "wishlist",
-      icon: <MdOutlineFavoriteBorder size={20} />,
+      icon: <MdOutlineFavoriteBorder size={18} />,
     },
     {
       name: "Profile & Addresses",
       value: "settings",
-      icon: <MdOutlineSettings size={20} />,
+      icon: <MdOutlineSettings size={18} />,
     },
   ];
 
@@ -60,27 +60,27 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 
   return (
     <div className="flex flex-col justify-between h-full space-y-6">
-      <div className="space-y-6">
+      <div className="space-y-5">
         {/* User Mini Card */}
-        <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-orange-50/70 border border-orange-100">
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-orange-50/60 border border-orange-100/80">
           <img
             src={userPhoto}
             alt={userName}
-            className="h-11 w-11 rounded-xl object-cover ring-2 ring-orange-500/20"
+            className="h-10 w-10 rounded-xl object-cover ring-2 ring-orange-500/20"
           />
           <div className="min-w-0">
-            <h3 className="font-heading text-sm font-black text-slate-900 truncate">
+            <h3 className="font-heading text-xs font-bold text-slate-900 truncate">
               {userName}
             </h3>
-            <p className="text-[11px] font-bold text-orange-600 truncate">
-              {user?.email || "Student Foodie"}
+            <p className="text-[11px] font-semibold text-orange-600 truncate">
+              {user?.email || "Customer"}
             </p>
           </div>
         </div>
 
         {/* Nav Tabs */}
-        <div className="space-y-1.5">
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 px-3">
+        <div className="space-y-1">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-3 pb-1">
             Menu
           </p>
           {mainTabs.map((tab) => {
@@ -89,10 +89,10 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
               <button
                 key={tab.value}
                 onClick={() => setActiveTab(tab.value)}
-                className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-2xl text-xs font-extrabold transition-all duration-200 text-left ${
+                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all duration-150 text-left ${
                   active
-                    ? "bg-orange-600 text-white shadow-md shadow-orange-600/30 scale-102"
-                    : "text-slate-700 hover:bg-orange-50/80 hover:text-orange-600"
+                    ? "bg-orange-600 text-white shadow-sm shadow-orange-600/30"
+                    : "text-slate-600 hover:bg-orange-50/80 hover:text-orange-600"
                 }`}
               >
                 <span className={active ? "text-white" : "text-orange-600"}>
@@ -105,14 +105,14 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         </div>
 
         {/* Quick Order shortcut */}
-        <div className="p-4 rounded-2xl bg-gradient-to-tr from-amber-500/10 to-orange-500/10 border border-orange-200/50 space-y-2">
-          <p className="text-xs font-black text-slate-900">Craving something now?</p>
-          <p className="text-[11px] font-semibold text-slate-500">Explore fresh campus menus</p>
+        <div className="p-3.5 rounded-xl bg-orange-50/50 border border-orange-100/70 space-y-2">
+          <p className="text-xs font-bold text-slate-900">Craving food?</p>
+          <p className="text-[11px] font-medium text-slate-500">Explore fresh campus menus</p>
           <button
             onClick={() => navigate("/order-now")}
-            className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-orange-600 py-2 text-xs font-black text-white shadow-xs hover:bg-orange-500 active:scale-95 transition"
+            className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-orange-600 py-2 text-xs font-bold text-white shadow-xs hover:bg-orange-500 active:scale-98 transition"
           >
-            <MdOutlineRestaurant size={16} />
+            <MdOutlineRestaurant size={15} />
             <span>Order Food</span>
           </button>
         </div>
@@ -121,9 +121,9 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
       {/* Logout button */}
       <button
         onClick={handleLogout}
-        className="flex items-center gap-2.5 px-3.5 py-3 rounded-2xl text-xs font-extrabold text-red-600 hover:bg-red-50 transition border border-red-100"
+        className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50/60 transition border border-slate-200/80"
       >
-        <HiOutlineLogout size={18} />
+        <HiOutlineLogout size={16} />
         <span>Sign Out</span>
       </button>
     </div>

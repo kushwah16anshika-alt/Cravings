@@ -21,10 +21,10 @@ const UserDashboard = () => {
   if (!isLogin || !user) {
     return (
       <div className="min-h-[85vh] flex flex-col items-center justify-center p-6 text-center bg-[#fcfaf7]">
-        <div className="h-16 w-16 rounded-3xl bg-orange-100 text-orange-600 flex items-center justify-center text-3xl mb-4">
+        <div className="h-14 w-14 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center text-2xl mb-4 border border-orange-100">
           <MdOutlineLock />
         </div>
-        <h1 className="font-heading text-2xl font-black text-slate-900 mb-2">
+        <h1 className="font-heading text-2xl font-bold text-slate-900 mb-2">
           Sign In Required
         </h1>
         <p className="text-xs text-slate-500 max-w-sm mb-6 font-medium">
@@ -32,7 +32,7 @@ const UserDashboard = () => {
         </p>
         <button
           onClick={() => navigate("/login")}
-          className="px-6 py-3 bg-gradient-to-r from-orange-600 to-amber-600 text-white font-extrabold text-xs rounded-2xl shadow-lg shadow-orange-600/30 hover:from-orange-500 hover:to-amber-500 transition"
+          className="px-6 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs rounded-xl shadow-xs transition"
         >
           Go to Sign In
         </button>
@@ -43,8 +43,8 @@ const UserDashboard = () => {
   if (user.userType !== "user" && user.userType !== "customer") {
     return (
       <div className="min-h-[85vh] flex items-center justify-center p-6 bg-[#fcfaf7]">
-        <div className="p-8 rounded-3xl bg-white border border-slate-200 text-center max-w-md shadow-xl space-y-4">
-          <h1 className="font-heading text-2xl font-black text-slate-900">
+        <div className="p-8 rounded-2xl bg-white border border-slate-200 text-center max-w-md shadow-xs space-y-4">
+          <h1 className="font-heading text-2xl font-bold text-slate-900">
             Customer Dashboard
           </h1>
           <p className="text-slate-500 text-xs font-medium">
@@ -56,7 +56,7 @@ const UserDashboard = () => {
               else if (user.userType === "rider") navigate("/rider-dashboard");
               else navigate("/admin-dashboard");
             }}
-            className="w-full px-6 py-3 bg-orange-600 text-white font-extrabold text-xs rounded-2xl shadow-md hover:bg-orange-500 transition"
+            className="w-full px-6 py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs rounded-xl shadow-xs transition"
           >
             Go to Partner Dashboard
           </button>
@@ -68,14 +68,14 @@ const UserDashboard = () => {
   return (
     <div className="min-h-[calc(100vh-80px)] bg-[#fcfaf7] py-6 sm:py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
           {/* Sidebar Navigation */}
-          <div className="w-full lg:w-72 bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs flex-shrink-0">
+          <div className="w-full lg:w-68 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-xs flex-shrink-0">
             <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>
 
           {/* Tab Content Panel */}
-          <div className="flex-1 w-full">
+          <div className="flex-1 w-full min-w-0">
             {activeTab === "overview" && <Overview />}
             {activeTab === "orders" && <Order />}
             {activeTab === "wishlist" && <Wishlist />}

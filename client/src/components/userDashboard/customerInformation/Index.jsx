@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useAuth } from "../../../context/AuthContext.jsx";
 import PasswordChangeModal from "../../../components/commomModals/PasswordChangeModal.jsx";
 import { MdEdit, MdOutlineAddAPhoto, MdOutlineLockReset } from "react-icons/md";
-import { IoPersonOutline, IoMailOutline, IoCallOutline } from "react-icons/io5";
 import api from "../../../config/api.config.js";
 import toast from "react-hot-toast";
 
@@ -74,13 +73,13 @@ const Index = () => {
 
   return (
     <>
-      <div className="rounded-3xl bg-white border border-slate-200/80 p-6 shadow-xs space-y-6">
+      <div className="rounded-2xl bg-white border border-slate-200/80 p-6 shadow-xs space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
           <div>
-            <h3 className="font-heading text-lg font-black text-slate-900">
+            <h3 className="font-heading text-base sm:text-lg font-bold text-slate-900">
               Personal Information
             </h3>
-            <p className="text-xs font-semibold text-slate-400">
+            <p className="text-xs text-slate-500 font-normal">
               Manage your profile details and security
             </p>
           </div>
@@ -89,14 +88,14 @@ const Index = () => {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setEditingProfile(true)}
-                className="flex items-center gap-1.5 rounded-xl bg-orange-600 px-3.5 py-2 text-xs font-black text-white hover:bg-orange-500 transition shadow-xs"
+                className="flex items-center gap-1.5 rounded-xl bg-orange-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-orange-500 transition shadow-xs shadow-orange-600/20"
               >
                 <MdEdit />
                 <span>Edit Profile</span>
               </button>
               <button
                 onClick={() => setIsPasswordChangeModalOpen(true)}
-                className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-3.5 py-2 text-xs font-black text-slate-700 hover:bg-slate-50 transition"
+                className="flex items-center gap-1.5 rounded-xl border border-slate-200 px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
               >
                 <MdOutlineLockReset size={16} />
                 <span>Change Password</span>
@@ -107,14 +106,14 @@ const Index = () => {
               <button
                 onClick={handleCancelProfile}
                 disabled={isLoading}
-                className="rounded-xl border border-slate-200 px-3.5 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 transition"
+                className="rounded-xl border border-slate-200 px-3.5 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 transition"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveProfile}
                 disabled={isLoading}
-                className="rounded-xl bg-orange-600 px-4 py-2 text-xs font-black text-white shadow-xs hover:bg-orange-500 transition"
+                className="rounded-xl bg-orange-600 px-4 py-2 text-xs font-bold text-white shadow-xs shadow-orange-600/20 hover:bg-orange-500 transition"
               >
                 {isLoading ? "Saving..." : "Save Changes"}
               </button>
@@ -128,14 +127,14 @@ const Index = () => {
             <img
               src={userPhoto}
               alt="Profile"
-              className="h-24 w-24 rounded-2xl object-cover ring-4 ring-orange-500/20"
+              className="h-20 w-20 rounded-2xl object-cover ring-2 ring-orange-500/20"
             />
             {editingProfile && (
               <label
                 htmlFor="customerProfilePic"
                 className="absolute inset-0 bg-black/50 backdrop-blur-xs rounded-2xl flex flex-col items-center justify-center text-white cursor-pointer transition"
               >
-                <MdOutlineAddAPhoto size={20} />
+                <MdOutlineAddAPhoto size={18} />
                 <span className="text-[10px] font-bold mt-1">Upload</span>
                 <input
                   type="file"
@@ -151,7 +150,7 @@ const Index = () => {
           {/* Form Fields */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-1 w-full">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Full Name
               </label>
               <input
@@ -160,12 +159,12 @@ const Index = () => {
                 value={profileFormData.fullName}
                 onChange={handleProfileChange}
                 disabled={!editingProfile}
-                className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold disabled:bg-slate-100 disabled:text-slate-500 focus:outline-hidden focus:border-orange-500"
+                className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-medium disabled:bg-slate-100/70 disabled:text-slate-500 focus:outline-hidden focus:border-orange-500 focus:bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Email Address
               </label>
               <input
@@ -173,12 +172,12 @@ const Index = () => {
                 name="email"
                 value={profileFormData.email}
                 disabled
-                className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-100 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-500 cursor-not-allowed"
+                className="w-full px-3.5 py-2 rounded-xl bg-slate-100/70 border border-slate-200 text-xs sm:text-sm font-medium text-slate-500 cursor-not-allowed"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Phone Number
               </label>
               <input
@@ -187,7 +186,7 @@ const Index = () => {
                 value={profileFormData.phone}
                 onChange={handleProfileChange}
                 disabled={!editingProfile}
-                className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold disabled:bg-slate-100 disabled:text-slate-500 focus:outline-hidden focus:border-orange-500"
+                className="w-full px-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-medium disabled:bg-slate-100/70 disabled:text-slate-500 focus:outline-hidden focus:border-orange-500 focus:bg-white"
               />
             </div>
           </div>
