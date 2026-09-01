@@ -100,14 +100,9 @@ const Navbar = () => {
                 className="h-full w-full object-contain"
               />
             </div>
-            <div className="flex flex-col">
-              <span className="font-heading text-2xl font-extrabold tracking-tight text-slate-900">
-                Cravings<span className="text-orange-600">.</span>
-              </span>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-orange-600/80 -mt-1">
-                Campus Food Tech
-              </span>
-            </div>
+            <span className="font-heading text-2xl font-extrabold tracking-tight text-slate-900">
+              Cravings<span className="text-orange-600">.</span>
+            </span>
           </Link>
 
           {/* Desktop Navigation Links */}
