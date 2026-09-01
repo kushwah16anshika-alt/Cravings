@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import logoCircle from "../assets/images/circleLogo-DpCri5UD.png";
 import {
   IoLogoInstagram,
@@ -12,13 +12,8 @@ import {
 import toast from "react-hot-toast";
 
 const Footer = () => {
-  const location = useLocation().pathname;
   const currentYear = new Date().getFullYear();
   const [newsletterEmail, setNewsletterEmail] = useState("");
-
-  if (location.toLowerCase().includes("dashboard")) {
-    return null;
-  }
 
   const handleSubscribe = (e) => {
     e.preventDefault();
