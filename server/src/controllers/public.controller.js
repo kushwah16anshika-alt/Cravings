@@ -1,7 +1,28 @@
+import mongoose from "mongoose";
 import Contact from "../models/contact.model.js";
 import Restaurant from "../models/restaurant.model.js";
 import Menu from "../models/menu.model.js";
 import Feedback from "../models/feedback.model.js";
+
+export const validateFeedbackPayload = (payload = {}) => {
+  const errors = {};
+  if (!payload.fullName || !payload.fullName.trim()) {
+    errors.fullName = "Full name is required";
+  }
+  if (!payload.email || !payload.email.trim()) {
+    errors.email = "Email is required";
+  }
+  if (!payload.category || !payload.category.trim()) {
+    errors.category = "Category is required";
+  }
+  if (!payload.message || !payload.message.trim()) {
+    errors.message = "Message is required";
+  }
+  return {
+    ok: Object.keys(errors).length === 0,
+    errors,
+  };
+};
 
 export const ContactUsForm = async (req, res, next) => {
   try {
@@ -14,11 +35,11 @@ export const ContactUsForm = async (req, res, next) => {
     }
 
     await Contact.create({
-      fullName,
+      fullName: fullName.trim(),
       email: email.toLowerCase().trim(),
-      phone,
-      subject,
-      message,
+      phone: phone.trim(),
+      subject: subject.trim(),
+      message: message.trim(),
     });
 
     res.status(201).json({
@@ -34,18 +55,20 @@ export const FeedbackForm = async (req, res, next) => {
   try {
     const { fullName, email, category, rating, message } = req.body;
 
-    if (!fullName || !email || !category || !rating || !message) {
+    const validation = validateFeedbackPayload(req.body);
+    if (!validation.ok || !rating) {
       const error = new Error("All fields Required");
       error.statusCode = 400;
+      error.errors = validation.errors;
       return next(error);
     }
 
     await Feedback.create({
-      fullName,
+      fullName: fullName.trim(),
       email: email.toLowerCase().trim(),
-      category,
+      category: category.trim(),
       rating: Number(rating),
-      message,
+      message: message.trim(),
     });
 
     res.status(201).json({
@@ -73,6 +96,12 @@ export const GetAllRestaurants = async (req, res, next) => {
 export const GetRestaurantDetails = async (req, res, next) => {
   try {
     const { restaurantId } = req.params;
+
+    if (!restaurantId || !mongoose.Types.ObjectId.isValid(restaurantId)) {
+      const error = new Error("Restaurant not found");
+      error.statusCode = 404;
+      return next(error);
+    }
 
     const restaurant = await Restaurant.findById(restaurantId).populate(
       "managerId",

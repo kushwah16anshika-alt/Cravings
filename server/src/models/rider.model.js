@@ -11,119 +11,121 @@ const RiderSchema = mongoose.Schema(
     vehicleDetails: {
       vehicleType: {
         type: String,
-        required: true,
+        default: "Bike",
       },
 
       vehicleNumber: {
         type: String,
-        required: true,
+        default: "",
       },
 
       vehicleModel: {
         type: String,
-        required: true,
+        default: "",
       },
 
       vehicleColor: {
         type: String,
-        required: true,
+        default: "",
       },
     },
 
     documents: {
       drivingLicense: {
         type: String,
-        required: true,
+        default: "",
       },
 
       vehicleRegistrationCertificate: {
         type: String,
-        required: true,
+        default: "",
       },
 
       insuranceCertificate: {
         type: String,
-        required: true,
+        default: "",
       },
 
       aadharCard: {
         type: String,
-        required: true,
+        default: "",
       },
 
       panCard: {
         type: String,
-        required: true,
+        default: "",
       },
     },
 
     currentAddress: {
       address: {
         type: String,
-        required: true,
+        default: "",
       },
 
       city: {
         type: String,
-        required: true,
+        default: "",
       },
 
       state: {
         type: String,
-        required: true,
+        default: "",
       },
 
       pinCode: {
         type: String,
-        required: true,
+        default: "",
       },
 
       country: {
         type: String,
-        required: true,
+        default: "India",
       },
     },
 
     status: {
       type: String,
       enum: ["active", "inactive", "blocked"],
-      default: "inactive",
+      default: "active",
     },
 
     averageRating: {
       type: Number,
-      default: 0,
+      default: 5.0,
     },
 
     isAvailable: {
       type: Boolean,
-      default: false,
+      default: true,
     },
 
     financialDetails: {
       bankName: {
         type: String,
-        required: true,
+        default: "",
       },
 
       accountNumber: {
         type: String,
-        required: true,
+        default: "",
       },
 
       ifscCode: {
         type: String,
-        required: true,
+        default: "",
       },
     },
 
     currentLocation: {
       lat: {
         type: String,
+        default: "",
       },
 
       lon: {
         type: String,
+        default: "",
       },
     },
   },
