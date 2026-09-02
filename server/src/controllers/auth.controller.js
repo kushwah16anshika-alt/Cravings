@@ -114,8 +114,11 @@ export const LoginUser = async (req, res, next) => {
 
 export const LogoutUser = async (req, res, next) => {
   try {
+    const isProduction = process.env.NODE_ENV === "production";
     res.clearCookie("Oreo", {
-      maxAge: 0,
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
     });
 
     res.status(200).json({

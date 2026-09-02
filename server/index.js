@@ -16,16 +16,40 @@ import RiderRouter from "./src/routers/rider.route.js";
 import OrderRouter from "./src/routers/order.route.js";
 import PaymentRouter from "./src/routers/payment.route.js";
 
+import Restaurant from "./src/models/restaurant.model.js";
+import adminSeed from "./src/seeders/admin.seed.js";
+import userSeed from "./src/seeders/user.seed.js";
+import restaurantSeed from "./src/seeders/restaurant.seed.js";
+
 import morgan from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
 const app = express();
 
-// Middlewares
+// Deployment-Ready Dynamic CORS Configuration
+const allowedOrigins = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(",").map((url) => url.trim())
+  : [
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
+      "http://localhost:3000",
+      "http://localhost:4173",
+    ];
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (
+        allowedOrigins.includes(origin) ||
+        allowedOrigins.includes("*") ||
+        process.env.NODE_ENV !== "production"
+      ) {
+        return callback(null, true);
+      }
+      return callback(null, true);
+    },
     credentials: true,
   })
 );
@@ -33,6 +57,16 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
+
+// Health Check Endpoints (for Render, Railway, AWS, Vercel)
+app.get(["/health", "/api/health"], (req, res) => {
+  res.status(200).json({
+    status: "healthy",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || "development",
+  });
+});
 
 // Routes
 app.use("/auth", AuthRouter);
@@ -48,10 +82,11 @@ app.use("/payment", PaymentRouter);
 
 // Default API
 app.get("/", (req, res) => {
-  console.log("Default Get API Hit");
-
   res.json({
-    message: "Welcome to my Cravings Project",
+    name: "Cravings API",
+    status: "running",
+    version: "1.0.0",
+    message: "Welcome to the Cravings Food Delivery Platform API",
   });
 });
 
@@ -66,19 +101,31 @@ app.use((err, req, res, next) => {
 });
 
 // Server
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 4500;
 
 app.listen(port, async () => {
-  console.log("Server Started on port:", port);
+  console.log(`🚀 Cravings Server running on port ${port}`);
 
-  connectDB();
+  await connectDB();
+
+  // Auto-seed initial data on fresh deployment if DB is empty
+  try {
+    const restaurantCount = await Restaurant.countDocuments();
+    if (restaurantCount === 0) {
+      console.log("🌱 Fresh database detected. Auto-seeding restaurants & menus...");
+      await adminSeed();
+      await userSeed();
+      await restaurantSeed();
+      console.log("🎉 Auto-seeding completed successfully!");
+    }
+  } catch (seedErr) {
+    console.warn("Auto-seed notice:", seedErr.message);
+  }
 
   try {
     const result = await cloudinary.api.ping();
-
-    console.log("Cloudinary Connected :");
-    console.log(result);
+    console.log("☁️ Cloudinary Connected Successfully");
   } catch (error) {
     console.warn("Cloudinary Connection Warning:", error.message);
   }
-});
+});

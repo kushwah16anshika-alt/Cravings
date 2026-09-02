@@ -1,10 +1,21 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 
-// Normal Authentication
+// Helper to extract JWT token from cookies or Authorization header
+const extractToken = (req, cookieName = "Oreo") => {
+  return (
+    req.cookies?.[cookieName] ||
+    req.cookies?.token ||
+    (req.headers.authorization?.startsWith("Bearer ")
+      ? req.headers.authorization.split(" ")[1]
+      : null)
+  );
+};
+
+// Normal Authentication (Customer / Any User)
 export const AuthProtect = async (req, res, next) => {
   try {
-    const token = req.cookies.Oreo;
+    const token = extractToken(req, "Oreo");
 
     if (!token) {
       const error = new Error("Session Expired");
@@ -13,7 +24,6 @@ export const AuthProtect = async (req, res, next) => {
     }
 
     const decode = jwt.verify(token, process.env.JWT_SECRET);
-
     const verifiedUser = await User.findById(decode.id);
 
     if (!verifiedUser) {
@@ -24,18 +34,18 @@ export const AuthProtect = async (req, res, next) => {
 
     req.user = verifiedUser;
     next();
-
   } catch (error) {
-    console.log(error.message);
-    next(error);
+    console.log("AuthProtect error:", error.message);
+    const authError = new Error("Session Expired");
+    authError.statusCode = 401;
+    next(authError);
   }
 };
-
 
 // Forgot Password OTP Authentication
 export const OTPAuthProtect = async (req, res, next) => {
   try {
-    const token = req.cookies.kitkat;
+    const token = extractToken(req, "kitkat");
 
     if (!token) {
       const error = new Error("Session Expired");
@@ -44,7 +54,6 @@ export const OTPAuthProtect = async (req, res, next) => {
     }
 
     const decode = jwt.verify(token, process.env.JWT_SECRET);
-
     const verifiedUser = await User.findById(decode.id);
 
     if (!verifiedUser) {
@@ -55,22 +64,18 @@ export const OTPAuthProtect = async (req, res, next) => {
 
     req.user = verifiedUser;
     next();
-
   } catch (error) {
-    console.log(error.message);
-    next(error);
+    console.log("OTPAuthProtect error:", error.message);
+    const authError = new Error("Session Expired");
+    authError.statusCode = 401;
+    next(authError);
   }
 };
-
 
 // Restaurant Authentication
 export const RestaurantAuthProtect = async (req, res, next) => {
   try {
-    console.log("COOKIES:", req.cookies);
-
-    const token = req.cookies.Oreo;
-
-    console.log("OREO TOKEN:", token);
+    const token = extractToken(req, "Oreo");
 
     if (!token) {
       const error = new Error("Session Expired");
@@ -78,11 +83,7 @@ export const RestaurantAuthProtect = async (req, res, next) => {
       return next(error);
     }
 
-    const decode = jwt.verify(
-      token,
-      process.env.JWT_SECRET
-    );
-
+    const decode = jwt.verify(token, process.env.JWT_SECRET);
     const verifiedUser = await User.findById(decode.id);
 
     if (!verifiedUser) {
@@ -99,15 +100,18 @@ export const RestaurantAuthProtect = async (req, res, next) => {
 
     req.user = verifiedUser;
     next();
-
   } catch (error) {
-    console.log("AUTH ERROR:", error.message);
-    next(error);
+    console.log("RestaurantAuthProtect error:", error.message);
+    const authError = new Error("Invalid or expired token");
+    authError.statusCode = 401;
+    next(authError);
   }
 };
+
+// Rider Authentication
 export const RiderAuthProtect = async (req, res, next) => {
   try {
-    const token = req.cookies?.Oreo || req.cookies?.token;
+    const token = extractToken(req, "Oreo");
 
     if (!token) {
       const error = new Error("Rider authentication required");
@@ -115,11 +119,7 @@ export const RiderAuthProtect = async (req, res, next) => {
       return next(error);
     }
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET
-    );
-
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id);
 
     if (!user) {
@@ -128,24 +128,18 @@ export const RiderAuthProtect = async (req, res, next) => {
       return next(error);
     }
 
-    // Check rider role
     if (user.userType !== "rider") {
       const error = new Error("Access denied. Rider only.");
       error.statusCode = 403;
       return next(error);
     }
 
-    // Store logged-in user
     req.user = user;
-
     next();
-
   } catch (error) {
-    console.log(error.message);
-
+    console.log("RiderAuthProtect error:", error.message);
     const authError = new Error("Invalid or expired token");
     authError.statusCode = 401;
-
     next(authError);
   }
 };
@@ -153,7 +147,7 @@ export const RiderAuthProtect = async (req, res, next) => {
 // Admin Authentication
 export const AdminAuthProtect = async (req, res, next) => {
   try {
-    const token = req.cookies?.Oreo || req.cookies?.token;
+    const token = extractToken(req, "Oreo");
 
     if (!token) {
       const error = new Error("Admin authentication required");
@@ -184,4 +178,4 @@ export const AdminAuthProtect = async (req, res, next) => {
     authError.statusCode = 401;
     next(authError);
   }
-};
+};

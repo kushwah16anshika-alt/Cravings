@@ -1,5 +1,14 @@
 import jwt from "jsonwebtoken";
 
+const isProduction = process.env.NODE_ENV === "production";
+
+export const getCookieOptions = (maxAgeMs) => ({
+  maxAge: maxAgeMs,
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+});
+
 export const genToken = async (user, res) => {
   try {
     const payload = { id: user._id };
@@ -8,16 +17,11 @@ export const genToken = async (user, res) => {
       expiresIn: "1d",
     });
 
-    res.cookie("Oreo", token, {
-      maxAge: 1000 * 60 * 60 * 24,
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-    });
+    res.cookie("Oreo", token, getCookieOptions(1000 * 60 * 60 * 24));
 
-    console.log(token);
+    return token;
   } catch (error) {
-    console.log(error.message);
+    console.log("genToken error:", error.message);
     throw error;
   }
 };
@@ -30,16 +34,11 @@ export const genOTPToken = async (user, res) => {
       expiresIn: "10m",
     });
 
-    res.cookie("kitkat", token, {
-      maxAge: 1000 * 60 * 10,
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-    });
+    res.cookie("kitkat", token, getCookieOptions(1000 * 60 * 10));
 
-    console.log(token);
+    return token;
   } catch (error) {
-    console.log(error.message);
+    console.log("genOTPToken error:", error.message);
     throw error;
   }
-};
+};
