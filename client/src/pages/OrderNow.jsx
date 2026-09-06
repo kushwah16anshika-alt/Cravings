@@ -4,6 +4,7 @@ import api from "../config/api.config";
 import toast from "react-hot-toast";
 import Loader from "../components/Loader";
 import NoDataFound from "../components/NoDataFound";
+import AISearchModal from "../components/AISearchModal";
 
 import {
   IoSearch,
@@ -40,6 +41,8 @@ const OrderNow = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+  const [aiModalQuery, setAiModalQuery] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [showOpenOnly, setShowOpenOnly] = useState(false);
   const [minRating, setMinRating] = useState(0);
@@ -145,25 +148,46 @@ const OrderNow = () => {
         <div className="rounded-3xl bg-white p-4 sm:p-6 shadow-xl shadow-orange-950/5 border border-orange-100 space-y-4">
           <div className="flex flex-col md:flex-row items-center gap-3">
             {/* Search Input */}
-            <div className="relative flex-1 w-full">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-orange-600">
-                <IoSearch size={20} />
+            <div className="relative flex-1 w-full flex items-center gap-2">
+              <div className="relative flex-1">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-orange-600">
+                  <IoSearch size={20} />
+                </div>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && searchQuery.trim()) {
+                      setAiModalQuery(searchQuery);
+                      setIsAiModalOpen(true);
+                    }
+                  }}
+                  placeholder="Search by restaurant name, cuisine, dish, or campus zone..."
+                  className="w-full pl-11 pr-14 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold placeholder:text-slate-400 focus:outline-hidden focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-xs font-bold text-slate-400 hover:text-slate-600"
+                  >
+                    Clear
+                  </button>
+                )}
               </div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by restaurant name, cuisine, dish, or campus zone..."
-                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold placeholder:text-slate-400 focus:outline-hidden focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-xs font-bold text-slate-400 hover:text-slate-600"
-                >
-                  Clear
-                </button>
-              )}
+
+              {/* Ask AI Trigger Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  setAiModalQuery(searchQuery);
+                  setIsAiModalOpen(true);
+                }}
+                className="flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 px-4 py-3 text-xs font-extrabold text-white shadow-md shadow-orange-600/25 hover:from-orange-500 hover:to-amber-500 active:scale-95 transition whitespace-nowrap"
+              >
+                <IoSparkles size={15} className="animate-pulse" />
+                <span>Ask AI</span>
+              </button>
             </div>
 
             {/* Rating Filter */}
@@ -391,6 +415,13 @@ const OrderNow = () => {
           </div>
         )}
       </div>
+
+      {/* AI Craving Search Modal */}
+      <AISearchModal
+        isOpen={isAiModalOpen}
+        onClose={() => setIsAiModalOpen(false)}
+        initialQuery={aiModalQuery}
+      />
     </div>
   );
 };

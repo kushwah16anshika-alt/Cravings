@@ -17,10 +17,11 @@ import {
   MdOutlineSupportAgent,
   MdOutlineEmail,
 } from "react-icons/md";
-import { IoSparklesOutline } from "react-icons/io5";
+import { IoSparklesOutline, IoSparkles, IoSearch } from "react-icons/io5";
 
 import toast from "react-hot-toast";
 import api from "../config/api.config.js";
+import AISearchModal from "./AISearchModal";
 
 const Navbar = () => {
   const { user, isLogin, role, setUser, setIsLogin, setRole } = useAuth();
@@ -29,6 +30,19 @@ const Navbar = () => {
   const location = useLocation();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+
+  // Global Ctrl+K / Cmd+K shortcut listener for AI Search
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsAiModalOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Navigate user to respective dashboard
   const handleNavigateDashboard = () => {
@@ -138,6 +152,30 @@ const Navbar = () => {
 
           {/* Right Action Icons & Profile */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* AI Search Trigger Button (Desktop Pill) */}
+            <button
+              onClick={() => setIsAiModalOpen(true)}
+              className="hidden lg:flex items-center gap-2 rounded-2xl border border-orange-200/80 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50/50 px-3.5 py-2 text-xs font-bold text-orange-700 shadow-2xs hover:border-orange-400 hover:shadow-xs transition active:scale-95 group"
+              title="AI Smart Search (Ctrl + K)"
+            >
+              <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-orange-600 text-white shadow-xs">
+                <IoSparkles size={12} className="animate-pulse" />
+              </div>
+              <span className="font-heading font-extrabold">Ask AI</span>
+              <kbd className="rounded-md bg-white border border-orange-200/80 px-1.5 py-0.5 font-mono text-[10px] text-orange-800 shadow-2xs">
+                Ctrl K
+              </kbd>
+            </button>
+
+            {/* Mobile / Tablet AI Search Icon */}
+            <button
+              onClick={() => setIsAiModalOpen(true)}
+              title="AI Search (Ctrl + K)"
+              className="flex lg:hidden h-11 w-11 items-center justify-center rounded-2xl border border-orange-200 bg-orange-50/80 text-orange-600 shadow-xs transition hover:bg-orange-100 active:scale-95"
+            >
+              <IoSparkles size={20} className="animate-pulse" />
+            </button>
+
             {/* Cart Shortcut Button */}
             <button
               onClick={() => navigate("/cart")}
@@ -246,6 +284,25 @@ const Navbar = () => {
                 </Link>
               ))}
 
+              {/* Mobile AI Crave Search Button */}
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setIsAiModalOpen(true);
+                }}
+                className="flex items-center justify-between rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 p-3.5 text-white shadow-md shadow-orange-600/30 active:scale-95 transition"
+              >
+                <div className="flex items-center gap-2.5 font-heading font-extrabold text-sm">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-white/20">
+                    <IoSparkles size={16} className="text-amber-200 animate-pulse" />
+                  </div>
+                  <span>Chef Crave AI Search</span>
+                </div>
+                <span className="rounded-lg bg-white/20 px-2 py-0.5 text-[11px] font-bold">
+                  Open ✨
+                </span>
+              </button>
+
               <div className="my-2 border-t border-slate-100 pt-2" />
 
               {isLogin ? (
@@ -288,6 +345,12 @@ const Navbar = () => {
           </div>
         )}
       </nav>
+
+      {/* Global AI Craving Search Modal */}
+      <AISearchModal
+        isOpen={isAiModalOpen}
+        onClose={() => setIsAiModalOpen(false)}
+      />
     </header>
   );
 };

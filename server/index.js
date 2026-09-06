@@ -15,6 +15,7 @@ import CustomerRouter from "./src/routers/customer.route.js";
 import RiderRouter from "./src/routers/rider.route.js";
 import OrderRouter from "./src/routers/order.route.js";
 import PaymentRouter from "./src/routers/payment.route.js";
+import AiRouter from "./src/routers/ai.route.js";
 
 import Restaurant from "./src/models/restaurant.model.js";
 import adminSeed from "./src/seeders/admin.seed.js";
@@ -79,6 +80,8 @@ app.use("/customer", CustomerRouter);
 app.use("/rider", RiderRouter);
 app.use("/order", OrderRouter);
 app.use("/payment", PaymentRouter);
+app.use("/ai", AiRouter);
+app.use("/public/ai", AiRouter);
 
 // Default API
 app.get("/", (req, res) => {

@@ -24,6 +24,7 @@ import { useAuth } from "../context/AuthContext";
 import api from "../config/api.config";
 import Loader from "../components/Loader";
 import NoDataFound from "../components/NoDataFound";
+import AISearchModal from "../components/AISearchModal";
 
 // Food Categories with Gen-Z flair
 const categories = [
@@ -85,6 +86,8 @@ const Home = () => {
   const { user } = useAuth();
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
+  const [aiModalQuery, setAiModalQuery] = useState("");
   const [restaurants, setRestaurants] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [loading, setLoading] = useState(true);
@@ -230,8 +233,8 @@ const Home = () => {
               </p>
 
               {/* Search Bar */}
-              <div className="pt-2 max-w-xl mx-auto lg:mx-0">
-                <div className="relative flex items-center rounded-3xl bg-white p-2 shadow-xl shadow-orange-950/5 border border-orange-200/60 focus-within:border-orange-500 focus-within:ring-4 focus-within:ring-orange-500/15 transition-all duration-300">
+              <div className="pt-2 max-w-xl mx-auto lg:mx-0 space-y-3">
+                <div className="relative flex items-center rounded-3xl bg-white p-2 shadow-xl shadow-orange-950/5 border-2 border-orange-300/60 focus-within:border-orange-500 focus-within:ring-4 focus-within:ring-orange-500/15 transition-all duration-300">
                   <div className="pl-3.5 pr-2 text-orange-600">
                     <IoSearch size={22} />
                   </div>
@@ -239,27 +242,56 @@ const Home = () => {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search pizzas, burgers, biryani, or restaurants..."
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        if (searchQuery.trim()) {
+                          setAiModalQuery(searchQuery);
+                          setIsAiModalOpen(true);
+                        } else {
+                          navigate("/order-now");
+                        }
+                      }
+                    }}
+                    placeholder="Search dishes or describe craving (e.g. 'spicy pasta under 200')..."
                     className="w-full bg-transparent text-sm sm:text-base font-semibold text-slate-800 placeholder:text-slate-400 focus:outline-hidden"
                   />
-                  <button
-                    onClick={() => navigate("/order-now")}
-                    className="flex-shrink-0 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 px-5 py-3 text-xs sm:text-sm font-extrabold text-white shadow-md shadow-orange-600/30 hover:from-orange-500 hover:to-amber-500 active:scale-95 transition-all"
-                  >
-                    Find Food
-                  </button>
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    {/* Ask AI Button */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAiModalQuery(searchQuery);
+                        setIsAiModalOpen(true);
+                      }}
+                      className="flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-orange-600 via-amber-500 to-orange-600 px-4 py-3 text-xs sm:text-sm font-extrabold text-white shadow-md shadow-orange-600/30 hover:shadow-lg hover:shadow-orange-600/40 active:scale-95 transition-all"
+                    >
+                      <IoSparkles size={16} className="animate-pulse" />
+                      <span>Ask AI</span>
+                    </button>
+                  </div>
                 </div>
 
-                {/* Popular Tags */}
-                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 pt-3 text-xs font-semibold text-slate-500">
-                  <span className="text-slate-400">Popular:</span>
-                  {["🍕 Pizza", "🍔 Burgers", "🍗 Crisp Chicken", "🍛 Biryani", "🥤 Cold Coffee"].map((tag) => (
+                {/* Popular Tags & AI Mood Chips */}
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 text-xs font-semibold text-slate-500">
+                  <span className="text-slate-400 flex items-center gap-1 font-bold">
+                    <IoSparkles className="text-orange-500" size={13} />
+                    <span>AI Moods:</span>
+                  </span>
+                  {[
+                    { label: "🧀 Cheesy Treat", prompt: "Cheesy loaded pizza or burger snacks under 250" },
+                    { label: "💪 High-Protein", prompt: "High protein healthy chicken or paneer meal" },
+                    { label: "🌧️ Warm & Comforting", prompt: "Hot spicy noodles or soup for cozy evening" },
+                    { label: "💰 Under ₹150", prompt: "Delicious pocket friendly meals under 150" },
+                  ].map((item, idx) => (
                     <button
-                      key={tag}
-                      onClick={() => setSearchQuery(tag.slice(3))}
-                      className="rounded-full bg-orange-50/80 px-2.5 py-1 text-slate-700 border border-orange-100 hover:bg-orange-100 hover:text-orange-700 transition"
+                      key={idx}
+                      onClick={() => {
+                        setAiModalQuery(item.prompt);
+                        setIsAiModalOpen(true);
+                      }}
+                      className="rounded-full bg-orange-50/80 px-2.5 py-1 text-slate-700 border border-orange-200/80 hover:bg-orange-100 hover:text-orange-700 hover:border-orange-300 transition"
                     >
-                      {tag}
+                      {item.label}
                     </button>
                   ))}
                 </div>
@@ -669,6 +701,13 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* AI Craving Search Modal */}
+      <AISearchModal
+        isOpen={isAiModalOpen}
+        onClose={() => setIsAiModalOpen(false)}
+        initialQuery={aiModalQuery}
+      />
     </div>
   );
 };
