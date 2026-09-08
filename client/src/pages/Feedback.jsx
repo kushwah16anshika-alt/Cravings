@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { FaStar } from "react-icons/fa";
+import { IoSparkles } from "react-icons/io5";
 import { RiLoader4Fill } from "react-icons/ri";
-import { IoSparkles, IoHeartOutline } from "react-icons/io5";
 import api from "../config/api.config.js";
 
 const Feedback = () => {

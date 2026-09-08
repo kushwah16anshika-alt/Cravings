@@ -2,13 +2,11 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { RiLoader4Fill } from "react-icons/ri";
 import {
   IoPersonOutline,
   IoMailOutline,
   IoCallOutline,
   IoLockClosedOutline,
-  IoCalendarOutline,
   IoSparkles,
   IoStorefrontOutline,
   IoBicycleOutline,

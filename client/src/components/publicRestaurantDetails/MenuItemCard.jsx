@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
-import { IoStar, IoAdd, IoRemove, IoSparkles } from "react-icons/io5";
+import { IoStar, IoAdd, IoRemove } from "react-icons/io5";
 
-import { foodTypeDot } from "./helpers";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 

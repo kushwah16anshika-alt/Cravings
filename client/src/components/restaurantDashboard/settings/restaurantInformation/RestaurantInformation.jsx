@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../../../../context/AuthContext";
 import { MdEdit } from "react-icons/md";
 import api from "../../../../config/api.config.js";
 import toast from "react-hot-toast";
 
 const RestaurantInformation = () => {
-  const { user, setUser } = useAuth();
 
   // Common State variables
   const [isLoading, setIsLoading] = useState(false);

@@ -6,7 +6,6 @@ import api from "../config/api.config.js";
 import toast from "react-hot-toast";
 import { foodTypeDot } from "./publicRestaurantDetails/helpers";
 import {
-  IoCartOutline,
   IoTrashOutline,
   IoArrowBack,
   IoStorefrontOutline,

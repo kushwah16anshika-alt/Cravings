@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../../../context/AuthContext";
 import api from "../../../config/api.config";
 import toast from "react-hot-toast";
 import { RiLoader4Fill } from "react-icons/ri";
 
 const RiderProfileView = () => {
-  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);

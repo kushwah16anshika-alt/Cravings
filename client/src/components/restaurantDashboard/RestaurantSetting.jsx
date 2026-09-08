@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import api from "../../config/api.config.js";
 import toast from "react-hot-toast";
 import { RiLoader4Fill } from "react-icons/ri";
@@ -40,7 +40,8 @@ const RestaurantSetting = () => {
   const [restaurantData, setRestaurantData] = useState(null);
 
   // Fetch Restaurant Data
-  const fetchRestaurantData = async () => {
+  const fetchRestaurantData = useCallback(async () => {
+    if (!user?._id) return;
     try {
       setIsLoadingRestaurant(true);
       setIsLoadingResturantOpen(true);
@@ -73,7 +74,7 @@ const RestaurantSetting = () => {
       setIsLoadingRestaurant(false);
       setIsLoadingResturantOpen(false);
     }
-  };
+  }, [user]);
 
   // Change Restaurant Open/Close Status
   const handleRestaurantOpen = async () => {
@@ -116,7 +117,7 @@ const RestaurantSetting = () => {
     if (user?._id) {
       fetchRestaurantData();
     }
-  }, [user]);
+  }, [user?._id, fetchRestaurantData]);
 
   return (
     <div className="h-full flex flex-col space-y-4">

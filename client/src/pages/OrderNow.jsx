@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import api from "../config/api.config";
 import toast from "react-hot-toast";
 import Loader from "../components/Loader";
-import NoDataFound from "../components/NoDataFound";
 import AISearchModal from "../components/AISearchModal";
 
 import {
@@ -11,19 +10,11 @@ import {
   IoLocationOutline,
   IoTimeOutline,
   IoStar,
-  IoStorefrontOutline,
   IoHeart,
   IoHeartOutline,
   IoSparkles,
-  IoFlame,
 } from "react-icons/io5";
-
-import {
-  FaLeaf,
-  FaDrumstickBite,
-  FaUtensils,
-} from "react-icons/fa";
-import { MdOutlineRestaurantMenu, MdArrowForward } from "react-icons/md";
+import { MdArrowForward } from "react-icons/md";
 
 // Restaurant Types
 const RESTAURANT_TYPES = [

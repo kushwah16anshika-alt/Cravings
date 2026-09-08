@@ -261,7 +261,11 @@ const Index = () => {
       )}
 
       {/* Address Cards Grid */}
-      {addressBook.length > 0 ? (
+      {isLoading ? (
+        <div className="py-8 text-center text-slate-400">
+          <p className="text-xs font-medium">Loading address book...</p>
+        </div>
+      ) : addressBook.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {addressBook.map((addr) => (
             <div

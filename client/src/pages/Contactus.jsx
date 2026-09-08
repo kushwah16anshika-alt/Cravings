@@ -4,7 +4,6 @@ import { RiLoader4Fill } from "react-icons/ri";
 import { IoSparkles, IoPaperPlaneOutline } from "react-icons/io5";
 import toast from "react-hot-toast";
 import api from "../config/api.config.js";
-import foodBgImg from "../assets/images/fresh-gourmet-meal-beef-taco-salad-plate-generated-by-ai.jpg";
 
 const ContactUs = () => {
   const [contactData, setContactData] = useState({

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import api from "../config/api.config.js";
@@ -9,15 +9,13 @@ import {
   IoSearch,
   IoClose,
   IoMic,
-  IoMicOff,
   IoFastFoodOutline,
   IoStar,
   IoArrowForward,
   IoRestaurantOutline,
-  IoCheckmarkCircle,
   IoTimeOutline,
 } from "react-icons/io5";
-import { FiTrendingUp, FiShoppingBag, FiDollarSign } from "react-icons/fi";
+import { FiTrendingUp, FiShoppingBag } from "react-icons/fi";
 import { HiOutlineSparkles } from "react-icons/hi2";
 
 const AISearchModal = ({ isOpen, onClose, initialQuery = "" }) => {
@@ -46,105 +44,18 @@ const AISearchModal = ({ isOpen, onClose, initialQuery = "" }) => {
 
   const inputRef = useRef(null);
   const recognitionRef = useRef(null);
+  const handleSearchRef = useRef(null);
 
-  // Sync initial query
-  useEffect(() => {
-    if (initialQuery) {
-      setQuery(initialQuery);
-    }
-  }, [initialQuery]);
-
-  // Focus input when opened
-  useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
-      fetchTrendingSuggestions();
-    } else {
-      stopVoiceInput();
-    }
-  }, [isOpen]);
-
-  // Keyboard shortcut (Escape to close)
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
-
-  // Speech Recognition Setup
-  useEffect(() => {
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      setSpeechSupported(true);
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      recognition.interimResults = false;
-      recognition.lang = "en-IN";
-
-      recognition.onstart = () => {
-        setIsListening(true);
-        toast("🎙️ Listening... Tell me your food craving!", {
-          icon: "✨",
-          duration: 3000,
-        });
-      };
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        if (transcript) {
-          setQuery(transcript);
-          handleSearch(transcript);
-        }
-        setIsListening(false);
-      };
-
-      recognition.onerror = (err) => {
-        console.warn("Speech recognition error:", err);
-        setIsListening(false);
-        toast.error("Could not capture voice. Please try typing.");
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-
-      recognitionRef.current = recognition;
-    }
-  }, []);
-
-  const toggleVoiceInput = () => {
-    if (!speechSupported) {
-      toast.error("Voice search is not supported on this browser.");
-      return;
-    }
-    if (isListening) {
-      recognitionRef.current?.stop();
-      setIsListening(false);
-    } else {
-      try {
-        recognitionRef.current?.start();
-      } catch (err) {
-        console.warn("Recognition start error:", err);
-      }
-    }
-  };
-
-  const stopVoiceInput = () => {
+  // Stop voice input helper
+  const stopVoiceInput = useCallback(() => {
     if (isListening && recognitionRef.current) {
       recognitionRef.current.stop();
       setIsListening(false);
     }
-  };
+  }, [isListening]);
 
   // Fetch AI Trending Prompts
-  const fetchTrendingSuggestions = async () => {
+  const fetchTrendingSuggestions = useCallback(async () => {
     try {
       const res = await api.get("/ai/suggestions");
       if (res.data?.success && res.data?.data) {
@@ -179,10 +90,10 @@ const AISearchModal = ({ isOpen, onClose, initialQuery = "" }) => {
         },
       ]);
     }
-  };
+  }, []);
 
   // Execute AI Search
-  const handleSearch = async (searchPrompt = query, budget = selectedBudget, diet = selectedDiet) => {
+  const handleSearch = useCallback(async (searchPrompt = query, budget = selectedBudget, diet = selectedDiet) => {
     const finalQuery = (searchPrompt || "").trim();
     if (!finalQuery && !budget && diet === "all") {
       toast.error("Please enter a craving or select a prompt!");
@@ -219,6 +130,100 @@ const AISearchModal = ({ isOpen, onClose, initialQuery = "" }) => {
       toast.error(error.response?.data?.message || "AI search is momentarily busy. Please try again!");
     } finally {
       setLoading(false);
+    }
+  }, [query, selectedBudget, selectedDiet]);
+
+  // Keep handleSearchRef synchronized
+  useEffect(() => {
+    handleSearchRef.current = handleSearch;
+  }, [handleSearch]);
+
+  // Sync initial query
+  useEffect(() => {
+    if (initialQuery) {
+      setQuery(initialQuery);
+    }
+  }, [initialQuery]);
+
+  // Focus input when opened
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+      fetchTrendingSuggestions();
+    } else {
+      stopVoiceInput();
+    }
+  }, [isOpen, fetchTrendingSuggestions, stopVoiceInput]);
+
+  // Keyboard shortcut (Escape to close)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
+  // Speech Recognition Setup
+  useEffect(() => {
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      setSpeechSupported(true);
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = "en-IN";
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        toast("🎙️ Listening... Tell me your food craving!", {
+          icon: "✨",
+          duration: 3000,
+        });
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        if (transcript) {
+          setQuery(transcript);
+          handleSearchRef.current?.(transcript);
+        }
+        setIsListening(false);
+      };
+
+      recognition.onerror = (err) => {
+        console.warn("Speech recognition error:", err);
+        setIsListening(false);
+        toast.error("Could not capture voice. Please try typing.");
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+    }
+  }, []);
+
+  const toggleVoiceInput = () => {
+    if (!speechSupported) {
+      toast.error("Voice search is not supported on this browser.");
+      return;
+    }
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    } else {
+      try {
+        recognitionRef.current?.start();
+      } catch (err) {
+        console.warn("Recognition start error:", err);
+      }
     }
   };
 

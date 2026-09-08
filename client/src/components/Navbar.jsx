@@ -13,11 +13,8 @@ import {
 } from "react-icons/hi";
 import {
   MdOutlineDashboard,
-  MdOutlineStorefront,
-  MdOutlineSupportAgent,
-  MdOutlineEmail,
 } from "react-icons/md";
-import { IoSparklesOutline, IoSparkles, IoSearch } from "react-icons/io5";
+import { IoSparklesOutline, IoSparkles } from "react-icons/io5";
 
 import toast from "react-hot-toast";
 import api from "../config/api.config.js";

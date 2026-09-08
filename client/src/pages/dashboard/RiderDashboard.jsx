@@ -6,11 +6,10 @@ import RiderOverview from "../../components/riderDashboard/RiderOverview";
 import RiderOrders from "../../components/riderDashboard/RiderOrder";
 import RiderSetting from "../../components/riderDashboard/RiderSetting";
 import RiderProfileView from "../../components/riderDashboard/RiderProfile/RiderProfileView";
-import { IoBicycleOutline, IoSparkles } from "react-icons/io5";
-import { MdOutlineLock } from "react-icons/md";
+import { IoBicycleOutline } from "react-icons/io5";
 
 const RiderDashboard = () => {
-  const { isLogin, role, user } = useAuth();
+  const { isLogin, role } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 

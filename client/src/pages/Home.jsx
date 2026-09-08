@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   IoSearch,
   IoStar,
@@ -13,7 +13,6 @@ import {
   IoFlashOutline,
 } from "react-icons/io5";
 import {
-  MdOutlineRestaurantMenu,
   MdDeliveryDining,
   MdArrowForward,
   MdLocalOffer,
@@ -23,7 +22,6 @@ import { TbChefHat } from "react-icons/tb";
 import { useAuth } from "../context/AuthContext";
 import api from "../config/api.config";
 import Loader from "../components/Loader";
-import NoDataFound from "../components/NoDataFound";
 import AISearchModal from "../components/AISearchModal";
 
 // Food Categories with Gen-Z flair

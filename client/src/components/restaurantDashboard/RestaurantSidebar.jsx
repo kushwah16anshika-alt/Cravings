@@ -48,7 +48,7 @@ const RestaurantSidebar = ({ activeTab, setActiveTab }) => {
       setIsLogin(false);
       setRole(null);
       navigate("/");
-    } catch (error) {
+    } catch {
       toast.error("Logout failed");
     }
   };

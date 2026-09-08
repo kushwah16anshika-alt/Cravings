@@ -4,10 +4,9 @@ import {
   FaCheckCircle,
   FaStar,
   FaMapMarkerAlt,
-  FaPhoneAlt,
   FaClock,
 } from "react-icons/fa";
-import { IoLocationOutline, IoCheckmarkDoneCircle } from "react-icons/io5";
+import { IoLocationOutline } from "react-icons/io5";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 
