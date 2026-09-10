@@ -6,6 +6,7 @@ import {
   deleteSingleImage,
 } from "../utils/image.service.js";
 import Menu from "../models/menu.model.js";
+import Order from "../models/order.model.js";
 
 // =========================================
 // Get Restaurant Data
@@ -1322,3 +1323,262 @@ export const RestaurantUpdateRestaurantImages =
       next(error);
     }
   };
+
+// =========================================
+// Get Restaurant Dashboard Stats
+// =========================================
+export const getRestaurantDashboardStats = async (req, res, next) => {
+  try {
+    const currentUser = req.user;
+    const restaurant = await Restaurant.findOne({ managerId: currentUser._id });
+
+    if (!restaurant) {
+      return res.status(200).json({
+        success: true,
+        data: {
+          restaurant: null,
+          totalRevenue: 0,
+          todayRevenue: 0,
+          totalOrders: 0,
+          todayOrders: 0,
+          liveOrdersCount: 0,
+          completedOrdersCount: 0,
+          cancelledOrdersCount: 0,
+          totalMenuItems: 0,
+          availableMenuItems: 0,
+          unavailableMenuItems: 0,
+          averageRating: 0,
+          recentOrders: [],
+        },
+      });
+    }
+
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const orders = await Order.find({ restaurantId: restaurant._id })
+      .populate("customerId", "fullName email phone photo")
+      .populate("riderId", "fullName phone photo")
+      .sort({ createdAt: -1 });
+
+    const totalOrders = orders.length;
+    let totalRevenue = 0;
+    let todayRevenue = 0;
+    let todayOrders = 0;
+    let liveOrdersCount = 0;
+    let completedOrdersCount = 0;
+    let cancelledOrdersCount = 0;
+
+    const liveStatuses = [
+      "pending",
+      "accepted",
+      "preparing",
+      "ready",
+      "pickedUp",
+      "onTheWay",
+      "outForDelivery",
+    ];
+
+    orders.forEach((o) => {
+      const orderAmount = Number(o.billDetails?.finalAmount || 0);
+      const isToday = new Date(o.createdAt) >= startOfToday;
+
+      if (isToday) {
+        todayOrders += 1;
+      }
+
+      if (o.orderStatus === "delivered") {
+        totalRevenue += orderAmount;
+        completedOrdersCount += 1;
+        if (isToday) {
+          todayRevenue += orderAmount;
+        }
+      } else if (liveStatuses.includes(o.orderStatus)) {
+        liveOrdersCount += 1;
+      } else if (["cancelled", "rejected", "failed"].includes(o.orderStatus)) {
+        cancelledOrdersCount += 1;
+      }
+    });
+
+    const menuItems = await Menu.find({ restaurantId: restaurant._id });
+    const totalMenuItems = menuItems.length;
+    const availableMenuItems = menuItems.filter(
+      (m) => m.itemStatus === "available"
+    ).length;
+    const unavailableMenuItems = totalMenuItems - availableMenuItems;
+
+    const recentOrders = orders.slice(0, 8);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        restaurant: {
+          _id: restaurant._id,
+          restaurantName: restaurant.restaurantName,
+          description: restaurant.description,
+          isOpen: restaurant.isOpen,
+          averageRating: restaurant.averageRating || 4.5,
+          address: restaurant.address,
+          city: restaurant.city,
+          coverImage: restaurant.coverImage,
+          servingHours: restaurant.servingHours,
+          cuisineTypes: restaurant.cuisineTypes,
+          contactDetails: restaurant.contactDetails,
+        },
+        totalRevenue: Math.round(totalRevenue),
+        todayRevenue: Math.round(todayRevenue),
+        totalOrders,
+        todayOrders,
+        liveOrdersCount,
+        completedOrdersCount,
+        cancelledOrdersCount,
+        totalMenuItems,
+        availableMenuItems,
+        unavailableMenuItems,
+        averageRating: restaurant.averageRating || 4.5,
+        recentOrders,
+      },
+    });
+  } catch (error) {
+    console.error("getRestaurantDashboardStats error:", error);
+    next(error);
+  }
+};
+
+// =========================================
+// Get Restaurant Orders with Filter & Search
+// =========================================
+export const getRestaurantOrders = async (req, res, next) => {
+  try {
+    const currentUser = req.user;
+    const restaurant = await Restaurant.findOne({ managerId: currentUser._id });
+
+    if (!restaurant) {
+      return res.status(200).json({
+        success: true,
+        data: [],
+      });
+    }
+
+    const { status, search } = req.query;
+    const filter = { restaurantId: restaurant._id };
+
+    if (status && status !== "all") {
+      if (status === "live") {
+        filter.orderStatus = {
+          $in: [
+            "pending",
+            "accepted",
+            "preparing",
+            "ready",
+            "pickedUp",
+            "onTheWay",
+            "outForDelivery",
+          ],
+        };
+      } else {
+        filter.orderStatus = status;
+      }
+    }
+
+    let orders = await Order.find(filter)
+      .populate("customerId", "fullName email phone photo")
+      .populate("riderId", "fullName phone photo")
+      .sort({ createdAt: -1 });
+
+    if (search && search.trim()) {
+      const q = search.trim().toLowerCase();
+      orders = orders.filter((order) => {
+        const orderIdStr = order._id.toString().toLowerCase();
+        const customerName = (order.customerId?.fullName || "").toLowerCase();
+        const customerPhone = (order.customerId?.phone || "").toLowerCase();
+        const itemNames = (order.orderItems || [])
+          .map((i) => (i.itemName || "").toLowerCase())
+          .join(" ");
+
+        return (
+          orderIdStr.includes(q) ||
+          customerName.includes(q) ||
+          customerPhone.includes(q) ||
+          itemNames.includes(q)
+        );
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: orders,
+    });
+  } catch (error) {
+    console.error("getRestaurantOrders error:", error);
+    next(error);
+  }
+};
+
+// =========================================
+// Update Restaurant Order Status
+// =========================================
+export const updateRestaurantOrderStatus = async (req, res, next) => {
+  try {
+    const currentUser = req.user;
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    const restaurant = await Restaurant.findOne({ managerId: currentUser._id });
+    if (!restaurant) {
+      const error = new Error("Restaurant not found for current user");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      const error = new Error("Order not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    if (order.restaurantId.toString() !== restaurant._id.toString()) {
+      const error = new Error(
+        "Unauthorized to update orders from another restaurant"
+      );
+      error.statusCode = 403;
+      return next(error);
+    }
+
+    const validStatuses = [
+      "pending",
+      "accepted",
+      "preparing",
+      "ready",
+      "pickedUp",
+      "onTheWay",
+      "outForDelivery",
+      "delivered",
+      "cancelled",
+      "rejected",
+    ];
+
+    if (!validStatuses.includes(status)) {
+      const error = new Error(`Invalid status: ${status}`);
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    order.orderStatus = status;
+    await order.save();
+
+    const populatedOrder = await Order.findById(orderId)
+      .populate("customerId", "fullName email phone photo")
+      .populate("riderId", "fullName phone photo");
+
+    return res.status(200).json({
+      success: true,
+      message: `Order status updated to ${status}`,
+      data: populatedOrder,
+    });
+  } catch (error) {
+    console.error("updateRestaurantOrderStatus error:", error);
+    next(error);
+  }
+};

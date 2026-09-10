@@ -18,6 +18,9 @@ import {
   RestaurantUpdateSocialMediaLinks,
   RestaurantUpdateCoverPhoto,
   RestaurantUpdateRestaurantImages,
+  getRestaurantDashboardStats,
+  getRestaurantOrders,
+  updateRestaurantOrderStatus,
 } from "../controllers/restaurant.controller.js";
 
 import { RestaurantAuthProtect } from "../middlewares/auth.middleware.js";
@@ -25,15 +28,26 @@ import { RestaurantAuthProtect } from "../middlewares/auth.middleware.js";
 const upload = multer();
 const router = express.Router();
 
-// Restaurant Profile
-// router.post(
-//   "/update-profile",
-//   RestaurantAuthProtect,
-//   upload.single("coverImage"),
-//   upload.array("restaurantImage", 10),
-//   RestaurantUpdateProfile,
-// );
+// Restaurant Dashboard & Live Orders
+router.get(
+  "/dashboard-stats",
+  RestaurantAuthProtect,
+  getRestaurantDashboardStats
+);
 
+router.get(
+  "/orders",
+  RestaurantAuthProtect,
+  getRestaurantOrders
+);
+
+router.patch(
+  "/order/:orderId/status",
+  RestaurantAuthProtect,
+  updateRestaurantOrderStatus
+);
+
+// Restaurant Profile
 router.get(
   "/get-resturant-data",
   RestaurantAuthProtect,
