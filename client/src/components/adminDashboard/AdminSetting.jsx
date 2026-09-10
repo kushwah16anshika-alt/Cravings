@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { MdEdit, MdOutlineAddAPhoto, MdOutlineLockReset } from "react-icons/md";
+import { IoShieldCheckmark, IoMailOutline, IoCallOutline, IoPersonOutline } from "react-icons/io5";
 import { useAuth } from "../../context/AuthContext";
 import api from "../../config/api.config.js";
 import toast from "react-hot-toast";
@@ -17,25 +18,22 @@ const AdminSetting = () => {
     useState(false);
 
   const [formData, setFormData] = useState({
-    fullName: user?.fullName || "",
+    fullName: user?.fullName || user?.fullname || "",
     email: user?.email || "",
     phone: user?.phone || "",
   });
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
-
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-    });
+    }));
   };
 
   const handleProfilePicChange = (e) => {
     const file = e.target.files[0];
-
     if (!file) return;
-
     setProfilePic(file);
     setProfilePicPreview(URL.createObjectURL(file));
   };
@@ -45,7 +43,6 @@ const AdminSetting = () => {
       setIsLoading(true);
 
       const payload = new FormData();
-
       payload.append("fullName", formData.fullName);
       payload.append("email", formData.email.toLowerCase());
       payload.append("phone", formData.phone);
@@ -57,14 +54,13 @@ const AdminSetting = () => {
       const response = await api.put("/common/edit-profile", payload);
 
       setUser(response.data.data);
-
       sessionStorage.setItem("cravingUser", JSON.stringify(response.data.data));
 
       setProfilePic(null);
       setProfilePicPreview(null);
       setEditingProfile(false);
 
-      toast.success("Profile updated successfully!");
+      toast.success("Admin profile updated successfully!");
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to update profile");
     } finally {
@@ -74,46 +70,54 @@ const AdminSetting = () => {
 
   const handleCancelProfile = () => {
     setFormData({
-      fullName: user?.fullName || "",
+      fullName: user?.fullName || user?.fullname || "",
       email: user?.email || "",
       phone: user?.phone || "",
     });
-
     setProfilePic(null);
     setProfilePicPreview(null);
     setEditingProfile(false);
   };
 
+  const avatar =
+    profilePicPreview ||
+    user?.photo?.url ||
+    `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(
+      formData.fullName || "Admin"
+    )}`;
+
   return (
     <>
-      <div className="overflow-y-auto h-full p-6 space-y-6">
-        <div className="bg-(--color-base-100) rounded-2xl shadow-xl overflow-hidden border border-(--color-base-300)">
-          <div className="h-32 bg-gradient-to-r from-(--color-primary) to-(--color-secondary) relative">
-            <div className="absolute top-4 right-4 z-10">
+      <div className="space-y-6">
+        {/* Profile Card */}
+        <div className="rounded-3xl bg-white border border-slate-200/80 shadow-xs overflow-hidden">
+          {/* Header Banner */}
+          <div className="h-36 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-700 relative p-6 flex items-start justify-end">
+            <div className="flex gap-2">
               {!editingProfile ? (
-                <div className="flex gap-2">
+                <>
                   <button
                     onClick={() => setEditingProfile(true)}
-                    className="flex items-center gap-2 bg-white text-(--color-primary) hover:bg-(--color-primary) hover:text-(--color-primary-content) px-4 py-2 rounded-lg text-sm font-bold shadow-md"
+                    className="flex items-center gap-1.5 bg-white text-orange-600 hover:bg-orange-50 px-4 py-2 rounded-2xl text-xs font-black shadow-md transition active:scale-95"
                   >
-                    <MdEdit />
-                    Edit Profile
+                    <MdEdit size={16} />
+                    <span>Edit Profile</span>
                   </button>
 
                   <button
                     onClick={() => setIsPasswordChangeModalOpen(true)}
-                    className="flex items-center gap-2 bg-white text-(--color-primary) hover:bg-(--color-primary) hover:text-(--color-primary-content) px-4 py-2 rounded-lg text-sm font-bold shadow-md"
+                    className="flex items-center gap-1.5 bg-slate-900 text-white hover:bg-slate-800 px-4 py-2 rounded-2xl text-xs font-black shadow-md transition active:scale-95"
                   >
-                    <MdOutlineLockReset />
-                    Change Password
+                    <MdOutlineLockReset size={16} />
+                    <span>Security & Password</span>
                   </button>
-                </div>
+                </>
               ) : (
-                <div className="flex gap-2">
+                <>
                   <button
                     onClick={handleCancelProfile}
                     disabled={isLoading}
-                    className="bg-white/20 text-white px-4 py-2 rounded-lg text-sm"
+                    className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-2xl text-xs font-bold transition"
                   >
                     Cancel
                   </button>
@@ -121,98 +125,137 @@ const AdminSetting = () => {
                   <button
                     onClick={handleSaveProfile}
                     disabled={isLoading}
-                    className="bg-white text-(--color-primary) px-4 py-2 rounded-lg text-sm font-bold"
+                    className="bg-white text-orange-600 px-5 py-2 rounded-2xl text-xs font-black shadow-md hover:bg-orange-50 transition"
                   >
                     {isLoading ? "Saving..." : "Save Changes"}
                   </button>
-                </div>
+                </>
               )}
             </div>
           </div>
 
-          <div className="px-8 pb-8">
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className="-mt-16 relative">
-                <div className="w-32 h-32 rounded-full p-1 bg-white shadow-lg relative group">
+          {/* Profile Body */}
+          <div className="px-6 sm:px-8 pb-8">
+            <div className="flex flex-col sm:flex-row gap-6 items-start">
+              {/* Avatar with upload trigger */}
+              <div className="-mt-14 relative flex-shrink-0">
+                <div className="h-28 w-28 rounded-3xl p-1.5 bg-white shadow-xl border border-slate-100 relative group overflow-hidden">
                   <img
-                    src={
-                      profilePicPreview ||
-                      user?.photo?.url ||
-                      "https://via.placeholder.com/150"
-                    }
-                    alt="Profile"
-                    className="w-full h-full rounded-full object-cover"
+                    src={avatar}
+                    alt="Admin Avatar"
+                    className="w-full h-full rounded-2xl object-cover bg-slate-100"
                   />
 
                   {editingProfile && (
-                    <>
-                      <label
-                        htmlFor="profilePic"
-                        className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center text-white cursor-pointer"
-                      >
-                        <MdOutlineAddAPhoto className="text-3xl" />
-                      </label>
-
-                      <input
-                        type="file"
-                        id="profilePic"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleProfilePicChange}
-                      />
-                    </>
+                    <label
+                      htmlFor="adminProfilePic"
+                      className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs rounded-2xl flex flex-col items-center justify-center text-white cursor-pointer transition"
+                    >
+                      <MdOutlineAddAPhoto size={24} />
+                      <span className="text-[9px] font-extrabold mt-1">Change</span>
+                    </label>
                   )}
+                </div>
+
+                <input
+                  type="file"
+                  id="adminProfilePic"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleProfilePicChange}
+                  disabled={!editingProfile}
+                />
+              </div>
+
+              {/* Title and Info */}
+              <div className="flex-1 min-w-0 pt-2 space-y-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-heading text-xl sm:text-2xl font-black text-slate-900 truncate">
+                    {formData.fullName || "Platform Admin"}
+                  </h3>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 text-orange-700 px-2.5 py-0.5 text-[10px] font-black uppercase">
+                    <IoShieldCheckmark />
+                    <span>Administrator</span>
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 font-medium">
+                  Highest-level privileges for system metrics, restaurant verification, and order supervision.
+                </p>
+              </div>
+            </div>
+
+            {/* Form Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-8 pt-6 border-t border-slate-100">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                  Full Name
+                </label>
+                <div className="relative">
+                  <IoPersonOutline className="absolute left-3.5 top-1/2 -translate-y-1/2 text-orange-600 text-base" />
+                  <input
+                    type="text"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleProfileChange}
+                    disabled={!editingProfile}
+                    className={`w-full pl-10 pr-4 py-2.5 text-xs font-semibold rounded-2xl border transition ${
+                      editingProfile
+                        ? "bg-white border-slate-300 focus:border-orange-500 focus:outline-hidden"
+                        : "bg-slate-50 border-slate-200 text-slate-700 cursor-not-allowed"
+                    }`}
+                  />
                 </div>
               </div>
 
-              <div className="w-full mt-4">
-                <h3 className="text-2xl font-bold">
-                  {user?.fullName || "Admin Profile"}
-                </h3>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                  Official Email Address
+                </label>
+                <div className="relative">
+                  <IoMailOutline className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base" />
+                  <input
+                    type="email"
+                    value={formData.email}
+                    disabled
+                    className="w-full pl-10 pr-4 py-2.5 text-xs font-semibold rounded-2xl bg-slate-50 border border-slate-200 text-slate-500 cursor-not-allowed"
+                  />
+                </div>
+              </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                  <div>
-                    <label className="text-sm font-semibold">Full Name</label>
-
-                    <input
-                      type="text"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleProfileChange}
-                      disabled={!editingProfile}
-                      className="w-full px-4 py-3 bg-(--color-base-200) rounded-xl"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-semibold">Email</label>
-
-                    <input
-                      type="email"
-                      value={formData.email}
-                      disabled
-                      className="w-full px-4 py-3 bg-(--color-base-200) rounded-xl"
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="text-sm font-semibold">
-                      Phone Number
-                    </label>
-
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleProfileChange}
-                      disabled={!editingProfile}
-                      className="w-full px-4 py-3 bg-(--color-base-200) rounded-xl"
-                    />
-                  </div>
+              <div className="md:col-span-2 space-y-1.5">
+                <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500">
+                  Contact Phone Number
+                </label>
+                <div className="relative">
+                  <IoCallOutline className="absolute left-3.5 top-1/2 -translate-y-1/2 text-orange-600 text-base" />
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleProfileChange}
+                    disabled={!editingProfile}
+                    placeholder="+91 98765 43210"
+                    className={`w-full pl-10 pr-4 py-2.5 text-xs font-semibold rounded-2xl border transition ${
+                      editingProfile
+                        ? "bg-white border-slate-300 focus:border-orange-500 focus:outline-hidden"
+                        : "bg-slate-50 border-slate-200 text-slate-700 cursor-not-allowed"
+                    }`}
+                  />
                 </div>
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Platform Security Badge Card */}
+        <div className="p-6 rounded-3xl bg-slate-900 text-white space-y-3 shadow-xs border border-slate-800">
+          <div className="flex items-center gap-2 text-xs font-black uppercase text-orange-400">
+            <IoShieldCheckmark size={18} />
+            <span>Admin Authentication & Protection</span>
+          </div>
+          <p className="text-xs text-slate-400 leading-relaxed max-w-xl">
+            Admin sessions are protected with HTTP-only tokens, role-based authorization gates, and encrypted password credentials.
+          </p>
         </div>
       </div>
 
