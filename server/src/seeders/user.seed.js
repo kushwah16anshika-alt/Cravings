@@ -4,6 +4,8 @@ import bcrypt from "bcrypt";
 export const getSeedUsers = async () => {
   const defaultPassword = await bcrypt.hash("Password@123", 10);
   const managerPassword = await bcrypt.hash("Manager@123", 10);
+  const riderPassword = await bcrypt.hash("Rider@123", 10);
+  const customerPassword = await bcrypt.hash("Customer@123", 10);
 
   return [
     // Restaurant Managers
@@ -92,7 +94,7 @@ export const getSeedUsers = async () => {
     {
       fullname: "Aarav Sharma",
       email: "customer1@gmail.com",
-      password: defaultPassword,
+      password: customerPassword,
       dob: new Date("2002-05-15"),
       gender: "male",
       userType: "user",
@@ -102,7 +104,7 @@ export const getSeedUsers = async () => {
     {
       fullname: "Priya Nair",
       email: "customer2@gmail.com",
-      password: defaultPassword,
+      password: customerPassword,
       dob: new Date("2003-09-20"),
       gender: "female",
       userType: "user",
@@ -114,7 +116,7 @@ export const getSeedUsers = async () => {
     {
       fullname: "Vikram Singh",
       email: "rider1@gmail.com",
-      password: defaultPassword,
+      password: riderPassword,
       dob: new Date("1999-08-20"),
       gender: "male",
       userType: "rider",
@@ -124,7 +126,7 @@ export const getSeedUsers = async () => {
     {
       fullname: "Amit Patel",
       email: "rider2@gmail.com",
-      password: defaultPassword,
+      password: riderPassword,
       dob: new Date("2000-02-14"),
       gender: "male",
       userType: "rider",
