@@ -88,7 +88,7 @@ const AdminSetting = () => {
     <>
       <div className="overflow-y-auto h-full p-6 space-y-6">
         <div className="bg-(--color-base-100) rounded-2xl shadow-xl overflow-hidden border border-(--color-base-300)">
-          <div className="h-32 bg-linear-to-r from-(--color-primary) to-(--color-secondary) relative">
+          <div className="h-32 bg-gradient-to-r from-(--color-primary) to-(--color-secondary) relative">
             <div className="absolute top-4 right-4 z-10">
               {!editingProfile ? (
                 <div className="flex gap-2">

@@ -28,7 +28,7 @@ export default defineConfig([
       ],
       'react-refresh/only-export-components': [
         'warn',
-        { allowConstantExport: true },
+        { allowConstantExport: true, allowExportNames: ['useAuth', 'useCart'] },
       ],
       'react-hooks/set-state-in-effect': 'off',
       'react-hooks/immutability': 'warn',
