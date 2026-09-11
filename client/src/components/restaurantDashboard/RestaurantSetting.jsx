@@ -11,7 +11,7 @@ import {
 } from "react-icons/md";
 import { IoSparkles } from "react-icons/io5";
 
-import CoreDetails from "./settings/coreDetails/Index";
+import CoreDetails from "./settings/coreDetails/index";
 import Information from "./settings/restaurantInformation/Index";
 import RestaurantPhotos from "./settings/RestaurantPhotos";
 
