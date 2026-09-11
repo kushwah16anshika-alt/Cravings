@@ -63,7 +63,7 @@ const AdminOverview = ({ onNavigateTab }) => {
       <Loader
         height="400px"
         width="100%"
-        text="Calculating real-time campus statistics..."
+        text="Calculating real-time platform statistics..."
       />
     );
   }
@@ -80,13 +80,13 @@ const AdminOverview = ({ onNavigateTab }) => {
         <div className="relative z-10 space-y-2">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-xs font-black uppercase tracking-wider backdrop-blur-md">
             <IoSparkles />
-            <span>Campus Food Operations</span>
+            <span>Live Operations Command</span>
           </div>
           <h1 className="font-heading text-2xl sm:text-3xl font-black tracking-tight">
             Platform Command Cockpit
           </h1>
           <p className="text-xs sm:text-sm text-orange-100 max-w-xl font-medium">
-            Monitor real-time food orders, campus kitchen revenue, active student accounts, and delivery partner status.
+            Monitor real-time food orders, restaurant revenue, active user accounts, and delivery partner status.
           </p>
         </div>
 
@@ -144,11 +144,11 @@ const AdminOverview = ({ onNavigateTab }) => {
           </div>
         </div>
 
-        {/* Active Campus Kitchens */}
+        {/* Active Restaurants */}
         <div className="rounded-3xl bg-white border border-slate-200/80 p-5 shadow-xs hover:border-orange-200 transition space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
-              Campus Eateries
+              Partner Restaurants
             </span>
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-100 text-amber-600">
               <MdOutlineStorefront size={22} />
@@ -198,7 +198,7 @@ const AdminOverview = ({ onNavigateTab }) => {
               Live Order Fulfillment Pipeline
             </h3>
             <p className="text-xs text-slate-400 font-bold">
-              Real-time progression of orders across all campus food kitchens
+              Real-time progression of orders across all partner restaurants
             </p>
           </div>
           <button
@@ -249,7 +249,7 @@ const AdminOverview = ({ onNavigateTab }) => {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-heading text-base sm:text-lg font-black text-slate-900">
-              Recent Campus Orders
+              Recent Orders
             </h3>
             <p className="text-xs text-slate-400 font-bold">
               Latest transactions processed through Cravings

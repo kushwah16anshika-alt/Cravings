@@ -27,7 +27,7 @@ const RiderOrders = () => {
     {
       id: "CRV-9281",
       status: "delivering",
-      restaurant: "Campus Spice Kitchen",
+      restaurant: "Spice Symphony Kitchen",
       restaurantAddress: "Student Central Food Court, Stall #4",
       dropAddress: "CV Raman Hostel, Room 312",
       customerName: "Rohan Verma",
@@ -62,7 +62,7 @@ const RiderOrders = () => {
       id: "CRV-8942",
       status: "completed",
       restaurant: "Urban Pizza & Cafe",
-      restaurantAddress: "Campus Gate 1",
+      restaurantAddress: "Central Avenue 1",
       dropAddress: "Girls Hostel 2, Gate #1",
       customerName: "Sneha Patel",
       customerPhone: "+91 99887 76655",

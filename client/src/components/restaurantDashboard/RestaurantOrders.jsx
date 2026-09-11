@@ -241,11 +241,11 @@ const RestaurantOrders = () => {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="font-heading text-xs font-black text-slate-800 truncate">
-                        {customer?.fullName || "Campus Student"}
+                        {customer?.fullName || "Valued Customer"}
                       </p>
                       <p className="text-[11px] font-medium text-slate-400 truncate flex items-center gap-1">
                         <MdOutlineLocationOn size={13} className="text-orange-600 flex-shrink-0" />
-                        <span>{order.deliveryAddress?.address || "Campus Hostel / Dept"}</span>
+                        <span>{order.deliveryAddress?.address || "Delivery Address"}</span>
                       </p>
                     </div>
                   </div>
@@ -400,14 +400,14 @@ const RestaurantOrders = () => {
                   <span>Customer Details</span>
                 </p>
                 <p className="font-heading font-black text-sm text-slate-800">
-                  {selectedOrder.customerId?.fullName || "Campus Student"}
+                  {selectedOrder.customerId?.fullName || "Valued Customer"}
                 </p>
                 <p className="text-xs font-bold text-slate-500 flex items-center gap-1">
                   <MdOutlinePhone size={13} />
                   <span>{selectedOrder.customerId?.phone || "No phone provided"}</span>
                 </p>
                 <p className="text-xs font-medium text-slate-500">
-                  {selectedOrder.customerId?.email || "student@campus.edu"}
+                  {selectedOrder.customerId?.email || "customer@example.com"}
                 </p>
               </div>
 
@@ -434,7 +434,7 @@ const RestaurantOrders = () => {
                   </div>
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-wider text-indigo-700">
-                      Assigned Campus Rider
+                      Assigned Delivery Partner
                     </p>
                     <p className="font-heading font-black text-sm text-indigo-950">
                       {selectedOrder.riderId.fullName}

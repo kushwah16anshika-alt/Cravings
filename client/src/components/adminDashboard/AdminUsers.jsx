@@ -79,7 +79,7 @@ const AdminUsers = () => {
             Platform Users & Delivery Partners
           </h2>
           <p className="text-xs text-slate-500 font-medium">
-            Directory of registered campus students, delivery riders, and canteen partners
+            Directory of registered customers, delivery riders, and restaurant partners
           </p>
         </div>
 

@@ -442,7 +442,7 @@ const AISearchModal = ({ isOpen, onClose, initialQuery = "" }) => {
                   Chef Crave is cooking up recommendations...
                 </p>
                 <p className="text-xs text-slate-500 font-medium">
-                  Analyzing campus menus, spices, prices, and reviews
+                  Analyzing restaurant menus, ingredients, prices, and reviews
                 </p>
               </div>
             </div>
@@ -574,7 +574,7 @@ const AISearchModal = ({ isOpen, onClose, initialQuery = "" }) => {
                 <div className="space-y-3 pt-2">
                   <h3 className="font-heading font-black text-slate-900 text-sm sm:text-base flex items-center gap-2">
                     <IoRestaurantOutline className="text-orange-600" />
-                    <span>Recommended Campus Kitchens</span>
+                    <span>Recommended Restaurants</span>
                   </h3>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -684,7 +684,7 @@ const AISearchModal = ({ isOpen, onClose, initialQuery = "" }) => {
                 <div className="flex items-center gap-2">
                   <FiTrendingUp className="text-orange-600" />
                   <span className="text-xs font-extrabold uppercase tracking-wider text-slate-700">
-                    Trending Campus Cravings (Click to Try)
+                    Trending Cravings (Click to Try)
                   </span>
                 </div>
 
@@ -716,7 +716,7 @@ const AISearchModal = ({ isOpen, onClose, initialQuery = "" }) => {
         <div className="bg-slate-50 px-6 py-3 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500 font-medium">
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 rounded-full bg-emerald-500" />
-            <span>Connected to Live Campus Menus</span>
+            <span>Connected to Live Restaurant Menus</span>
           </div>
           <div className="flex items-center gap-3">
             <span className="hidden sm:inline">Press <kbd className="rounded bg-slate-200 px-1.5 py-0.5 font-mono text-[10px] font-bold text-slate-700">ESC</kbd> to close</span>

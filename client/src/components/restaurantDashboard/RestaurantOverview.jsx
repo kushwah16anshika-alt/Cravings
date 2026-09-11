@@ -144,7 +144,7 @@ const RestaurantOverview = ({ onNavigateTab, onStatusUpdated }) => {
             </h1>
             <p className="text-orange-100 text-xs sm:text-sm font-medium line-clamp-2">
               {restaurant?.description ||
-                "Manage your live kitchen orders, modify dish availability, and review daily campus sales."}
+                "Manage your live kitchen orders, modify dish availability, and review daily restaurant sales."}
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-2 text-xs font-bold text-orange-100">
@@ -379,7 +379,7 @@ const RestaurantOverview = ({ onNavigateTab, onStatusUpdated }) => {
               Live Recent Orders
             </h2>
             <p className="text-xs font-medium text-slate-500">
-              Real-time incoming campus requests and quick preparation status updates.
+              Real-time incoming customer requests and quick preparation status updates.
             </p>
           </div>
           <button
@@ -497,7 +497,7 @@ const RestaurantOverview = ({ onNavigateTab, onStatusUpdated }) => {
               No recent orders in this session
             </p>
             <p className="text-xs text-slate-400">
-              New customer orders placed from campus will appear here in real-time.
+              New customer orders will appear here in real-time.
             </p>
           </div>
         )}

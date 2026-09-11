@@ -25,7 +25,7 @@ const menuItems = [
   },
   {
     id: "restaurants",
-    name: "Campus Eateries",
+    name: "Restaurants",
     icon: <MdOutlineStorefront size={20} />,
     badge: null,
   },
@@ -139,7 +139,7 @@ const AdminSidebar = ({ activeTab, setActiveTab }) => {
           </span>
         </div>
         <p className="text-[11px] text-slate-400 leading-relaxed font-normal">
-          Campus order pipeline and live payment webhook sync active.
+          Order pipeline and live payment webhook sync active.
         </p>
       </div>
     </div>

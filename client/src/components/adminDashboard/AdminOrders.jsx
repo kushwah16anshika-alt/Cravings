@@ -186,7 +186,7 @@ const AdminOrders = () => {
                 <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-extrabold uppercase tracking-wider text-slate-400 px-6">
                   <th className="py-3.5 pl-6">Order ID</th>
                   <th className="py-3.5">Student / Customer</th>
-                  <th className="py-3.5">Campus Kitchen</th>
+                  <th className="py-3.5">Restaurant</th>
                   <th className="py-3.5">Items</th>
                   <th className="py-3.5">Amount</th>
                   <th className="py-3.5">Status</th>
@@ -331,7 +331,7 @@ const AdminOrders = () => {
                 <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
                   <div className="flex items-center gap-2 text-xs font-extrabold uppercase text-slate-400">
                     <IoStorefrontOutline size={14} />
-                    <span>Campus Kitchen</span>
+                    <span>Restaurant</span>
                   </div>
                   <h4 className="font-heading text-sm font-black text-slate-900">
                     {selectedOrderDetails.restaurantName}

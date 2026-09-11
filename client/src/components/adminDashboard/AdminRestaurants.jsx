@@ -25,7 +25,7 @@ const AdminRestaurants = () => {
       }
     } catch (error) {
       toast.error(
-        error.response?.data?.message || "Failed to load campus restaurants"
+        error.response?.data?.message || "Failed to load restaurants"
       );
     } finally {
       setIsLoading(false);
@@ -80,10 +80,10 @@ const AdminRestaurants = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="font-heading text-xl sm:text-2xl font-black text-slate-900">
-            Campus Eateries & Canteens
+            Partner Restaurants & Kitchens
           </h2>
           <p className="text-xs text-slate-500 font-medium">
-            Manage campus dining partners, operational status, menu items, and manager contacts
+            Manage dining partners, operational status, menu items, and manager contacts
           </p>
         </div>
 
@@ -116,7 +116,7 @@ const AdminRestaurants = () => {
           <Loader
             height="250px"
             width="100%"
-            text="Fetching campus restaurants & menus..."
+            text="Fetching restaurants & menus..."
           />
         </div>
       ) : filteredRestaurants.length === 0 ? (

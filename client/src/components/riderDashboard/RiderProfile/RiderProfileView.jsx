@@ -416,7 +416,7 @@ const RiderProfileView = () => {
               {isEditing ? (
                 <input
                   type="text"
-                  placeholder="Hostel Block 4, Campus Hub"
+                  placeholder="Flat 102, Central Residency"
                   value={riderData.currentAddress.address}
                   onChange={(e) =>
                     handleNestedChange("currentAddress", "address", e.target.value)
@@ -425,7 +425,7 @@ const RiderProfileView = () => {
                 />
               ) : (
                 <div className="p-2 rounded-lg bg-slate-50 border border-slate-100 text-xs text-slate-800">
-                  {riderData.currentAddress.address || "Hostel Sector 4, Campus Hub"}
+                  {riderData.currentAddress.address || "Sector 4, Central District"}
                 </div>
               )}
             </div>

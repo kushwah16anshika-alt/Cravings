@@ -52,11 +52,11 @@ const Cart = () => {
   const handleApplyPromo = (e) => {
     e.preventDefault();
     if (!promoCode.trim()) return;
-    if (promoCode.toUpperCase() === "CAMPUS20" || promoCode.toUpperCase() === "CRAVINGS") {
+    if (promoCode.toUpperCase() === "CRAVINGS20" || promoCode.toUpperCase() === "CRAVINGS") {
       setAppliedPromo({ code: promoCode.toUpperCase(), discount: 20 });
       toast.success("Promo code applied! ₹20 discount added.");
     } else {
-      toast.error("Invalid promo code. Try 'CAMPUS20'");
+      toast.error("Invalid promo code. Try 'CRAVINGS20'");
     }
   };
 
@@ -189,7 +189,7 @@ const Cart = () => {
           Your cart is feeling light
         </h2>
         <p className="text-sm text-slate-500 max-w-sm mb-6">
-          Explore the best campus kitchens, add delicious meals, and satisfy your cravings in minutes.
+          Explore the best restaurants, add delicious meals, and satisfy your cravings in minutes.
         </p>
 
         <Link
@@ -341,7 +341,7 @@ const Cart = () => {
                     type="text"
                     value={promoCode}
                     onChange={(e) => setPromoCode(e.target.value)}
-                    placeholder="Enter coupon (e.g. CAMPUS20)"
+                    placeholder="Enter coupon (e.g. CRAVINGS20)"
                     className="w-full pl-9 pr-3 py-2.5 text-xs font-bold uppercase rounded-2xl bg-slate-50 border border-slate-200 focus:outline-hidden focus:border-orange-500"
                   />
                 </div>
@@ -379,7 +379,7 @@ const Cart = () => {
                 </div>
 
                 <div className="flex justify-between">
-                  <span>Campus Platform Fee</span>
+                  <span>Platform Fee</span>
                   <span className="text-slate-900">₹{platformFee.toFixed(2)}</span>
                 </div>
 

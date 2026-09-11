@@ -16,7 +16,7 @@ const RiderOverview = () => {
 
   const [activeDelivery, setActiveDelivery] = useState({
     id: "CRV-9281",
-    restaurant: "Campus Spice Kitchen",
+    restaurant: "Spice Symphony Kitchen",
     restaurantLocation: "Student Central Food Court, Stall #4",
     dropLocation: "CV Raman Hostel, Room 312",
     customerName: "Rohan Verma",

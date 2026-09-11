@@ -18,7 +18,7 @@ const Footer = () => {
   const handleSubscribe = (e) => {
     e.preventDefault();
     if (!newsletterEmail.trim()) return;
-    toast.success("Subscribed to Cravings Campus Bites newsletter!");
+    toast.success("Subscribed to Cravings Foodie newsletter!");
     setNewsletterEmail("");
   };
 
@@ -29,7 +29,7 @@ const Footer = () => {
         <div className="rounded-3xl bg-gradient-to-r from-orange-950/60 to-amber-950/40 border border-orange-500/20 p-8 mb-16 flex flex-col md:flex-row items-center justify-between gap-6 backdrop-blur-md">
           <div className="space-y-1 text-center md:text-left">
             <h3 className="font-heading text-xl sm:text-2xl font-black text-white">
-              Stay in the Loop on Campus Discounts 🍕
+              Stay in the Loop on Delicious Discounts 🍕
             </h3>
             <p className="text-xs text-slate-300">
               Get flash coupon codes, secret canteen menus, and student rewards in your inbox.
@@ -71,7 +71,7 @@ const Footer = () => {
               </span>
             </div>
             <p className="text-xs text-slate-400 max-w-sm leading-relaxed">
-              The premier smart food ordering and cafeteria management platform built for modern campuses and hungry foodies.
+              The premier smart food ordering and delivery platform built for modern foodies and top restaurants.
             </p>
             <div className="flex items-center gap-3 pt-2">
               <a
@@ -122,7 +122,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/order-now" className="hover:text-orange-400 transition">
-                  Campus Eateries
+                  Top Restaurants
                 </Link>
               </li>
               <li>
@@ -156,7 +156,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/register/rider" className="hover:text-orange-400 transition">
-                  Become a Campus Rider
+                  Become a Delivery Partner
                 </Link>
               </li>
               <li>
@@ -185,7 +185,7 @@ const Footer = () => {
               </li>
               <li>
                 <span className="text-slate-500 cursor-not-allowed">
-                  Campus Guidelines
+                  Community Guidelines
                 </span>
               </li>
               <li>

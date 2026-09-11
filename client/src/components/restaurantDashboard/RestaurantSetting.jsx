@@ -141,7 +141,7 @@ const RestaurantSetting = () => {
             Store Profile & Settings
           </h1>
           <p className="text-xs text-slate-500 font-medium">
-            Manage your kitchen details, campus delivery address, serving hours, and display photos.
+            Manage your kitchen details, restaurant address, serving hours, and display photos.
           </p>
         </div>
 
