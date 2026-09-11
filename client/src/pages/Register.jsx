@@ -132,7 +132,7 @@ const Register = () => {
             Create Your Account<span className="text-orange-600">.</span>
           </h1>
           <p className="text-xs sm:text-sm font-medium text-slate-500 mb-6">
-            Get instant access to campus dining, live discounts, and fast delivery.
+            Get instant access to top dining, live discounts, and superfast delivery.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -196,7 +196,7 @@ const Register = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    placeholder="alex@campus.edu"
+                    placeholder="alex@example.com"
                     className="w-full pl-10 pr-3 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold focus:outline-hidden focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition"
                   />
                 </div>
@@ -370,7 +370,7 @@ const Register = () => {
                   <span className="text-orange-400 font-bold">✓</span> No minimum order values
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-orange-400 font-bold">✓</span> Instant campus delivery under 25 mins
+                  <span className="text-orange-400 font-bold">✓</span> Instant doorstep delivery under 25 mins
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="text-orange-400 font-bold">✓</span> Exclusive canteen discounts & combo meals

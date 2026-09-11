@@ -65,7 +65,7 @@ const Order = () => {
           Order History
         </h2>
         <p className="text-xs sm:text-sm font-normal text-slate-500">
-          Track live deliveries and view past campus dining orders
+          Track live deliveries and view past orders
         </p>
       </div>
 
@@ -79,7 +79,7 @@ const Order = () => {
             const isExpanded = expandedOrderId === order._id;
 
             const restaurantName =
-              order.restaurantId?.restaurantName || "Campus Kitchen";
+              order.restaurantId?.restaurantName || "Featured Kitchen";
             const restId = order.restaurantId?._id || order.restaurantId;
 
             return (
@@ -214,7 +214,7 @@ const Order = () => {
 
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
                       <p className="text-xs text-slate-500 font-medium">
-                        Delivery to: <span className="text-slate-800 font-semibold">{order.deliveryAddress?.address || "Campus Address"}</span>
+                        Delivery to: <span className="text-slate-800 font-semibold">{order.deliveryAddress?.address || "Delivery Address"}</span>
                       </p>
 
                       {restId && (
@@ -238,7 +238,7 @@ const Order = () => {
             No orders placed yet
           </h3>
           <p className="text-xs text-slate-500 font-medium">
-            Browse our campus kitchens and place your first order.
+            Browse our top restaurants and place your first order.
           </p>
           <div className="pt-3">
             <Link

@@ -107,7 +107,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         {/* Quick Order shortcut */}
         <div className="p-3.5 rounded-xl bg-orange-50/50 border border-orange-100/70 space-y-2">
           <p className="text-xs font-bold text-slate-900">Craving food?</p>
-          <p className="text-[11px] font-medium text-slate-500">Explore fresh campus menus</p>
+          <p className="text-[11px] font-medium text-slate-500">Explore fresh menus & dishes</p>
           <button
             onClick={() => navigate("/order-now")}
             className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-orange-600 py-2 text-xs font-bold text-white shadow-xs hover:bg-orange-500 active:scale-98 transition"

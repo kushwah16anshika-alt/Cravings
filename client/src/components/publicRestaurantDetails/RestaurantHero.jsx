@@ -70,7 +70,7 @@ const RestaurantHero = ({ restaurant, onBack }) => {
             <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm font-semibold text-slate-300">
               <span className="flex items-center gap-1 text-slate-200">
                 <IoLocationOutline size={16} className="text-orange-400" />
-                {restaurant.address?.city || "Campus Central"}
+                {restaurant.address?.city || "Downtown"}
               </span>
 
               <span>•</span>

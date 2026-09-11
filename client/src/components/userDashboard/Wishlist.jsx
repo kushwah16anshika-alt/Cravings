@@ -55,7 +55,7 @@ const Wishlist = () => {
           Saved Favorites
         </h2>
         <p className="text-xs sm:text-sm font-normal text-slate-500">
-          Your bookmarked campus dining spots for quick ordering
+          Your bookmarked dining spots for quick ordering
         </p>
       </div>
 
@@ -107,7 +107,7 @@ const Wishlist = () => {
                       {restaurant.restaurantName}
                     </h4>
                     <p className="text-xs font-normal text-slate-500 line-clamp-1 mt-0.5">
-                      {restaurant.description || "Campus eatery"}
+                      {restaurant.description || "Featured eatery"}
                     </p>
                   </div>
 
@@ -126,7 +126,7 @@ const Wishlist = () => {
             Nothing saved yet
           </h3>
           <p className="text-xs text-slate-500 max-w-xs mx-auto font-medium">
-            Click the heart icon on any restaurant or dish to save your campus favorites here.
+            Click the heart icon on any restaurant or dish to save your favorite restaurants here.
           </p>
           <div className="pt-3">
             <Link

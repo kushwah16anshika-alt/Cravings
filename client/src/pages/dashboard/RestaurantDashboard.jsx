@@ -57,7 +57,7 @@ const RestaurantDashboard = () => {
             Restaurant Partner Portal
           </h1>
           <p className="text-slate-500 text-xs font-medium">
-            Please log in with a Restaurant Partner account to manage menu items, receive live campus orders, and update kitchen timings.
+            Please log in with a Restaurant Partner account to manage menu items, receive live customer orders, and update kitchen timings.
           </p>
           <button
             onClick={() => navigate("/login")}

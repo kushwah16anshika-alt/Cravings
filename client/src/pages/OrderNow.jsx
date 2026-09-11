@@ -122,10 +122,10 @@ const OrderNow = () => {
         <div className="max-w-7xl mx-auto flex flex-col items-center text-center space-y-3">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-xs font-black uppercase tracking-wider backdrop-blur-md">
             <IoSparkles />
-            <span>Campus Dining Hub</span>
+            <span>Gourmet Dining Hub</span>
           </span>
           <h1 className="font-heading text-3xl sm:text-5xl font-black tracking-tight">
-            Order From Top Campus Kitchens
+            Order From Top Rated Restaurants & Kitchens
           </h1>
           <p className="text-sm sm:text-base text-orange-100 max-w-xl font-medium">
             Explore authentic flavors, quick snacks, and gourmet meals delivered right to you.
@@ -154,7 +154,7 @@ const OrderNow = () => {
                       setIsAiModalOpen(true);
                     }
                   }}
-                  placeholder="Search by restaurant name, cuisine, dish, or campus zone..."
+                  placeholder="Search by restaurant name, cuisine, dish, or neighborhood..."
                   className="w-full pl-11 pr-14 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold placeholder:text-slate-400 focus:outline-hidden focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition"
                 />
                 {searchQuery && (
@@ -369,7 +369,7 @@ const OrderNow = () => {
                             (typeof restaurant.address === "object"
                               ? restaurant.address?.city
                               : restaurant.address) ||
-                            "Campus Main"}
+                            "City Center"}
                         </span>
                       </span>
 

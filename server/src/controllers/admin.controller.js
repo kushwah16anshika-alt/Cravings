@@ -75,7 +75,7 @@ export const getAdminStats = async (req, res, next) => {
       const custUser = ord.customerId?.customerId;
       return {
         _id: ord._id,
-        restaurantName: ord.restaurantId?.restaurantName || "Campus Kitchen",
+        restaurantName: ord.restaurantId?.restaurantName || "Featured Kitchen",
         restaurantCover: ord.restaurantId?.coverImage?.url || "",
         customerName: ord.deliveryAddress?.name || custUser?.fullname || "Student",
         customerEmail: custUser?.email || "",
@@ -162,7 +162,7 @@ export const getAllAdminOrders = async (req, res, next) => {
       return {
         _id: ord._id,
         restaurantId: ord.restaurantId?._id,
-        restaurantName: ord.restaurantId?.restaurantName || "Campus Kitchen",
+        restaurantName: ord.restaurantId?.restaurantName || "Featured Kitchen",
         restaurantPhone: ord.restaurantId?.phone || "",
         customerName: ord.deliveryAddress?.name || custUser?.fullname || "Student",
         customerEmail: custUser?.email || "",
@@ -239,7 +239,7 @@ export const updateAdminOrderStatus = async (req, res, next) => {
 };
 
 // ==========================================
-// 4. GET ALL RESTAURANTS (CAMPUS EATERIES)
+// 4. GET ALL RESTAURANTS
 // ==========================================
 export const getAllAdminRestaurants = async (req, res, next) => {
   try {
@@ -268,7 +268,7 @@ export const getAllAdminRestaurants = async (req, res, next) => {
           : null,
         cuisineTypes: r.cuisineTypes || [],
         address: r.address,
-        city: r.city || r.address?.city || "Campus Main",
+        city: r.city || r.address?.city || "Downtown",
         averageRating: r.averageRating || 4.2,
         isOpen: r.isOpen !== undefined ? r.isOpen : true,
         restaurantType: r.restaurantType || "both",

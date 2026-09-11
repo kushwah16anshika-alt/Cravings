@@ -58,7 +58,7 @@ const Overview = () => {
             Hey, {userName}! 👋
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 font-medium">
-            Track active meals, reorder campus favorites, and view your dining analytics.
+            Track active meals, reorder your favorites, and view your dining analytics.
           </p>
         </div>
       </div>
@@ -146,7 +146,7 @@ const Overview = () => {
                   </div>
                   <div>
                     <h4 className="font-heading text-xs font-bold text-slate-900">
-                      {order.restaurantId?.restaurantName || "Campus Kitchen"}
+                      {order.restaurantId?.restaurantName || "Featured Kitchen"}
                     </h4>
                     <p className="text-[11px] text-slate-500 font-medium">
                       {order.orderItems?.length || 1} items • ₹{order.billDetails?.finalAmount || 0}

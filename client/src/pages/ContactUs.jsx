@@ -85,7 +85,7 @@ const ContactUs = () => {
             </h1>
 
             <p className="text-sm font-medium text-slate-600 leading-relaxed">
-              Have questions regarding an ongoing order, canteen vendor onboarding, or campus rider support? Reach out to our 24/7 student support desk.
+              Have questions regarding an ongoing order, restaurant onboarding, or rider support? Reach out to our 24/7 customer support desk.
             </p>
 
             <div className="space-y-3.5 pt-2">
@@ -114,8 +114,8 @@ const ContactUs = () => {
                   <FaMapMarkerAlt size={16} />
                 </div>
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Campus Hub</p>
-                  <p className="font-heading text-sm font-black text-slate-900">Student Innovation Centre, Campus</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Main Office</p>
+                  <p className="font-heading text-sm font-black text-slate-900">Suite 402, Gourmet Central Tower</p>
                 </div>
               </div>
             </div>
@@ -127,7 +127,7 @@ const ContactUs = () => {
               Send us a Message
             </h2>
             <p className="text-xs sm:text-sm font-medium text-slate-500 mb-6">
-              Our campus coordination team typically responds within a few hours.
+              Our support team typically responds within a few hours.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -155,7 +155,7 @@ const ContactUs = () => {
                     name="email"
                     value={contactData.email}
                     onChange={handleChange}
-                    placeholder="alex@campus.edu"
+                    placeholder="alex@example.com"
                     className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold focus:outline-hidden focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition"
                   />
                 </div>

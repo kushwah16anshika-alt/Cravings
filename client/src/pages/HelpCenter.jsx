@@ -28,7 +28,7 @@ const HelpCenter = () => {
 
   const faqs = [
     {
-      question: "How do I track my campus meal in real-time?",
+      question: "How do I track my food order in real-time?",
       answer:
         "Open your Customer Dashboard → My Orders to see the real-time order stepper (Placed → Confirmed → Preparing → Out for Delivery → Delivered).",
       icon: <FaShoppingBag className="text-orange-600" />,
@@ -40,9 +40,9 @@ const HelpCenter = () => {
       icon: <FaCreditCard className="text-orange-600" />,
     },
     {
-      question: "What if my rider is delayed around campus?",
+      question: "What if my delivery rider is delayed?",
       answer:
-        "Campus deliveries are typically completed within 20-25 minutes. If peak hours cause delays, check live order status or submit a ticket.",
+        "Doorstep deliveries are typically completed within 20-25 minutes. If peak hours cause delays, check live order status or submit a ticket.",
       icon: <FaBicycle className="text-orange-600" />,
     },
     {
@@ -133,7 +133,7 @@ const HelpCenter = () => {
           <div className="lg:col-span-6 space-y-6">
             <div className="inline-flex items-center gap-1.5 rounded-full bg-orange-100 px-3.5 py-1 text-xs font-black text-orange-700">
               <IoHelpBuoyOutline />
-              <span>Campus Support</span>
+              <span>Help & Support</span>
             </div>
 
             <h1 className="font-heading text-3xl sm:text-4xl font-black text-slate-900 leading-tight">
@@ -141,7 +141,7 @@ const HelpCenter = () => {
             </h1>
 
             <p className="text-xs sm:text-sm font-medium text-slate-500">
-              Quick answers to frequent campus ordering questions, refunds, and live delivery updates.
+              Quick answers to frequent ordering questions, refunds, and live delivery updates.
             </p>
 
             <div className="space-y-3 pt-2">
@@ -184,7 +184,7 @@ const HelpCenter = () => {
               Raise a Support Ticket
             </h2>
             <p className="text-xs font-medium text-slate-500 mb-6">
-              Our campus support representative will reply directly to your email.
+              Our customer support representative will reply directly to your email.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -211,7 +211,7 @@ const HelpCenter = () => {
                   <input
                     type="email"
                     name="email"
-                    placeholder="alex@campus.edu"
+                    placeholder="alex@example.com"
                     value={formData.email}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold focus:outline-hidden focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition"

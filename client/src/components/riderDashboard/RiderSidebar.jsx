@@ -64,7 +64,7 @@ const RiderSidebar = ({ activeTab, setActiveTab }) => {
     }
   };
 
-  const userName = user?.fullName || user?.fullname || "Campus Rider";
+  const userName = user?.fullName || user?.fullname || "Delivery Partner";
   const userAvatar =
     user?.photo?.url ||
     "https://res.cloudinary.com/dpl3xwf1z/image/upload/v1783776802/circleLogo_z7icie.png";

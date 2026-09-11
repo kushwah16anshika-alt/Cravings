@@ -124,7 +124,7 @@ const Login = () => {
                 Log into Cravings<span className="text-orange-600">.</span>
               </h1>
               <p className="text-sm font-medium text-slate-500 mb-6">
-                Enter your credentials to access your orders, favorites, and campus benefits.
+                Enter your credentials to access your orders, favorites, and member benefits.
               </p>
 
               {/* Quick Demo Login Pills */}
@@ -160,7 +160,7 @@ const Login = () => {
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      placeholder="student@campus.edu"
+                      placeholder="user@example.com"
                       className={`w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 border text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-4 transition ${
                         errors.email
                           ? "border-red-500 focus:ring-red-500/10"
@@ -250,7 +250,7 @@ const Login = () => {
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-orange-500 animate-ping" />
                 <span className="text-xs font-extrabold uppercase tracking-widest text-orange-300">
-                  Campus Quick Bites
+                  Quick Gourmet Bites
                 </span>
               </div>
 
@@ -259,7 +259,7 @@ const Login = () => {
                   Hot meals delivered straight to your study spot.
                 </h3>
                 <p className="text-xs font-medium text-slate-300">
-                  Join thousands of students and campus staff enjoying seamless food ordering every day.
+                  Join thousands of foodies enjoying seamless, ultra-fast food ordering every day.
                 </p>
 
                 {/* Floating Glass Testimonial */}
@@ -271,7 +271,7 @@ const Login = () => {
                       className="h-9 w-9 rounded-xl bg-orange-500/20"
                     />
                     <div>
-                      <p className="text-xs font-black text-white">"Fastest food delivery on campus!"</p>
+                      <p className="text-xs font-black text-white">"Fastest food delivery to your doorstep!"</p>
                       <p className="text-[10px] text-orange-400 font-bold">5.0 ★ Verified Student</p>
                     </div>
                   </div>

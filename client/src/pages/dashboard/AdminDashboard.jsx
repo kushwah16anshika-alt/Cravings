@@ -33,7 +33,7 @@ const AdminDashboard = () => {
           </h1>
 
           <p className="text-slate-500 text-xs font-medium leading-relaxed">
-            Please log in with verified <strong>Admin credentials</strong> to access the platform command center and oversee campus food delivery operations.
+            Please log in with verified <strong>Admin credentials</strong> to access the platform command center and oversee platform food delivery operations.
           </p>
 
           <button

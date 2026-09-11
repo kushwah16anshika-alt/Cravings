@@ -135,7 +135,7 @@ const Index = () => {
             Saved Delivery Addresses
           </h3>
           <p className="text-xs text-slate-500 font-normal">
-            Manage your campus delivery locations and dorm spots
+            Manage your saved delivery locations & addresses
           </p>
         </div>
 
@@ -181,7 +181,7 @@ const Index = () => {
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
-                placeholder="Block B, 2nd Floor, Campus Hostel"
+                placeholder="Flat 302, Green Avenue, High Street"
                 className="w-full px-3 py-2 text-xs font-medium rounded-xl bg-white border border-slate-200 focus:border-orange-500 focus:outline-hidden"
               />
             </div>
@@ -195,7 +195,7 @@ const Index = () => {
                 name="city"
                 value={formData.city}
                 onChange={handleChange}
-                placeholder="Campus City"
+                placeholder="Metro City"
                 className="w-full px-3 py-2 text-xs font-medium rounded-xl bg-white border border-slate-200 focus:border-orange-500 focus:outline-hidden"
               />
             </div>

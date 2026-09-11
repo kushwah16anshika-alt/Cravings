@@ -177,7 +177,7 @@ const runFallbackSearch = (query, maxBudget, foodTypePreference, allRestaurants,
       _id: r._id,
       restaurantName: r.restaurantName,
       cuisines: r.cuisineTypes,
-      city: r.city || "Campus Main",
+      city: r.city || "Downtown",
       averageRating: r.averageRating || 4.2,
       coverImage: r.coverImage?.url || (r.restaurantImage?.[0]?.url || ""),
       restaurantType: r.restaurantType,
@@ -192,8 +192,8 @@ const runFallbackSearch = (query, maxBudget, foodTypePreference, allRestaurants,
 
   const summary =
     topDishes.length > 0
-      ? `Found ${topDishes.length} delicious options matching "${query}" across top campus kitchens!`
-      : `Here are some popular recommended picks from our top campus spots.`;
+      ? `Found ${topDishes.length} delicious options matching "${query}" across top partner kitchens!`
+      : `Here are some popular recommended picks from our top rated restaurants.`;
 
   return {
     aiResponse: summary,
@@ -280,7 +280,7 @@ export const AiSearch = async (req, res, next) => {
       rName: item.restaurantName,
     }));
 
-    const systemPrompt = `You are "Chef Crave", the friendly, witty, and highly knowledgeable AI Foodie Sommelier for the Cravings Campus Food Delivery app.
+    const systemPrompt = `You are "Chef Crave", the friendly, witty, and highly knowledgeable AI Foodie Sommelier for the Cravings Food Delivery app.
 Your job is to analyze the user's craving prompt and match them with the best dishes and restaurants from our LIVE database catalog.
 
 User Query: "${query}"
@@ -356,7 +356,7 @@ JSON SCHEMA:
                 foodType: item.foodType,
                 image: item.image?.url || "",
                 restaurantId: resObj?._id,
-                restaurantName: resObj?.restaurantName || "Campus Kitchen",
+                restaurantName: resObj?.restaurantName || "Featured Kitchen",
                 restaurantRating: resObj?.averageRating || 4.2,
                 matchReason: match.reason || `Perfect match for "${query}"`,
               };
@@ -377,7 +377,7 @@ JSON SCHEMA:
               _id: resObj._id,
               restaurantName: resObj.restaurantName,
               cuisines: resObj.cuisineTypes,
-              city: resObj.city || "Campus Main",
+              city: resObj.city || "Downtown",
               averageRating: resObj.averageRating || 4.2,
               coverImage: resObj.coverImage?.url || (resObj.restaurantImage?.[0]?.url || ""),
               restaurantType: resObj.restaurantType,

@@ -41,12 +41,12 @@ const perks = [
   {
     icon: <IoFlashOutline className="text-3xl text-orange-600" />,
     title: "Ultra-Fast Delivery",
-    desc: "Average 20-minute delivery direct to your dorm, library, or campus gate.",
+    desc: "Average 20-minute delivery direct to your home, office, or doorstep.",
   },
   {
     icon: <IoShieldCheckmarkOutline className="text-3xl text-emerald-600" />,
     title: "100% Fresh & Hygienic",
-    desc: "Strictly verified campus kitchens and sanitized food prep standards.",
+    desc: "Strictly verified partner kitchens and sanitized food prep standards.",
   },
   {
     icon: <MdLocalOffer className="text-3xl text-amber-600" />,
@@ -67,7 +67,7 @@ const testimonials = [
     name: "Priya Nair",
     dept: "Design & Media, Year 2",
     avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Priya",
-    quote: "The interface is so smooth and the live order tracking is spot on. Hands down the best campus food app.",
+    quote: "The interface is so smooth and the live order tracking is spot on. Hands down the best food delivery app.",
     rating: 5,
   },
   {
@@ -121,8 +121,8 @@ const Home = () => {
 
           return {
             id: res._id,
-            name: res.restaurantName || "Campus Kitchen",
-            description: res.description || "Authentic culinary delights and fast campus snacks",
+            name: res.restaurantName || "Featured Kitchen",
+            description: res.description || "Authentic culinary delights and fresh gourmet meals",
             cuisines: cuisines.length > 0 ? cuisines : ["Multi-Cuisine", "Fast Food"],
             rating: res.averageRating || (4.2 + (res.restaurantName?.length % 7) * 0.1).toFixed(1),
             deliveryTime: res.deliveryTime || "15-25 min",
@@ -130,7 +130,7 @@ const Home = () => {
             image,
             isOpen: res.isOpen !== undefined ? res.isOpen : true,
             isPureVeg: res.isPureVeg || false,
-            city: res.address?.city || "Campus Main",
+            city: res.address?.city || "City Center",
           };
         });
 
@@ -213,7 +213,7 @@ const Home = () => {
               <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/10 px-4 py-1.5 text-xs font-extrabold text-orange-700 backdrop-blur-md shadow-xs animate-pulse-subtle">
                 <span className="flex h-2 w-2 rounded-full bg-orange-600 animate-ping" />
                 <IoSparkles className="text-orange-600" />
-                <span>Fastest Campus Food Delivery</span>
+                <span>Fastest Doorstep Food Delivery</span>
               </div>
 
               {/* Main Headline */}
@@ -227,7 +227,7 @@ const Home = () => {
 
               {/* Subheading */}
               <p className="text-base sm:text-lg text-slate-600 max-w-xl mx-auto lg:mx-0 font-medium">
-                Discover your next favorite meal from campus cafeterias, artisan cafes, and top local eateries delivered in minutes.
+                Discover your next favorite meal from gourmet kitchens, artisan cafes, and top local eateries delivered in minutes.
               </p>
 
               {/* Search Bar */}
@@ -309,7 +309,7 @@ const Home = () => {
                 <div className="h-8 w-px bg-slate-200" />
                 <div className="text-left">
                   <p className="font-heading text-2xl font-black text-slate-900">4.8 ★</p>
-                  <p className="text-xs font-bold text-slate-500">Campus Rating</p>
+                  <p className="text-xs font-bold text-slate-500">Foodie Rating</p>
                 </div>
               </div>
             </div>
@@ -354,7 +354,7 @@ const Home = () => {
 
                 {/* Floating Card 3: Hot Offer */}
                 <div className="absolute top-1/2 -right-8 -translate-y-1/2 rounded-2xl bg-gradient-to-r from-red-600 to-orange-600 px-3.5 py-2 text-white shadow-lg shadow-orange-600/30 animate-pulse-subtle">
-                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-orange-100">Campus Special</p>
+                  <p className="text-[10px] font-extrabold uppercase tracking-wider text-orange-100">Chef's Special</p>
                   <p className="text-xs font-black">20% OFF FIRST ORDER</p>
                 </div>
               </div>
@@ -422,7 +422,7 @@ const Home = () => {
             <div>
               <div className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-widest text-orange-600">
                 <IoFlame className="text-orange-500 text-base" />
-                <span>Handpicked for Campus</span>
+                <span>Handpicked For You</span>
               </div>
               <h2 className="font-heading text-2xl sm:text-3xl font-black text-slate-900 mt-1">
                 Featured Restaurants & Cafes
@@ -582,7 +582,7 @@ const Home = () => {
               The Cravings Advantage
             </span>
             <h2 className="font-heading text-3xl font-black text-slate-900 mt-1">
-              Built Specifically for Campus Life
+              Engineered for Superfast Delivery
             </h2>
             <p className="text-sm text-slate-600 mt-2 font-medium">
               We eliminate canteen queues, unhygienic stalls, and late-night hunger with smart food technology.
@@ -611,7 +611,7 @@ const Home = () => {
       </section>
 
       {/* =========================================================================
-          TESTIMONIALS / CAMPUS LOVE
+          TESTIMONIALS / CUSTOMER LOVE
       ========================================================================= */}
       <section className="py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

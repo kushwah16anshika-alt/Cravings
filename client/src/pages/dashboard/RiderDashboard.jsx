@@ -31,7 +31,7 @@ const RiderDashboard = () => {
           </h1>
 
           <p className="text-slate-500 text-xs font-medium leading-relaxed">
-            Please log in with a registered <strong>Campus Delivery Partner</strong> account to access active orders, accept pickup requests, and manage your shift.
+            Please log in with a registered <strong>Delivery Partner</strong> account to access active orders, accept pickup requests, and manage your shift.
           </p>
 
           <button

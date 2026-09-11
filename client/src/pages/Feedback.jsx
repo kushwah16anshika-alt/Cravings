@@ -99,7 +99,7 @@ const Feedback = () => {
               Share Your Feedback<span className="text-orange-600">.</span>
             </h1>
             <p className="text-xs sm:text-sm font-medium text-slate-500 mt-2">
-              Tell us about your campus dining, deliveries, and app experience.
+              Tell us about your dining, deliveries, and app experience.
             </p>
           </div>
 
@@ -126,7 +126,7 @@ const Feedback = () => {
               <input
                 type="email"
                 name="email"
-                placeholder="alex@campus.edu"
+                placeholder="alex@example.com"
                 value={formData.email}
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold focus:outline-hidden focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition"

@@ -315,7 +315,7 @@ const RiderSetting = () => {
               <input
                 type="text"
                 name="address"
-                placeholder="Block 4, Campus Wing"
+                placeholder="Apt 12B, Central Residency"
                 value={formData.address}
                 onChange={handleChange}
                 disabled={!editingProfile}
