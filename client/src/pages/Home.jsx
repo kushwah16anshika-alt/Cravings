@@ -107,14 +107,16 @@ const Home = () => {
 
         const formatted = data.map((res) => {
           let cuisines = [];
-          if (Array.isArray(res.cuisineType)) {
-            cuisines = res.cuisineType;
-          } else if (typeof res.cuisineType === "string") {
-            cuisines = res.cuisineType.split(",").map((s) => s.trim()).filter(Boolean);
+          const rawCuisines = res.cuisineTypes || res.cuisineType || [];
+          if (Array.isArray(rawCuisines)) {
+            cuisines = rawCuisines;
+          } else if (typeof rawCuisines === "string") {
+            cuisines = rawCuisines.split(",").map((s) => s.trim()).filter(Boolean);
           }
 
           const image =
             res?.coverImage?.url ||
+            res?.restaurantImage?.[0]?.url ||
             res?.images?.[0]?.URL ||
             res?.images?.[0]?.url ||
             "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80";
@@ -129,8 +131,8 @@ const Home = () => {
             costForTwo: res.costForTwo || "₹250 for two",
             image,
             isOpen: res.isOpen !== undefined ? res.isOpen : true,
-            isPureVeg: res.isPureVeg || false,
-            city: res.address?.city || "City Center",
+            isPureVeg: res.isPureVeg || res.restaurantType === "veg",
+            city: res.city || (typeof res.address === "object" ? res.address?.city : res.address) || "City Center",
           };
         });
 

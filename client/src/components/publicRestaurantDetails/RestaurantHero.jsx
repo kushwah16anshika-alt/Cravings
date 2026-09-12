@@ -6,14 +6,16 @@ const RestaurantHero = ({ restaurant, onBack }) => {
   const typeInfo = restaurantTypeLabel(restaurant.restaurantType);
 
   let cuisines = [];
-  if (Array.isArray(restaurant.cuisineType)) {
-    cuisines = restaurant.cuisineType;
-  } else if (typeof restaurant.cuisineType === "string") {
-    cuisines = restaurant.cuisineType.split(",").map((s) => s.trim()).filter(Boolean);
+  const rawCuisines = restaurant.cuisineTypes || restaurant.cuisineType || [];
+  if (Array.isArray(rawCuisines)) {
+    cuisines = rawCuisines;
+  } else if (typeof rawCuisines === "string") {
+    cuisines = rawCuisines.split(",").map((s) => s.trim()).filter(Boolean);
   }
 
   const coverUrl =
     restaurant.coverImage?.url ||
+    restaurant.restaurantImage?.[0]?.url ||
     restaurant.images?.[0]?.url ||
     "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80";
 
@@ -70,7 +72,7 @@ const RestaurantHero = ({ restaurant, onBack }) => {
             <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm font-semibold text-slate-300">
               <span className="flex items-center gap-1 text-slate-200">
                 <IoLocationOutline size={16} className="text-orange-400" />
-                {restaurant.address?.city || "Downtown"}
+                {restaurant.city || (typeof restaurant.address === "object" ? restaurant.address?.city : restaurant.address) || "Downtown"}
               </span>
 
               <span>•</span>

@@ -64,6 +64,7 @@ const Wishlist = () => {
           {favoriteRestaurants.map((restaurant) => {
             const coverUrl =
               restaurant.coverImage?.url ||
+              restaurant.restaurantImage?.[0]?.url ||
               restaurant.images?.[0]?.url ||
               "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=600&q=80";
 
