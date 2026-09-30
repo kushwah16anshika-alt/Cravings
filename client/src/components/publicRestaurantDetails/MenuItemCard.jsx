@@ -107,6 +107,16 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
           <div className="flex-1 min-w-0 space-y-1">
             {/* Tag Badges */}
             <div className="flex flex-wrap items-center gap-1.5 mb-1">
+              {isCustomizable && (
+                <button
+                  type="button"
+                  onClick={() => setIsCustomizeOpen(true)}
+                  className="inline-flex items-center gap-1 rounded-md bg-gradient-to-r from-orange-500/15 to-amber-500/15 border border-orange-300/60 px-2 py-0.5 text-[9px] font-black text-orange-700 hover:from-orange-500 hover:to-amber-500 hover:text-white transition-all shadow-2xs"
+                >
+                  <IoSparkles size={10} className="text-orange-600 animate-pulse" />
+                  <span>Customizable</span>
+                </button>
+              )}
               {item.isTopRated && (
                 <span className="inline-flex items-center gap-0.5 rounded-md bg-amber-100 px-1.5 py-0.5 text-[9px] font-extrabold text-amber-800">
                   <IoStar size={10} /> Top Pick
@@ -132,7 +142,7 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
               {item.description || "Delicately prepared with fresh ingredients."}
             </p>
 
-            <div className="pt-2 flex items-center justify-between">
+            <div className="pt-2 flex items-center justify-between gap-2">
               <span className="font-heading text-base font-black text-slate-900">
                 ₹{item.price}
               </span>
@@ -141,22 +151,48 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
               {isUnavailable ? (
                 <span className="text-xs font-bold text-slate-400">Unavailable</span>
               ) : itemCount > 0 ? (
-                <div className="flex items-center gap-2 rounded-2xl bg-orange-600 p-1 text-white shadow-md shadow-orange-600/30">
-                  <button
-                    onClick={() => decreaseItem(item._id)}
-                    className="flex h-7 w-7 items-center justify-center rounded-xl bg-orange-700/60 hover:bg-orange-700 active:scale-90 transition"
-                  >
-                    <IoRemove size={16} />
-                  </button>
-                  <span className="font-heading font-black text-sm px-1 min-w-4 text-center">
-                    {itemCount}
-                  </span>
-                  <button
-                    onClick={() => increaseItem(item._id)}
-                    className="flex h-7 w-7 items-center justify-center rounded-xl bg-orange-700/60 hover:bg-orange-700 active:scale-90 transition"
-                  >
-                    <IoAdd size={16} />
-                  </button>
+                <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2 rounded-2xl bg-orange-600 p-1 text-white shadow-md shadow-orange-600/30">
+                    <button
+                      onClick={() => {
+                        const targetVariant = itemVariants[itemVariants.length - 1];
+                        if (targetVariant?.cartItemId) {
+                          decreaseItem(targetVariant.cartItemId);
+                        } else {
+                          decreaseItem(item._id);
+                        }
+                      }}
+                      className="flex h-7 w-7 items-center justify-center rounded-xl bg-orange-700/60 hover:bg-orange-700 active:scale-90 transition"
+                    >
+                      <IoRemove size={16} />
+                    </button>
+                    <span className="font-heading font-black text-sm px-1 min-w-4 text-center">
+                      {itemCount}
+                    </span>
+                    <button
+                      onClick={() => {
+                        if (isCustomizable) {
+                          setIsCustomizeOpen(true);
+                        } else {
+                          increaseItem(item._id);
+                        }
+                      }}
+                      className="flex h-7 w-7 items-center justify-center rounded-xl bg-orange-700/60 hover:bg-orange-700 active:scale-90 transition"
+                      title={isCustomizable ? "Add another customization" : "Add more"}
+                    >
+                      <IoAdd size={16} />
+                    </button>
+                  </div>
+                  {isCustomizable && (
+                    <button
+                      type="button"
+                      onClick={() => setIsCustomizeOpen(true)}
+                      className="flex items-center justify-center h-8 w-8 rounded-xl bg-orange-50 border border-orange-200 text-orange-600 hover:bg-orange-600 hover:text-white transition"
+                      title="Add another customization"
+                    >
+                      <IoSparkles size={14} />
+                    </button>
+                  )}
                 </div>
               ) : (
                 <button
@@ -164,13 +200,24 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
                   className="flex items-center gap-1 rounded-2xl border-2 border-orange-600 bg-orange-50/50 px-4 py-1.5 text-xs font-black text-orange-600 shadow-xs hover:bg-orange-600 hover:text-white active:scale-95 transition-all duration-200"
                 >
                   <IoAdd size={16} />
-                  <span>ADD</span>
+                  <span>{isCustomizable ? "CUSTOMIZE" : "ADD"}</span>
                 </button>
               )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Customize Meal Modal */}
+      {isCustomizeOpen && (
+        <CustomizeMealModal
+          isOpen={isCustomizeOpen}
+          onClose={() => setIsCustomizeOpen(false)}
+          item={item}
+          restaurantId={restaurantId}
+          restaurantName={restaurantName}
+        />
+      )}
 
       {/* Different Restaurant Conflict Modal */}
       {showConflictModal && (
