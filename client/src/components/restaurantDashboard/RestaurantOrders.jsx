@@ -453,20 +453,71 @@ const RestaurantOrders = () => {
                 Itemized Dishes
               </h3>
               <div className="rounded-2xl border border-slate-200 overflow-hidden divide-y divide-slate-100">
-                {(selectedOrder.orderItems || []).map((it, idx) => (
-                  <div key={idx} className="p-3.5 flex items-center justify-between text-xs">
-                    <div>
-                      <p className="font-black text-slate-800">
-                        <span className="text-orange-600 mr-2">{it.quantity}x</span>
-                        {it.itemName}
-                      </p>
-                      <p className="text-slate-400 text-[11px]">Unit Price: ₹{it.price}</p>
+                {(selectedOrder.orderItems || []).map((it, idx) => {
+                  const custom = it.customization || {};
+                  const isCustom = custom.isCustomized;
+
+                  return (
+                    <div key={idx} className="p-3.5 flex flex-col gap-2 text-xs">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-black text-slate-800 flex items-center gap-1.5">
+                            <span className="text-orange-600 font-black">{it.quantity}x</span>
+                            <span>{it.itemName}</span>
+                            {isCustom && (
+                              <span className="rounded-md bg-orange-100 text-orange-800 px-1.5 py-0.2 text-[9px] font-black uppercase">
+                                Custom Prep
+                              </span>
+                            )}
+                          </p>
+                          <p className="text-slate-400 text-[11px]">Unit Price: ₹{it.price}</p>
+                        </div>
+                        <span className="font-black text-slate-900">
+                          ₹{it.price * it.quantity}
+                        </span>
+                      </div>
+
+                      {/* Customization Details for Kitchen */}
+                      {isCustom && (
+                        <div className="bg-amber-50/70 border border-amber-200/80 rounded-xl p-2.5 text-[11px] space-y-1">
+                          <div className="flex flex-wrap items-center gap-1">
+                            {custom.size && (
+                              <span className="bg-white border border-amber-200 px-1.5 py-0.5 rounded font-bold text-amber-950">
+                                Size: {custom.size}
+                              </span>
+                            )}
+                            {custom.baseOrCrust && (
+                              <span className="bg-white border border-amber-200 px-1.5 py-0.5 rounded font-bold text-amber-950">
+                                Base: {custom.baseOrCrust}
+                              </span>
+                            )}
+                            {custom.spiceLevel && (
+                              <span className="bg-orange-100 border border-orange-200 px-1.5 py-0.5 rounded font-bold text-orange-900">
+                                Spice: {custom.spiceLevel}
+                              </span>
+                            )}
+                            {custom.selectedAddOns?.map((a, i) => (
+                              <span key={i} className="bg-amber-100/60 text-amber-900 px-1.5 py-0.5 rounded font-semibold">
+                                +{a.name}
+                              </span>
+                            ))}
+                            {custom.selectedSauces?.map((s, i) => (
+                              <span key={i} className="bg-emerald-100/60 text-emerald-900 px-1.5 py-0.5 rounded font-semibold">
+                                +{s.name}
+                              </span>
+                            ))}
+                          </div>
+
+                          {custom.specialInstructions && (
+                            <p className="text-orange-950 font-semibold pt-0.5">
+                              🍳 <span className="underline">Chef Note</span>: "{custom.specialInstructions}"
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
-                    <span className="font-black text-slate-900">
-                      ₹{it.price * it.quantity}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

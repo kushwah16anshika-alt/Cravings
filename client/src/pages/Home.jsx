@@ -412,6 +412,37 @@ const Home = () => {
               );
             })}
           </div>
+
+          {/* Custom Meal Studio Callout Card */}
+          <div className="mt-8 rounded-3xl bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 p-6 sm:p-8 text-white shadow-xl shadow-orange-600/20 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-2 z-10 max-w-xl text-center md:text-left">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-black uppercase tracking-wider backdrop-blur-xs">
+                <TbChefHat size={16} />
+                <span>Chef Experience</span>
+              </div>
+              <h3 className="font-heading text-xl sm:text-2xl font-black text-white">
+                Customize Every Bite with Meal Studio
+              </h3>
+              <p className="text-xs sm:text-sm text-orange-100 font-medium">
+                Want extra mozzarella on your pizza, a high-protein quinoa base, or a custom burger stack? Build your customized meal from scratch in seconds!
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 z-10 flex-shrink-0">
+              <button
+                onClick={() => navigate("/customize-meal")}
+                className="flex items-center gap-2 rounded-2xl bg-white px-6 py-3.5 text-xs sm:text-sm font-black text-orange-700 shadow-lg hover:bg-orange-50 active:scale-95 transition"
+              >
+                <IoSparkles className="text-orange-600" />
+                <span>Open Meal Studio</span>
+              </button>
+            </div>
+
+            {/* Background floating decor */}
+            <div className="absolute -right-10 -bottom-10 opacity-15 text-white pointer-events-none text-9xl select-none font-black">
+              🍽️
+            </div>
+          </div>
         </div>
       </section>
 

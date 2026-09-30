@@ -194,22 +194,70 @@ const Order = () => {
                     </h4>
 
                     <div className="divide-y divide-slate-100 bg-white rounded-xl p-4 border border-slate-200/80">
-                      {order.orderItems?.map((item, idx) => (
-                        <div
-                          key={idx}
-                          className="py-2 first:pt-0 last:pb-0 flex items-center justify-between text-xs font-medium text-slate-700"
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="h-5 w-5 rounded-md bg-orange-50 text-orange-700 flex items-center justify-center font-bold text-[10px] border border-orange-100/80">
-                              {item.quantity || 1}x
-                            </span>
-                            <span>{item.itemName || "Item"}</span>
+                      {order.orderItems?.map((item, idx) => {
+                        const custom = item.customization || {};
+                        const isCustom = custom.isCustomized;
+
+                        return (
+                          <div
+                            key={idx}
+                            className="py-3 first:pt-0 last:pb-0 flex flex-col gap-1.5 text-xs text-slate-700"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <span className="h-5 w-5 rounded-md bg-orange-50 text-orange-700 flex items-center justify-center font-bold text-[10px] border border-orange-100/80">
+                                  {item.quantity || 1}x
+                                </span>
+                                <span className="font-bold text-slate-800">{item.itemName || "Item"}</span>
+                                {isCustom && (
+                                  <span className="rounded-md bg-orange-100 px-1.5 py-0.2 text-[9px] font-black text-orange-700">
+                                    Customized
+                                  </span>
+                                )}
+                              </div>
+                              <span className="text-slate-900 font-bold">
+                                ₹{(item.price || 0) * (item.quantity || 1)}
+                              </span>
+                            </div>
+
+                            {/* Customization Details */}
+                            {isCustom && (
+                              <div className="ml-7 flex flex-wrap items-center gap-1 text-[11px] text-slate-500">
+                                {custom.size && (
+                                  <span className="bg-slate-100 px-1.5 py-0.5 rounded font-semibold text-slate-700">
+                                    Size: {custom.size}
+                                  </span>
+                                )}
+                                {custom.baseOrCrust && (
+                                  <span className="bg-slate-100 px-1.5 py-0.5 rounded font-semibold text-slate-700">
+                                    Base: {custom.baseOrCrust}
+                                  </span>
+                                )}
+                                {custom.spiceLevel && (
+                                  <span className="bg-orange-50 text-orange-800 px-1.5 py-0.5 rounded font-semibold">
+                                    {custom.spiceLevel}
+                                  </span>
+                                )}
+                                {custom.selectedAddOns?.map((a, i) => (
+                                  <span key={i} className="bg-amber-50 text-amber-800 px-1.5 py-0.5 rounded font-medium">
+                                    +{a.name}
+                                  </span>
+                                ))}
+                                {custom.selectedSauces?.map((s, i) => (
+                                  <span key={i} className="bg-emerald-50 text-emerald-800 px-1.5 py-0.5 rounded font-medium">
+                                    +{s.name}
+                                  </span>
+                                ))}
+                                {custom.specialInstructions && (
+                                  <span className="w-full mt-0.5 text-orange-900 bg-orange-50/80 px-2 py-0.5 rounded italic">
+                                    Note: "{custom.specialInstructions}"
+                                  </span>
+                                )}
+                              </div>
+                            )}
                           </div>
-                          <span className="text-slate-900 font-bold">
-                            ₹{(item.price || 0) * (item.quantity || 1)}
-                          </span>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
 
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
