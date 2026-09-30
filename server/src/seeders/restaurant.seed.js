@@ -1313,16 +1313,146 @@ export const restaurantSeed = async () => {
         await existing.deleteOne();
       }
 
-      // Create restaurant
-      const createdRestaurant = await Restaurant.create(restData);
+      // Helper to generate intelligent customization options based on dish category
+      const enrichWithCustomization = (item) => {
+        if (item.customizationOptions && item.customizationOptions.isCustomizable) {
+          return item;
+        }
+
+        const cat = (item.category || "").toLowerCase();
+        const itemName = (item.itemName || "").toLowerCase();
+        const isVeg = (item.foodType || "").toLowerCase().includes("veg") && !(item.foodType || "").toLowerCase().includes("non");
+
+        let customization = {
+          isCustomizable: true,
+          sizes: [
+            { name: "Regular Portion", priceExtra: 0 },
+            { name: "Large / Sharing (+50%)", priceExtra: Math.round(item.price * 0.35) },
+          ],
+          crustsOrBases: [],
+          spiceLevels: ["Mild", "Medium", "Spicy 🌶️", "Extra Hot 🌶️🌶️"],
+          addOns: [],
+          saucesOrDips: [
+            { name: "House Mint Dip", price: 20 },
+            { name: "Spicy Chipotle Sauce", price: 25 },
+            { name: "Garlic Mayo", price: 20 },
+          ],
+        };
+
+        if (cat.includes("pizza") || itemName.includes("pizza")) {
+          customization.sizes = [
+            { name: "Regular (8 inch)", priceExtra: 0 },
+            { name: "Medium (10 inch)", priceExtra: 80 },
+            { name: "Large (12 inch)", priceExtra: 150 },
+          ];
+          customization.crustsOrBases = [
+            { name: "Hand Tossed Classic", priceExtra: 0 },
+            { name: "Thin & Crispy Wheat", priceExtra: 30 },
+            { name: "Cheese Burst Stuffed Crust", priceExtra: 75 },
+            { name: "Garlic Herb Crust", priceExtra: 45 },
+          ];
+          customization.addOns = [
+            { name: "Extra Mozzarella Cheese", price: 45 },
+            { name: "Jalapeño & Black Olives", price: 35 },
+            { name: "Fresh Basil & Sun-dried Tomato", price: 30 },
+            ...(isVeg
+              ? [{ name: "Sautéed Wild Mushrooms", price: 40 }, { name: "Paneer Tikka Chunks", price: 45 }]
+              : [{ name: "Smoky Pork/Chicken Pepperoni", price: 65 }, { name: "Spicy Grilled Chicken", price: 55 }]),
+          ];
+        } else if (cat.includes("burger") || cat.includes("sandwich") || itemName.includes("burger")) {
+          customization.sizes = [
+            { name: "Single Patty", priceExtra: 0 },
+            { name: "Double Loaded Patty", priceExtra: 65 },
+          ];
+          customization.crustsOrBases = [
+            { name: "Toasted Brioche Bun", priceExtra: 0 },
+            { name: "Whole Wheat Multigrain Bun", priceExtra: 20 },
+            { name: "Lettuce Wrap (Keto)", priceExtra: 25 },
+          ];
+          customization.addOns = [
+            { name: "Melted Cheddar Cheese Slice", price: 30 },
+            { name: "Caramelized Onions & Gherkins", price: 25 },
+            { name: "Crispy Peri-Peri Fries on Top", price: 35 },
+            ...(isVeg
+              ? [{ name: "Extra Herb Potato/Paneer Patty", price: 45 }]
+              : [{ name: "Crispy Smoked Bacon Strips", price: 60 }, { name: "Sunny Side Up Fried Egg", price: 25 }]),
+          ];
+        } else if (cat.includes("biryani") || cat.includes("rice") || cat.includes("curry") || cat.includes("dal") || cat.includes("main")) {
+          customization.sizes = [
+            { name: "Regular Meal", priceExtra: 0 },
+            { name: "King / Jumbo Platter", priceExtra: 90 },
+          ];
+          customization.crustsOrBases = [
+            { name: "Fragrant Steamed Basmati Rice", priceExtra: 0 },
+            { name: "Jeera & Ghee Rice", priceExtra: 30 },
+            { name: "Whole Wheat Tandoori Roti (2 pcs)", priceExtra: 35 },
+            { name: "Butter Garlic Naan (1 pc)", priceExtra: 45 },
+          ];
+          customization.addOns = [
+            { name: "Boiled Spiced Egg", price: 25 },
+            { name: "Creamy Boondi Raita (150ml)", price: 35 },
+            { name: "Roasted Masala Papad & Chutney", price: 25 },
+            ...(isVeg
+              ? [{ name: "Extra Fresh Malai Paneer Cubes", price: 50 }]
+              : [{ name: "Extra Succulent Chicken Piece", price: 70 }]),
+          ];
+        } else if (cat.includes("pasta") || cat.includes("noodle") || cat.includes("asian")) {
+          customization.sizes = [
+            { name: "Standard Bowl", priceExtra: 0 },
+            { name: "Large Grande Portion", priceExtra: 70 },
+          ];
+          customization.crustsOrBases = [
+            { name: "Classic Penne / Hakka Noodle", priceExtra: 0 },
+            { name: "Fettuccine / Flat Rice Noodle", priceExtra: 30 },
+            { name: "Whole Wheat Grain Pasta", priceExtra: 35 },
+          ];
+          customization.addOns = [
+            { name: "Fresh Garlic Bread (2 pcs)", price: 45 },
+            { name: "Aged Shaved Parmesan Cheese", price: 40 },
+            { name: "Sautéed Broccoli & Zucchini", price: 35 },
+            ...(isVeg
+              ? [{ name: "Crisp Herb Tofu Cubes", price: 40 }]
+              : [{ name: "Herb Roasted Chicken Chunks", price: 60 }]),
+          ];
+        } else if (cat.includes("drink") || cat.includes("beverage") || cat.includes("shake") || cat.includes("coffee")) {
+          customization.sizes = [
+            { name: "Regular (350ml)", priceExtra: 0 },
+            { name: "Large (500ml)", priceExtra: 45 },
+          ];
+          customization.crustsOrBases = [
+            { name: "Standard Ice & Sweetness", priceExtra: 0 },
+            { name: "Less Sweet / Sugar Free", priceExtra: 0 },
+            { name: "Extra Chilled with Crushed Ice", priceExtra: 0 },
+          ];
+          customization.addOns = [
+            { name: "Whipped Cream Swirl", price: 25 },
+            { name: "Vanilla Bean Ice Cream Scoop", price: 35 },
+            { name: "Chewy Brown Sugar Boba", price: 30 },
+            { name: "Extra Shot of Espresso", price: 35 },
+          ];
+          customization.saucesOrDips = [
+            { name: "Chocolate Drizzle", price: 15 },
+            { name: "Caramel Sauce Drizzle", price: 15 },
+          ];
+        } else {
+          customization.addOns = [
+            { name: "Extra Seasoning & Herbs", price: 15 },
+            { name: "Gourmet Dip Pack", price: 25 },
+          ];
+        }
+
+        return { ...item, customizationOptions: customization };
+      };
+
+      const enrichedMenuItems = menuItems.map(enrichWithCustomization);
 
       // Create restaurant menu
       await Menu.create({
         restaurantId: createdRestaurant._id,
-        menuItems: menuItems,
+        menuItems: enrichedMenuItems,
       });
 
-      console.log(`✅ Seeded: ${createdRestaurant.restaurantName} (${menuItems.length} menu items)`);
+      console.log(`✅ Seeded: ${createdRestaurant.restaurantName} (${enrichedMenuItems.length} customizable menu items)`);
     }
 
     console.log("🎉 All 8 Restaurants & Full Menus Seeded Successfully!");
