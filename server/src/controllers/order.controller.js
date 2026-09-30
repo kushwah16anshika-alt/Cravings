@@ -79,7 +79,13 @@ export const CreateOrder = async (req, res, next) => {
     let itemsAmount = 0;
 
     for (const item of orderItems) {
-      const menuItem = menuDoc.menuItems.id(item.itemId);
+      let menuItem = menuDoc.menuItems.id(item.itemId);
+      
+      // Fallback for custom meal studio dishes if matched by first active item
+      if (!menuItem && menuDoc.menuItems?.length > 0) {
+        menuItem = menuDoc.menuItems[0];
+      }
+
       const qty = Number(item.quantity);
 
       if (!menuItem || !qty || qty < 1) {
@@ -88,12 +94,68 @@ export const CreateOrder = async (req, res, next) => {
         return next(error);
       }
 
-      itemsAmount += Number(menuItem.price) * qty;
+      const basePrice = Number(menuItem.price) || 0;
+      let customizationPrice = 0;
+      let sanitizedCustomization = null;
+
+      if (item.customization && (item.customization.isCustomized || item.customization.customizationPrice > 0 || item.customization.size || item.customization.specialInstructions)) {
+        const sizeExtra = Number(item.customization.sizeExtra) || 0;
+        const baseExtra = Number(item.customization.baseExtra) || 0;
+        const addOnsTotal = Array.isArray(item.customization.selectedAddOns)
+          ? item.customization.selectedAddOns.reduce(
+              (sum, a) => sum + (Number(a.price) || 0),
+              0
+            )
+          : 0;
+        const saucesTotal = Array.isArray(item.customization.selectedSauces)
+          ? item.customization.selectedSauces.reduce(
+              (sum, s) => sum + (Number(s.price) || 0),
+              0
+            )
+          : 0;
+
+        customizationPrice =
+          Number(item.customization.customizationPrice) ||
+          (sizeExtra + baseExtra + addOnsTotal + saucesTotal);
+
+        sanitizedCustomization = {
+          isCustomized: true,
+          size: item.customization.size || "",
+          sizeExtra,
+          baseOrCrust: item.customization.baseOrCrust || "",
+          baseExtra,
+          spiceLevel: item.customization.spiceLevel || "",
+          selectedAddOns: Array.isArray(item.customization.selectedAddOns)
+            ? item.customization.selectedAddOns
+            : [],
+          selectedSauces: Array.isArray(item.customization.selectedSauces)
+            ? item.customization.selectedSauces
+            : [],
+          specialInstructions: item.customization.specialInstructions || "",
+          customizationPrice,
+        };
+      }
+
+      const itemUnitPrice = (item.isCustomMealStudio && item.price) ? Number(item.price) : (basePrice + customizationPrice);
+      itemsAmount += itemUnitPrice * qty;
+
       normalizedOrderItems.push({
         itemId: menuItem._id,
-        itemName: menuItem.itemName || "",
-        price: Number(menuItem.price) || 0,
+        itemName: item.itemName || menuItem.itemName || "Customized Dish",
+        price: itemUnitPrice,
         quantity: qty,
+        customization: sanitizedCustomization || {
+          isCustomized: false,
+          size: "",
+          sizeExtra: 0,
+          baseOrCrust: "",
+          baseExtra: 0,
+          spiceLevel: "",
+          selectedAddOns: [],
+          selectedSauces: [],
+          specialInstructions: "",
+          customizationPrice: 0,
+        },
       });
     }
 

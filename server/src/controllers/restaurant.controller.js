@@ -540,6 +540,25 @@ export const RestaurantAddMenuItem = async (
     const toBool = (val) => val === true || val === "true";
     const parsedPrice = Number(price) || 0;
 
+    let parsedCustomization = {
+      isCustomizable: false,
+      sizes: [],
+      crustsOrBases: [],
+      spiceLevels: [],
+      addOns: [],
+      saucesOrDips: [],
+    };
+    if (req.body.customizationOptions) {
+      try {
+        parsedCustomization =
+          typeof req.body.customizationOptions === "string"
+            ? JSON.parse(req.body.customizationOptions)
+            : req.body.customizationOptions;
+      } catch (e) {
+        console.log("Failed to parse customizationOptions:", e.message);
+      }
+    }
+
     const menuItemData = {
       itemName: itemName.trim(),
       description: description.trim(),
@@ -552,6 +571,7 @@ export const RestaurantAddMenuItem = async (
       isNew: toBool(isNew),
       isDeleted: toBool(isDeleted),
       image: itemImage,
+      customizationOptions: parsedCustomization,
     };
 
     let existingMenuItem = await Menu.findOne({
@@ -800,6 +820,17 @@ export const RestaurantUpdateMenuItem = async (
 
     if (isNew !== undefined)
       menuItem.isNew = isNew;
+
+    if (req.body.customizationOptions !== undefined) {
+      try {
+        menuItem.customizationOptions =
+          typeof req.body.customizationOptions === "string"
+            ? JSON.parse(req.body.customizationOptions)
+            : req.body.customizationOptions;
+      } catch (e) {
+        console.log("Failed to parse customizationOptions in edit:", e.message);
+      }
+    }
 
     if (itemImageFromFE) {
       if (menuItem.image) {
