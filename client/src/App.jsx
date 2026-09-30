@@ -18,6 +18,7 @@ import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import Test from "./pages/Test";
 import OrderNow from "./pages/OrderNow";
 import RestaurantDetailsPage from "./pages/RestaurantDetailsPage";
+import CustomMealStudio from "./pages/CustomMealStudio";
 import Cart from "./components/Cart";
 
 const App = () => {
@@ -47,6 +48,8 @@ const App = () => {
 
           <Route path="/test" element={<Test />} />
           <Route path="/order-now" element={<OrderNow />} />
+          <Route path="/customize-meal" element={<CustomMealStudio />} />
+          <Route path="/build-meal" element={<CustomMealStudio />} />
 
           <Route
             path="/restaurant-details/:restaurantId"

@@ -13,8 +13,11 @@ import {
   IoRemove,
   IoShieldCheckmarkOutline,
   IoTicketOutline,
+  IoSparkles,
+  IoFlame,
 } from "react-icons/io5";
-import { MdOutlineRestaurantMenu, MdArrowForward } from "react-icons/md";
+import { MdOutlineRestaurantMenu, MdArrowForward, MdNotes } from "react-icons/md";
+import { TbChefHat } from "react-icons/tb";
 
 const Cart = () => {
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
@@ -80,13 +83,17 @@ const Cart = () => {
     try {
       setIsPlacingOrder(true);
 
-      // 1. Create order in DB
+      // 1. Create order in DB with full customization details
       const createOrderRes = await api.post("/order/create", {
         restaurantId: cart.restaurantId,
         paymentMethod: "upi",
         orderItems: cart.items.map((i) => ({
-          itemId: i._id,
+          itemId: i.itemId || i._id,
+          itemName: i.itemName,
+          price: i.price,
           quantity: i.quantity,
+          isCustomMealStudio: !!i.isCustomMealStudio,
+          customization: i.customization || null,
         })),
       });
       const appOrderId = createOrderRes?.data?.data?._id;
@@ -189,16 +196,25 @@ const Cart = () => {
           Your cart is feeling light
         </h2>
         <p className="text-sm text-slate-500 max-w-sm mb-6">
-          Explore the best restaurants, add delicious meals, and satisfy your cravings in minutes.
+          Explore the best restaurants, customize dishes to your taste, and satisfy your cravings in minutes.
         </p>
 
-        <Link
-          to="/order-now"
-          className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 px-7 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-orange-600/30 hover:from-orange-500 hover:to-amber-500 active:scale-95 transition"
-        >
-          <span>Explore Restaurants</span>
-          <MdArrowForward size={18} />
-        </Link>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Link
+            to="/order-now"
+            className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 px-7 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-orange-600/30 hover:from-orange-500 hover:to-amber-500 active:scale-95 transition"
+          >
+            <span>Explore Restaurants</span>
+            <MdArrowForward size={18} />
+          </Link>
+          <Link
+            to="/customize-meal"
+            className="inline-flex items-center gap-2 rounded-2xl bg-white border border-slate-200 px-6 py-3.5 text-sm font-extrabold text-slate-800 shadow-xs hover:bg-slate-50 active:scale-95 transition"
+          >
+            <TbChefHat size={18} className="text-orange-600" />
+            <span>Custom Meal Studio</span>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -245,88 +261,179 @@ const Cart = () => {
               </h3>
 
               <div className="divide-y divide-slate-100">
-                {cart.items.map((item) => (
-                  <div key={item._id} className="py-4 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
-                    {/* Image & Title */}
-                    <div className="flex items-center gap-3.5 min-w-0">
-                      <div className="relative h-16 w-16 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-100">
-                        {item.image?.url ? (
-                          <img
-                            src={item.image.url}
-                            alt={item.itemName}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="h-full w-full flex items-center justify-center bg-orange-50 text-orange-400">
-                            <MdOutlineRestaurantMenu size={24} />
+                {cart.items.map((item) => {
+                  const isCustom = item.customization?.isCustomized;
+                  const custom = item.customization || {};
+
+                  return (
+                    <div
+                      key={item.cartItemId || item._id}
+                      className="py-4 first:pt-0 last:pb-0 flex flex-col gap-3"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        {/* Image & Title */}
+                        <div className="flex items-start gap-3.5 min-w-0">
+                          <div className="relative h-16 w-16 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-100">
+                            {item.image?.url ? (
+                              <img
+                                src={item.image.url}
+                                alt={item.itemName}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <div className="h-full w-full flex items-center justify-center bg-orange-50 text-orange-400">
+                                <MdOutlineRestaurantMenu size={24} />
+                              </div>
+                            )}
+                            <span
+                              className={`absolute top-1 left-1 w-2.5 h-2.5 rounded-full border border-white ${foodTypeDot(
+                                item.foodType
+                              )}`}
+                            />
                           </div>
-                        )}
-                        <span
-                          className={`absolute top-1 left-1 w-2.5 h-2.5 rounded-full border border-white ${foodTypeDot(
-                            item.foodType
-                          )}`}
-                        />
+
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <h4 className="font-heading text-sm font-extrabold text-slate-900">
+                                {item.itemName}
+                              </h4>
+                              {isCustom && (
+                                <span className="inline-flex items-center gap-0.5 rounded-md bg-orange-100 px-1.5 py-0.5 text-[9px] font-black text-orange-700">
+                                  <IoSparkles size={9} />
+                                  <span>Customized</span>
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs font-bold text-slate-400 mt-0.5">
+                              ₹{item.price} each
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Counter & Price */}
+                        <div className="flex items-center gap-4 flex-shrink-0">
+                          <div className="flex items-center gap-1.5 rounded-xl bg-orange-50 p-1 border border-orange-100">
+                            <button
+                              onClick={() => decreaseItem(item.cartItemId || item._id)}
+                              className="flex h-6 w-6 items-center justify-center rounded-lg bg-white text-orange-700 shadow-xs hover:bg-orange-600 hover:text-white transition active:scale-90"
+                            >
+                              <IoRemove size={14} />
+                            </button>
+                            <span className="font-heading font-black text-xs min-w-4 text-center text-slate-900">
+                              {item.quantity}
+                            </span>
+                            <button
+                              onClick={() => increaseItem(item.cartItemId || item._id)}
+                              className="flex h-6 w-6 items-center justify-center rounded-lg bg-white text-orange-700 shadow-xs hover:bg-orange-600 hover:text-white transition active:scale-90"
+                            >
+                              <IoAdd size={14} />
+                            </button>
+                          </div>
+
+                          <div className="text-right min-w-16">
+                            <p className="font-heading text-sm font-black text-slate-900">
+                              ₹{(item.price * item.quantity).toFixed(2)}
+                            </p>
+                          </div>
+
+                          <button
+                            onClick={() => removeItem(item.cartItemId || item._id)}
+                            className="text-slate-400 hover:text-red-500 p-1 transition"
+                            title="Remove"
+                          >
+                            <IoTrashOutline size={16} />
+                          </button>
+                        </div>
                       </div>
 
-                      <div className="min-w-0">
-                        <h4 className="font-heading text-sm font-extrabold text-slate-900 truncate">
-                          {item.itemName}
-                        </h4>
-                        <p className="text-xs font-bold text-slate-400">
-                          ₹{item.price} each
-                        </p>
-                      </div>
+                      {/* Customization Details Breakdown */}
+                      {isCustom && (
+                        <div className="ml-0 sm:ml-19.5 bg-slate-50/80 rounded-2xl p-3 border border-slate-200/60 text-[11px] space-y-1.5">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            {custom.size && (
+                              <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200 font-extrabold text-slate-800">
+                                Size: {custom.size}
+                              </span>
+                            )}
+                            {custom.baseOrCrust && (
+                              <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200 font-extrabold text-slate-800">
+                                Base: {custom.baseOrCrust}
+                              </span>
+                            )}
+                            {custom.spiceLevel && (
+                              <span className="px-2 py-0.5 rounded-md bg-orange-100/60 border border-orange-200 font-extrabold text-orange-800 flex items-center gap-0.5">
+                                <IoFlame size={10} />
+                                <span>{custom.spiceLevel}</span>
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Add-ons list */}
+                          {custom.selectedAddOns?.length > 0 && (
+                            <div className="text-slate-600 flex flex-wrap items-center gap-1">
+                              <span className="font-bold text-slate-700">Add-ons:</span>
+                              {custom.selectedAddOns.map((addon, idx) => (
+                                <span
+                                  key={idx}
+                                  className="bg-amber-50 text-amber-900 border border-amber-200/80 px-1.5 py-0.2 rounded-md font-semibold"
+                                >
+                                  +{addon.name} (+₹{addon.price})
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Sauces list */}
+                          {custom.selectedSauces?.length > 0 && (
+                            <div className="text-slate-600 flex flex-wrap items-center gap-1">
+                              <span className="font-bold text-slate-700">Sauces:</span>
+                              {custom.selectedSauces.map((sauce, idx) => (
+                                <span
+                                  key={idx}
+                                  className="bg-emerald-50 text-emerald-900 border border-emerald-200/80 px-1.5 py-0.2 rounded-md font-semibold"
+                                >
+                                  +{sauce.name}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Kitchen Note */}
+                          {custom.specialInstructions && (
+                            <div className="text-orange-950 font-medium flex items-center gap-1 bg-orange-100/50 p-1.5 rounded-lg border border-orange-200/60">
+                              <MdNotes className="text-orange-600 flex-shrink-0" />
+                              <span>
+                                <strong>Note:</strong> "{custom.specialInstructions}"
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
-
-                    {/* Counter & Price */}
-                    <div className="flex items-center gap-4 flex-shrink-0">
-                      <div className="flex items-center gap-1.5 rounded-xl bg-orange-50 p-1 border border-orange-100">
-                        <button
-                          onClick={() => decreaseItem(item._id)}
-                          className="flex h-6 w-6 items-center justify-center rounded-lg bg-white text-orange-700 shadow-xs hover:bg-orange-600 hover:text-white transition active:scale-90"
-                        >
-                          <IoRemove size={14} />
-                        </button>
-                        <span className="font-heading font-black text-xs min-w-4 text-center text-slate-900">
-                          {item.quantity}
-                        </span>
-                        <button
-                          onClick={() => increaseItem(item._id)}
-                          className="flex h-6 w-6 items-center justify-center rounded-lg bg-white text-orange-700 shadow-xs hover:bg-orange-600 hover:text-white transition active:scale-90"
-                        >
-                          <IoAdd size={14} />
-                        </button>
-                      </div>
-
-                      <div className="text-right min-w-16">
-                        <p className="font-heading text-sm font-black text-slate-900">
-                          ₹{(item.price * item.quantity).toFixed(2)}
-                        </p>
-                      </div>
-
-                      <button
-                        onClick={() => removeItem(item._id)}
-                        className="text-slate-400 hover:text-red-500 p-1 transition"
-                        title="Remove"
-                      >
-                        <IoTrashOutline size={16} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
             {/* Add more items link */}
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-orange-50/70 border border-orange-100 text-xs font-bold text-slate-700">
+            <div className="flex flex-col sm:flex-row items-center justify-between p-4 rounded-2xl bg-orange-50/70 border border-orange-100 text-xs font-bold text-slate-700 gap-2">
               <span>Want something else from {cart.restaurantName}?</span>
-              <Link
-                to={`/restaurant-details/${cart.restaurantId}`}
-                className="text-orange-600 hover:underline font-black flex items-center gap-0.5"
-              >
-                <span>Add More Dishes</span>
-                <MdArrowForward />
-              </Link>
+              <div className="flex items-center gap-3">
+                <Link
+                  to="/customize-meal"
+                  className="text-amber-700 hover:underline font-black flex items-center gap-1"
+                >
+                  <TbChefHat />
+                  <span>Build Custom Box</span>
+                </Link>
+                <Link
+                  to={`/restaurant-details/${cart.restaurantId}`}
+                  className="text-orange-600 hover:underline font-black flex items-center gap-0.5"
+                >
+                  <span>Add More Dishes</span>
+                  <MdArrowForward />
+                </Link>
+              </div>
             </div>
           </div>
 

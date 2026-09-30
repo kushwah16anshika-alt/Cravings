@@ -80,6 +80,7 @@ const Navbar = () => {
   const navLinks = [
     { label: "Home", path: "/" },
     { label: "Explore Food", path: "/order-now", badge: "Hot" },
+    { label: "Customize Meal", path: "/customize-meal", badge: "Studio" },
     { label: "Help & FAQs", path: "/help-center" },
     { label: "Contact", path: "/contact" },
   ];
