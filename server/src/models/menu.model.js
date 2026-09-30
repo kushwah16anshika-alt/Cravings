@@ -69,6 +69,38 @@ const MenuItemSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    customizationOptions: {
+      isCustomizable: {
+        type: Boolean,
+        default: false,
+      },
+      sizes: [
+        {
+          name: { type: String, default: "" },
+          priceExtra: { type: Number, default: 0 },
+        },
+      ],
+      crustsOrBases: [
+        {
+          name: { type: String, default: "" },
+          priceExtra: { type: Number, default: 0 },
+        },
+      ],
+      spiceLevels: [{ type: String }],
+      addOns: [
+        {
+          name: { type: String, default: "" },
+          price: { type: Number, default: 0 },
+        },
+      ],
+      saucesOrDips: [
+        {
+          name: { type: String, default: "" },
+          price: { type: Number, default: 0 },
+        },
+      ],
+    },
   },
   {
     suppressReservedKeysWarning: true,

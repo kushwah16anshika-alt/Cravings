@@ -39,6 +39,52 @@ const OrderSchema = mongoose.Schema(
             type: Number,
             required: true,
           },
+          customization: {
+            isCustomized: {
+              type: Boolean,
+              default: false,
+            },
+            size: {
+              type: String,
+              default: "",
+            },
+            sizeExtra: {
+              type: Number,
+              default: 0,
+            },
+            baseOrCrust: {
+              type: String,
+              default: "",
+            },
+            baseExtra: {
+              type: Number,
+              default: 0,
+            },
+            spiceLevel: {
+              type: String,
+              default: "",
+            },
+            selectedAddOns: [
+              {
+                name: { type: String },
+                price: { type: Number, default: 0 },
+              },
+            ],
+            selectedSauces: [
+              {
+                name: { type: String },
+                price: { type: Number, default: 0 },
+              },
+            ],
+            specialInstructions: {
+              type: String,
+              default: "",
+            },
+            customizationPrice: {
+              type: Number,
+              default: 0,
+            },
+          },
         },
       ],
     },
