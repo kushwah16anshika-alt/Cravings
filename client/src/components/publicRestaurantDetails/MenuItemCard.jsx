@@ -1,20 +1,29 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
-import { IoStar, IoAdd, IoRemove } from "react-icons/io5";
+import { IoStar, IoAdd, IoRemove, IoSparkles } from "react-icons/io5";
 
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
+import CustomizeMealModal from "./CustomizeMealModal";
 
 const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
   const { isLogin, user, role } = useAuth();
-  const { addItem, increaseItem, decreaseItem, getItemQuantity, replaceCart } =
+  const { addItem, increaseItem, decreaseItem, getItemQuantity, getItemVariants, replaceCart } =
     useCart();
   const [showConflictModal, setShowConflictModal] = useState(false);
+  const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
 
   const isCustomer = isLogin && user && (role === "user" || role === "customer");
   const isUnavailable = item.status === "unavailable" || item.status === "discontinued";
   const itemCount = isCustomer ? getItemQuantity(item._id) : 0;
+  const itemVariants = isCustomer ? getItemVariants(item._id) : [];
+
+  const isCustomizable =
+    item.customizationOptions?.isCustomizable ||
+    (item.customizationOptions?.sizes && item.customizationOptions.sizes.length > 0) ||
+    (item.customizationOptions?.addOns && item.customizationOptions.addOns.length > 0) ||
+    (item.customizationOptions?.crustsOrBases && item.customizationOptions.crustsOrBases.length > 0);
 
   const handleAdd = () => {
     if (!isLogin || !user) {
@@ -26,6 +35,12 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
       return;
     }
     if (isUnavailable) return;
+
+    if (isCustomizable) {
+      setIsCustomizeOpen(true);
+      return;
+    }
+
     const result = addItem(item, restaurantId, restaurantName);
     if (result === "different_restaurant") {
       setShowConflictModal(true);
