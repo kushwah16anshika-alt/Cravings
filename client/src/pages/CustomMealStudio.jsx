@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   IoSparkles,
   IoCheckmarkCircle,
@@ -7,11 +7,8 @@ import {
   IoNutritionOutline,
   IoArrowBack,
   IoStorefrontOutline,
-  IoRestaurantOutline,
-  IoFlashOutline,
 } from "react-icons/io5";
 import { TbChefHat } from "react-icons/tb";
-import { MdOutlineFastfood } from "react-icons/md";
 import toast from "react-hot-toast";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -188,7 +185,6 @@ const CustomMealStudio = () => {
   const [selectedSide, setSelectedSide] = useState(MEAL_ARCHETYPES[0].sideOptions[0]);
   const [spiceLevel, setSpiceLevel] = useState("Medium");
   const [specialInstructions, setSpecialInstructions] = useState("");
-  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const fetchRestaurants = async () => {

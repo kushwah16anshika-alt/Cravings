@@ -6,7 +6,7 @@ const CART_KEY = "cravings_cart";
 const emptyCart = { restaurantId: null, restaurantName: "", items: [] };
 
 // Generate a deterministic or unique ID for a customized item
-export const generateCartItemId = (itemId, customization) => {
+const generateCartItemId = (itemId, customization) => {
   if (!customization || !customization.isCustomized) {
     return String(itemId);
   }
