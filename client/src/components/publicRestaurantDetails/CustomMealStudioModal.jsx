@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import {
   IoClose,
@@ -8,15 +8,7 @@ import {
   IoNutritionOutline,
   IoArrowForward,
   IoArrowBack,
-  IoStorefrontOutline,
 } from "react-icons/io5";
-import {
-  MdOutlineFastfood,
-  MdOutlineDinnerDining,
-  MdOutlineLunchDining,
-  MdOutlineLocalPizza,
-  MdOutlineRamenDining,
-} from "react-icons/md";
 import { TbChefHat } from "react-icons/tb";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";

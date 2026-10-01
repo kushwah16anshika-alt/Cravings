@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect } from "react";
 import toast from "react-hot-toast";
 import {
   IoClose,
-  IoStar,
   IoAdd,
   IoRemove,
   IoSparkles,

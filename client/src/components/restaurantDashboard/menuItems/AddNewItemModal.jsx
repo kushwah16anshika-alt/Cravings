@@ -63,7 +63,7 @@ const AddNewItemModal = ({ isOpen, onClose, onActionSuccess }) => {
     { name: "Extra Cheese", price: 40 },
     { name: "Extra Dip / Sauce", price: 20 },
   ]);
-  const [spiceLevels, setSpiceLevels] = React.useState([
+  const [spiceLevels] = React.useState([
     "Mild",
     "Medium",
     "Spicy",
