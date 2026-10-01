@@ -7,6 +7,8 @@ import {
   IoNutritionOutline,
   IoArrowBack,
   IoStorefrontOutline,
+  IoAdd,
+  IoRemove,
 } from "react-icons/io5";
 import { TbChefHat } from "react-icons/tb";
 import toast from "react-hot-toast";
@@ -185,6 +187,7 @@ const CustomMealStudio = () => {
   const [selectedSide, setSelectedSide] = useState(MEAL_ARCHETYPES[0].sideOptions[0]);
   const [spiceLevel, setSpiceLevel] = useState("Medium");
   const [specialInstructions, setSpecialInstructions] = useState("");
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -724,6 +727,31 @@ const CustomMealStudio = () => {
 
               {/* Total & Action */}
               <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                    Quantity
+                  </span>
+                  <div className="flex items-center gap-3 bg-slate-100 rounded-full px-3 py-1">
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                      className="text-slate-600 hover:text-orange-600 font-bold transition active:scale-90"
+                    >
+                      <IoRemove size={16} />
+                    </button>
+                    <span className="font-heading font-black text-sm text-slate-900 w-4 text-center">
+                      {quantity}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((q) => Math.min(20, q + 1))}
+                      className="text-slate-600 hover:text-orange-600 font-bold transition active:scale-90"
+                    >
+                      <IoAdd size={16} />
+                    </button>
+                  </div>
+                </div>
+
                 <div className="flex items-center justify-between">
                   <span className="font-heading text-base font-black text-slate-900">
                     Meal Price
