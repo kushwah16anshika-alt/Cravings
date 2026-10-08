@@ -20,6 +20,7 @@ import OrderNow from "./pages/OrderNow";
 import RestaurantDetailsPage from "./pages/RestaurantDetailsPage";
 import CustomMealStudio from "./pages/CustomMealStudio";
 import Cart from "./components/Cart";
+import TrackOrderPage from "./pages/TrackOrderPage";
 
 const App = () => {
   return (
@@ -61,6 +62,8 @@ const App = () => {
           />
 
           <Route path="/cart" element={<Cart />} />
+          <Route path="/track-order" element={<TrackOrderPage />} />
+          <Route path="/track-order/:orderId" element={<TrackOrderPage />} />
         </Routes>
       </main>
 
