@@ -1,6 +1,8 @@
 import Customer from "../models/customer.model.js";
 import Menu from "../models/menu.model.js";
 import Order from "../models/order.model.js";
+import Restaurant from "../models/restaurant.model.js";
+import Rider from "../models/rider.model.js";
 
 const getDefaultDeliveryAddress = (currentUser, defaultAddr) => {
   if (defaultAddr) {
@@ -201,6 +203,173 @@ export const CreateOrder = async (req, res, next) => {
     res.status(201).json({
       message: "Order created successfully",
       data: newOrder,
+    });
+  } catch (error) {
+    console.log(error.message);
+    next(error);
+  }
+};
+
+// ======================================
+// GET ORDER TRACKING DETAILS
+// ======================================
+export const GetOrderTracking = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+
+    if (!orderId) {
+      const error = new Error("Order ID is required");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const order = await Order.findById(orderId)
+      .populate("restaurantId", "restaurantName address city state pinCode geoLocation contactDetails coverImage averageRating")
+      .populate({
+        path: "riderId",
+        populate: {
+          path: "riderId",
+          select: "fullname phone photo",
+        },
+      });
+
+    if (!order) {
+      const error = new Error("Order not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    // Baseline coordinates
+    const defaultRestLat = 12.9716;
+    const defaultRestLng = 77.5946;
+
+    const restLat = parseFloat(order.restaurantId?.geoLocation?.lat) || defaultRestLat;
+    const restLng = parseFloat(order.restaurantId?.geoLocation?.lon) || defaultRestLng;
+
+    // Delivery address coords (fallback: approx 2km north-east if missing)
+    const destLat = parseFloat(order.deliveryAddress?.geoLocation?.lat) || (restLat + 0.0185);
+    const destLng = parseFloat(order.deliveryAddress?.geoLocation?.lon) || (restLng + 0.0152);
+
+    // Rider position calculation based on status
+    const status = (order.orderStatus || "pending").toLowerCase();
+    let riderProgress = 0; // 0 = at restaurant, 1 = at destination
+
+    if (status === "delivered") {
+      riderProgress = 1.0;
+    } else if (status === "outfordelivery" || status === "ontheway") {
+      riderProgress = 0.65;
+    } else if (status === "pickedup") {
+      riderProgress = 0.25;
+    } else if (status === "ready" || status === "preparing" || status === "accepted") {
+      riderProgress = 0.05;
+    } else {
+      riderProgress = 0.0;
+    }
+
+    const riderLat = restLat + (destLat - restLat) * riderProgress;
+    const riderLng = restLng + (destLng - restLng) * riderProgress;
+
+    const trackingData = {
+      orderId: order._id,
+      orderStatus: order.orderStatus,
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+      billDetails: order.billDetails,
+      orderItems: order.orderItems,
+      restaurant: {
+        id: order.restaurantId?._id,
+        name: order.restaurantId?.restaurantName || "Cravings Kitchen",
+        address: order.restaurantId?.address || "Culinary Avenue",
+        city: order.restaurantId?.city || "Bengaluru",
+        phone: order.restaurantId?.contactDetails?.phone || "+91 98765 43201",
+        rating: order.restaurantId?.averageRating || 4.8,
+        coverImage: order.restaurantId?.coverImage?.url || "",
+        location: {
+          lat: restLat,
+          lng: restLng,
+        },
+      },
+      destination: {
+        recipientName: order.deliveryAddress?.name || "Customer",
+        address: order.deliveryAddress?.address || "Delivery Address",
+        city: order.deliveryAddress?.city || "Bengaluru",
+        state: order.deliveryAddress?.state || "Karnataka",
+        pinCode: order.deliveryAddress?.pinCode || "560001",
+        location: {
+          lat: destLat,
+          lng: destLng,
+        },
+      },
+      rider: {
+        name: order.riderId?.riderId?.fullname || "Rahul Sharma",
+        phone: order.riderId?.riderId?.phone || "+91 98450 11223",
+        photo: order.riderId?.riderId?.photo?.url || "",
+        vehicle: order.riderId?.vehicleDetails?.vehicleModel 
+          ? `${order.riderId.vehicleDetails.vehicleModel} (${order.riderId.vehicleDetails.vehicleNumber || 'KA-01-EA-4521'})`
+          : "Honda Activa (KA-01-EA-4521)",
+        vehicleType: order.riderId?.vehicleDetails?.vehicleType || "Electric Scooter",
+        rating: order.riderId?.averageRating || 4.9,
+        location: {
+          lat: riderLat,
+          lng: riderLng,
+        },
+        progress: riderProgress,
+      },
+      estimatedMinutes: status === "delivered" ? 0 : status === "outfordelivery" || status === "ontheway" ? 12 : 25,
+      distanceKm: "2.4 km",
+    };
+
+    return res.status(200).json({
+      message: "Order tracking details fetched successfully",
+      data: trackingData,
+    });
+  } catch (error) {
+    console.log(error.message);
+    next(error);
+  }
+};
+
+// ======================================
+// SIMULATE / ADVANCE ORDER STATUS (DEMO)
+// ======================================
+export const UpdateOrderStatusForDemo = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    const allowed = [
+      "pending",
+      "accepted",
+      "preparing",
+      "ready",
+      "pickedUp",
+      "onTheWay",
+      "outForDelivery",
+      "delivered",
+      "cancelled",
+    ];
+
+    if (!status || !allowed.includes(status)) {
+      const error = new Error(`Invalid status. Allowed: ${allowed.join(", ")}`);
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const order = await Order.findByIdAndUpdate(
+      orderId,
+      { orderStatus: status },
+      { new: true }
+    );
+
+    if (!order) {
+      const error = new Error("Order not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    return res.status(200).json({
+      message: `Order status updated to ${status}`,
+      data: order,
     });
   } catch (error) {
     console.log(error.message);

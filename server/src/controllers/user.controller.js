@@ -328,7 +328,14 @@ export const GetAllOrders = async (req, res, next) => {
     const orders = await Order.find({
       customerId: { $in: customerIds },
     })
-      .populate("restaurantId", "restaurantName coverImage address city averageRating")
+      .populate("restaurantId", "restaurantName coverImage address city state pinCode averageRating geoLocation contactDetails")
+      .populate({
+        path: "riderId",
+        populate: {
+          path: "riderId",
+          select: "fullname phone photo",
+        },
+      })
       .sort({ createdAt: -1 });
 
     return res.status(200).json({
