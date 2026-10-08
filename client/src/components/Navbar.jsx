@@ -81,6 +81,7 @@ const Navbar = () => {
     { label: "Home", path: "/" },
     { label: "Explore Food", path: "/order-now", badge: "Hot" },
     { label: "Customize Meal", path: "/customize-meal", badge: "Studio" },
+    { label: "Track Order", path: "/track-order", badge: "Live GPS" },
     { label: "Help & FAQs", path: "/help-center" },
     { label: "Contact", path: "/contact" },
   ];

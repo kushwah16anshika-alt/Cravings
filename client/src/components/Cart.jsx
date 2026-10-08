@@ -113,9 +113,9 @@ const Cart = () => {
           razorpay_signature: "demo_signature",
         });
 
-        toast.success("🎉 Order placed successfully!");
+        toast.success("🎉 Order placed successfully! Tracking your delivery...");
         clearCart();
-        navigate("/customer-dashboard");
+        navigate(`/track-order/${appOrderId}`);
         return;
       }
 
@@ -143,9 +143,9 @@ const Cart = () => {
               razorpay_signature: response.razorpay_signature,
             });
 
-            toast.success("🎉 Payment verified and order confirmed!");
+            toast.success("🎉 Payment verified! Tracking your order live...");
             clearCart();
-            navigate("/customer-dashboard");
+            navigate(`/track-order/${appOrderId}`);
           } catch (err) {
             toast.error(
               err.response?.data?.message || "Payment verification failed"

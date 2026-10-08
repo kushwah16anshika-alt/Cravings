@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import Loader from "../Loader";
 import api from "../../config/api.config.js";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import OrderTrackingModal from "../orderTracking/OrderTrackingModal";
 import {
   IoStorefrontOutline,
   IoChevronDown,
   IoChevronUp,
+  IoMapOutline,
+  IoNavigateOutline,
 } from "react-icons/io5";
 import { MdDeliveryDining } from "react-icons/md";
 
@@ -28,9 +31,11 @@ const getStepIndex = (status) => {
 };
 
 const Order = () => {
+  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
+  const [trackingModalOrder, setTrackingModalOrder] = useState(null);
 
   const fetchAllOrders = async () => {
     try {
@@ -60,13 +65,25 @@ const Order = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="font-heading text-xl sm:text-2xl font-bold text-slate-900">
-          Order History
-        </h2>
-        <p className="text-xs sm:text-sm font-normal text-slate-500">
-          Track live deliveries and view past orders
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 className="font-heading text-xl sm:text-2xl font-bold text-slate-900">
+            Order History
+          </h2>
+          <p className="text-xs sm:text-sm font-normal text-slate-500">
+            Track live deliveries with Google Maps and view past order receipts
+          </p>
+        </div>
+
+        {orders.length > 0 && (
+          <Link
+            to="/track-order"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-orange-50 border border-orange-200 text-orange-700 text-xs font-bold hover:bg-orange-100 transition shadow-xs w-fit"
+          >
+            <IoMapOutline size={16} />
+            <span>Open Live Tracker</span>
+          </Link>
+        )}
       </div>
 
       {orders.length > 0 ? (
@@ -77,6 +94,7 @@ const Order = () => {
               (order.orderStatus || "").toLowerCase()
             );
             const isExpanded = expandedOrderId === order._id;
+            const isDelivered = (order.orderStatus || "").toLowerCase() === "delivered";
 
             const restaurantName =
               order.restaurantId?.restaurantName || "Featured Kitchen";
@@ -112,7 +130,20 @@ const Order = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between sm:justify-end gap-4">
+                  <div className="flex items-center justify-between sm:justify-end gap-3 flex-wrap sm:flex-nowrap">
+                    {/* Live Track Button */}
+                    <button
+                      onClick={() => setTrackingModalOrder(order)}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition shadow-xs ${
+                        !isDelivered && !isFailed
+                          ? "bg-gradient-to-r from-orange-600 to-amber-600 text-white hover:from-orange-500 hover:to-amber-500 shadow-orange-600/20"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                      }`}
+                    >
+                      <IoMapOutline size={14} />
+                      <span>{!isDelivered && !isFailed ? "Live Track Map" : "View Route"}</span>
+                    </button>
+
                     <div className="text-right">
                       <p className="font-heading text-base font-bold text-slate-900">
                         ₹{order.billDetails?.finalAmount || 0}
@@ -121,7 +152,7 @@ const Order = () => {
                         className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
                           isFailed
                             ? "bg-red-50 text-red-700 border border-red-200"
-                            : order.orderStatus === "delivered"
+                            : isDelivered
                             ? "bg-slate-100 text-slate-700 border border-slate-200"
                             : "bg-orange-50 text-orange-700 border border-orange-200"
                         }`}
@@ -130,9 +161,9 @@ const Order = () => {
                           className={`h-1.5 w-1.5 rounded-full ${
                             isFailed
                               ? "bg-red-500"
-                              : order.orderStatus === "delivered"
+                              : isDelivered
                               ? "bg-emerald-500"
-                              : "bg-orange-500"
+                              : "bg-orange-500 animate-pulse"
                           }`}
                         />
                         {order.orderStatus || "Pending"}
@@ -151,10 +182,20 @@ const Order = () => {
                 {/* Live Tracking Visual Stepper (if not failed) */}
                 {!isFailed && order.orderStatus !== "delivered" && (
                   <div className="p-5 bg-orange-50/40 border-b border-slate-100">
-                    <p className="text-xs font-bold uppercase tracking-wider text-orange-800 mb-4 flex items-center gap-1.5">
-                      <MdDeliveryDining size={16} />
-                      <span>Live Order Status</span>
-                    </p>
+                    <div className="flex items-center justify-between mb-4">
+                      <p className="text-xs font-bold uppercase tracking-wider text-orange-800 flex items-center gap-1.5">
+                        <MdDeliveryDining size={16} />
+                        <span>Live Delivery Tracker Active</span>
+                      </p>
+
+                      <button
+                        onClick={() => navigate(`/track-order/${order._id}`)}
+                        className="text-xs font-extrabold text-orange-600 hover:underline flex items-center gap-1"
+                      >
+                        <span>Full Map Screen</span>
+                        <IoNavigateOutline size={14} />
+                      </button>
+                    </div>
 
                     <div className="grid grid-cols-5 gap-2 relative">
                       {ORDER_STEPS.map((step, idx) => {
@@ -265,14 +306,24 @@ const Order = () => {
                         Delivery to: <span className="text-slate-800 font-semibold">{order.deliveryAddress?.address || "Delivery Address"}</span>
                       </p>
 
-                      {restId && (
-                        <Link
-                          to={`/restaurant-details/${restId}`}
-                          className="inline-flex items-center justify-center rounded-xl bg-orange-600 px-4 py-2 text-xs font-bold text-white hover:bg-orange-500 transition shadow-xs shadow-orange-600/20"
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setTrackingModalOrder(order)}
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-orange-200 bg-orange-50 px-3.5 py-2 text-xs font-bold text-orange-700 hover:bg-orange-100 transition shadow-xs"
                         >
-                          Order Again →
-                        </Link>
-                      )}
+                          <IoMapOutline size={15} />
+                          <span>Google Map Tracker</span>
+                        </button>
+
+                        {restId && (
+                          <Link
+                            to={`/restaurant-details/${restId}`}
+                            className="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white hover:bg-slate-800 transition shadow-xs"
+                          >
+                            Order Again →
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )}
@@ -297,6 +348,16 @@ const Order = () => {
             </Link>
           </div>
         </div>
+      )}
+
+      {/* Live Map Tracking Modal */}
+      {trackingModalOrder && (
+        <OrderTrackingModal
+          isOpen={!!trackingModalOrder}
+          onClose={() => setTrackingModalOrder(null)}
+          orderId={trackingModalOrder._id}
+          initialOrderData={trackingModalOrder}
+        />
       )}
     </div>
   );
