@@ -9,7 +9,9 @@ import {
   IoChevronDown,
   IoChevronUp,
   IoMapOutline,
-  IoNavigateOutline,
+  IoCloseCircleOutline,
+  IoStar,
+  IoStarOutline,
 } from "react-icons/io5";
 import { MdDeliveryDining } from "react-icons/md";
 
@@ -36,16 +38,26 @@ const Order = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
   const [trackingModalOrder, setTrackingModalOrder] = useState(null);
+  const [cancellingId, setCancellingId] = useState(null);
+  const [ratingOrder, setRatingOrder] = useState(null);
+  const [selectedRating, setSelectedRating] = useState(5);
+  const [isSubmittingRating, setIsSubmittingRating] = useState(false);
 
   const fetchAllOrders = async () => {
     try {
       setIsLoading(true);
-      const res = await api.get("/customer/all-orders");
+      const res = await api.get("/order/my-orders");
       setOrders(res.data.data || []);
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Failed to fetch orders. Please try again."
-      );
+      // Fallback to customer/all-orders if needed
+      try {
+        const fallbackRes = await api.get("/customer/all-orders");
+        setOrders(fallbackRes.data.data || []);
+      } catch (err) {
+        toast.error(
+          error.response?.data?.message || "Failed to fetch orders. Please try again."
+        );
+      }
     } finally {
       setIsLoading(false);
     }
@@ -54,6 +66,54 @@ const Order = () => {
   useEffect(() => {
     fetchAllOrders();
   }, []);
+
+  const handleCancelOrder = async (orderId) => {
+    if (!window.confirm("Are you sure you want to cancel this order?")) {
+      return;
+    }
+
+    try {
+      setCancellingId(orderId);
+      const res = await api.patch(`/order/cancel/${orderId}`, {
+        reason: "Cancelled by customer from dashboard",
+      });
+      toast.success(res.data?.message || "Order cancelled successfully");
+      setOrders((prev) =>
+        prev.map((o) => (o._id === orderId ? { ...o, orderStatus: "cancelled" } : o))
+      );
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to cancel order. Please try again."
+      );
+    } finally {
+      setCancellingId(null);
+    }
+  };
+
+  const handleRateOrder = async (e) => {
+    e.preventDefault();
+    if (!ratingOrder) return;
+
+    try {
+      setIsSubmittingRating(true);
+      const res = await api.patch(`/order/rate/${ratingOrder._id}`, {
+        rating: selectedRating,
+      });
+      toast.success(res.data?.message || "Thank you for rating your order!");
+      setOrders((prev) =>
+        prev.map((o) =>
+          o._id === ratingOrder._id ? { ...o, rating: selectedRating } : o
+        )
+      );
+      setRatingOrder(null);
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to submit rating. Please try again."
+      );
+    } finally {
+      setIsSubmittingRating(false);
+    }
+  };
 
   if (isLoading) {
     return <Loader height="300px" width="100%" text="Fetching your order history..." />;
@@ -71,7 +131,7 @@ const Order = () => {
             Order History
           </h2>
           <p className="text-xs sm:text-sm font-normal text-slate-500">
-            Track live deliveries with Google Maps and view past order receipts
+            Track live deliveries with Google Maps, view receipts, and rate past meals
           </p>
         </div>
 
@@ -90,11 +150,11 @@ const Order = () => {
         <div className="space-y-4">
           {orders.map((order) => {
             const currentStep = getStepIndex(order.orderStatus);
-            const isFailed = ["cancelled", "failed", "rejected"].includes(
-              (order.orderStatus || "").toLowerCase()
-            );
+            const statusNorm = (order.orderStatus || "").toLowerCase();
+            const isFailed = ["cancelled", "failed", "rejected"].includes(statusNorm);
             const isExpanded = expandedOrderId === order._id;
-            const isDelivered = (order.orderStatus || "").toLowerCase() === "delivered";
+            const isDelivered = statusNorm === "delivered";
+            const canCancel = ["pending", "accepted"].includes(statusNorm);
 
             const restaurantName =
               order.restaurantId?.restaurantName || "Featured Kitchen";
@@ -173,49 +233,46 @@ const Order = () => {
                     <button
                       onClick={() => toggleExpand(order._id)}
                       className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600 hover:bg-orange-50 hover:text-orange-600 transition"
+                      aria-label="Toggle details"
                     >
                       {isExpanded ? <IoChevronUp size={16} /> : <IoChevronDown size={16} />}
                     </button>
                   </div>
                 </div>
 
-                {/* Live Tracking Visual Stepper (if not failed) */}
-                {!isFailed && order.orderStatus !== "delivered" && (
-                  <div className="p-5 bg-orange-50/40 border-b border-slate-100">
-                    <div className="flex items-center justify-between mb-4">
-                      <p className="text-xs font-bold uppercase tracking-wider text-orange-800 flex items-center gap-1.5">
-                        <MdDeliveryDining size={16} />
-                        <span>Live Delivery Tracker Active</span>
-                      </p>
+                {/* Progress Stepper for Active/Recent orders */}
+                {!isFailed && (
+                  <div className="px-5 py-3.5 bg-slate-50/50 border-b border-slate-100">
+                    <div className="flex items-center justify-between max-w-2xl mx-auto relative">
+                      <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 h-0.5 bg-slate-200 -z-0" />
+                      <div
+                        className="absolute top-1/2 left-0 -translate-y-1/2 h-0.5 bg-orange-500 transition-all duration-500 -z-0"
+                        style={{
+                          width: `${(currentStep / (ORDER_STEPS.length - 1)) * 100}%`,
+                        }}
+                      />
 
-                      <button
-                        onClick={() => navigate(`/track-order/${order._id}`)}
-                        className="text-xs font-extrabold text-orange-600 hover:underline flex items-center gap-1"
-                      >
-                        <span>Full Map Screen</span>
-                        <IoNavigateOutline size={14} />
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-5 gap-2 relative">
                       {ORDER_STEPS.map((step, idx) => {
-                        const isDone = idx <= currentStep;
+                        const isCompleted = idx <= currentStep;
                         const isCurrent = idx === currentStep;
 
                         return (
-                          <div key={step.key} className="flex flex-col items-center text-center">
+                          <div
+                            key={step.key}
+                            className="flex flex-col items-center gap-1 z-10"
+                          >
                             <div
-                              className={`h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all ${
-                                isDone
-                                  ? "bg-orange-600 text-white shadow-xs"
-                                  : "bg-slate-200 text-slate-500"
-                              } ${isCurrent ? "ring-2 ring-orange-500/30 scale-105" : ""}`}
+                              className={`h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-all shadow-xs ${
+                                isCompleted
+                                  ? "bg-orange-600 text-white ring-4 ring-orange-100"
+                                  : "bg-white text-slate-400 border border-slate-200"
+                              } ${isCurrent && !isDelivered ? "animate-pulse" : ""}`}
                             >
-                              {isDone ? "✓" : idx + 1}
+                              {idx + 1}
                             </div>
                             <span
-                              className={`text-[10px] mt-1.5 font-medium ${
-                                isDone ? "text-slate-900 font-bold" : "text-slate-400"
+                              className={`text-[10px] font-bold ${
+                                isCompleted ? "text-orange-950" : "text-slate-400"
                               }`}
                             >
                               {step.label}
@@ -227,26 +284,23 @@ const Order = () => {
                   </div>
                 )}
 
-                {/* Expanded Details: Order Items & Actions */}
+                {/* Expanded Details */}
                 {isExpanded && (
-                  <div className="p-5 bg-slate-50/50 space-y-4">
-                    <h4 className="font-heading text-xs font-bold uppercase tracking-wider text-slate-500">
-                      Dishes Ordered ({order.orderItems?.length || 0})
-                    </h4>
-
-                    <div className="divide-y divide-slate-100 bg-white rounded-xl p-4 border border-slate-200/80">
+                  <div className="p-5 bg-white space-y-4 border-t border-slate-100">
+                    <div className="divide-y divide-slate-100 rounded-xl border border-slate-100 bg-slate-50/50 p-4">
                       {order.orderItems?.map((item, idx) => {
                         const custom = item.customization || {};
-                        const isCustom = custom.isCustomized;
+                        const isCustom =
+                          custom.isCustomized ||
+                          custom.size ||
+                          custom.baseOrCrust ||
+                          custom.specialInstructions;
 
                         return (
-                          <div
-                            key={idx}
-                            className="py-3 first:pt-0 last:pb-0 flex flex-col gap-1.5 text-xs text-slate-700"
-                          >
-                            <div className="flex items-center justify-between">
+                          <div key={idx} className="py-2.5 first:pt-0 last:pb-0 space-y-1">
+                            <div className="flex items-center justify-between text-xs">
                               <div className="flex items-center gap-2">
-                                <span className="h-5 w-5 rounded-md bg-orange-50 text-orange-700 flex items-center justify-center font-bold text-[10px] border border-orange-100/80">
+                                <span className="h-5 w-5 rounded-md bg-orange-100 text-orange-700 flex items-center justify-center font-bold text-[10px]">
                                   {item.quantity || 1}x
                                 </span>
                                 <span className="font-bold text-slate-800">{item.itemName || "Item"}</span>
@@ -306,7 +360,31 @@ const Order = () => {
                         Delivery to: <span className="text-slate-800 font-semibold">{order.deliveryAddress?.address || "Delivery Address"}</span>
                       </p>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {canCancel && (
+                          <button
+                            onClick={() => handleCancelOrder(order._id)}
+                            disabled={cancellingId === order._id}
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3.5 py-2 text-xs font-bold text-red-700 hover:bg-red-100 transition shadow-xs disabled:opacity-50"
+                          >
+                            <IoCloseCircleOutline size={16} />
+                            <span>{cancellingId === order._id ? "Cancelling..." : "Cancel Order"}</span>
+                          </button>
+                        )}
+
+                        {isDelivered && (
+                          <button
+                            onClick={() => {
+                              setRatingOrder(order);
+                              setSelectedRating(order.rating || 5);
+                            }}
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-2 text-xs font-bold text-amber-800 hover:bg-amber-100 transition shadow-xs"
+                          >
+                            <IoStar className="text-amber-500" size={15} />
+                            <span>{order.rating ? `Rated ${order.rating}★` : "Rate Order"}</span>
+                          </button>
+                        )}
+
                         <button
                           onClick={() => setTrackingModalOrder(order)}
                           className="inline-flex items-center gap-1.5 rounded-xl border border-orange-200 bg-orange-50 px-3.5 py-2 text-xs font-bold text-orange-700 hover:bg-orange-100 transition shadow-xs"
@@ -358,6 +436,57 @@ const Order = () => {
           orderId={trackingModalOrder._id}
           initialOrderData={trackingModalOrder}
         />
+      )}
+
+      {/* Rating Modal */}
+      {ratingOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl space-y-5 border border-slate-100">
+            <div className="text-center space-y-1">
+              <h3 className="font-heading text-xl font-bold text-slate-900">
+                Rate your meal
+              </h3>
+              <p className="text-xs text-slate-500">
+                How was your experience with {ratingOrder.restaurantId?.restaurantName || "this restaurant"}?
+              </p>
+            </div>
+
+            <div className="flex justify-center items-center gap-2 py-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setSelectedRating(star)}
+                  className="p-1 text-3xl transition hover:scale-110 focus:outline-none"
+                >
+                  {star <= selectedRating ? (
+                    <IoStar className="text-amber-400 drop-shadow-xs" />
+                  ) : (
+                    <IoStarOutline className="text-slate-300" />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setRatingOrder(null)}
+                className="flex-1 py-2.5 px-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleRateOrder}
+                disabled={isSubmittingRating}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-orange-600 text-xs font-bold text-white hover:bg-orange-500 transition shadow-sm shadow-orange-600/20 disabled:opacity-50"
+              >
+                {isSubmittingRating ? "Submitting..." : "Submit Review"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

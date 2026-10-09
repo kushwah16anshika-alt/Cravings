@@ -34,6 +34,9 @@ const getDefaultDeliveryAddress = (currentUser, defaultAddr) => {
   };
 };
 
+// ======================================
+// CREATE NEW ORDER
+// ======================================
 export const CreateOrder = async (req, res, next) => {
   try {
     const currentUser = req.user;
@@ -211,6 +214,263 @@ export const CreateOrder = async (req, res, next) => {
 };
 
 // ======================================
+// GET LOGGED-IN CUSTOMER ORDERS
+// ======================================
+export const GetCustomerOrders = async (req, res, next) => {
+  try {
+    const currentUser = req.user;
+
+    if (!currentUser) {
+      const error = new Error("User not authenticated");
+      error.statusCode = 401;
+      return next(error);
+    }
+
+    const customer = await Customer.findOne({ customerId: currentUser._id });
+    const customerIds = [currentUser._id];
+    if (customer?._id) {
+      customerIds.push(customer._id);
+    }
+
+    const orders = await Order.find({
+      customerId: { $in: customerIds },
+    })
+      .populate("restaurantId", "restaurantName coverImage address city state pinCode averageRating geoLocation contactDetails")
+      .populate({
+        path: "riderId",
+        populate: {
+          path: "riderId",
+          select: "fullname phone photo",
+        },
+      })
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      message: "Customer orders fetched successfully",
+      data: orders,
+    });
+  } catch (error) {
+    console.log(error.message);
+    next(error);
+  }
+};
+
+// ======================================
+// GET SINGLE ORDER BY ID
+// ======================================
+export const GetOrderById = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+
+    if (!orderId) {
+      const error = new Error("Order ID is required");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const order = await Order.findById(orderId)
+      .populate("restaurantId", "restaurantName address city state pinCode geoLocation contactDetails coverImage averageRating")
+      .populate({
+        path: "riderId",
+        populate: {
+          path: "riderId",
+          select: "fullname phone photo",
+        },
+      })
+      .populate("customerId");
+
+    if (!order) {
+      const error = new Error("Order not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    return res.status(200).json({
+      message: "Order details fetched successfully",
+      data: order,
+    });
+  } catch (error) {
+    console.log(error.message);
+    next(error);
+  }
+};
+
+// ======================================
+// CANCEL ORDER (CUSTOMER / RESTAURANT / ADMIN)
+// ======================================
+export const CancelOrder = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+    const { reason } = req.body;
+    const currentUser = req.user;
+
+    if (!orderId) {
+      const error = new Error("Order ID is required");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      const error = new Error("Order not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    // Check customer ownership
+    if (currentUser.userType === "user" || currentUser.userType === "customer") {
+      const customer = await Customer.findOne({ customerId: currentUser._id });
+      const validCustomerIds = [currentUser._id.toString()];
+      if (customer) {
+        validCustomerIds.push(customer._id.toString());
+      }
+      if (!validCustomerIds.includes(order.customerId.toString())) {
+        const error = new Error("You are not authorized to cancel this order");
+        error.statusCode = 403;
+        return next(error);
+      }
+    }
+
+    const currentStatus = (order.orderStatus || "").toLowerCase();
+    if (currentStatus === "cancelled") {
+      const error = new Error("Order is already cancelled");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    if (["preparing", "ready", "pickedup", "ontheway", "outfordelivery", "delivered"].includes(currentStatus)) {
+      const error = new Error(
+        `Cannot cancel order once it is '${order.orderStatus}'. Please contact customer support.`
+      );
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    order.orderStatus = "cancelled";
+    if (reason) {
+      order.cancellationReason = reason;
+    }
+    await order.save();
+
+    return res.status(200).json({
+      message: "Order cancelled successfully",
+      data: order,
+    });
+  } catch (error) {
+    console.log(error.message);
+    next(error);
+  }
+};
+
+// ======================================
+// RATE DELIVERED ORDER
+// ======================================
+export const RateOrder = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+    const { rating } = req.body;
+
+    const numRating = Number(rating);
+    if (!numRating || numRating < 1 || numRating > 5) {
+      const error = new Error("Rating must be a number between 1 and 5");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      const error = new Error("Order not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    if ((order.orderStatus || "").toLowerCase() !== "delivered") {
+      const error = new Error("You can only rate orders that have been delivered");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    order.rating = numRating;
+    await order.save();
+
+    // Recalculate restaurant average rating
+    if (order.restaurantId) {
+      const ratedOrders = await Order.find({
+        restaurantId: order.restaurantId,
+        rating: { $exists: true, $ne: null, $gte: 1 },
+      });
+
+      if (ratedOrders.length > 0) {
+        const avg =
+          ratedOrders.reduce((sum, o) => sum + o.rating, 0) / ratedOrders.length;
+        await Restaurant.findByIdAndUpdate(order.restaurantId, {
+          averageRating: Math.round(avg * 10) / 10,
+        });
+      }
+    }
+
+    return res.status(200).json({
+      message: "Thank you! Order rated successfully",
+      data: order,
+    });
+  } catch (error) {
+    console.log(error.message);
+    next(error);
+  }
+};
+
+// ======================================
+// UPDATE ORDER STATUS (STAFF / RESTAURANT / RIDER)
+// ======================================
+export const UpdateOrderStatus = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    const allowed = [
+      "pending",
+      "accepted",
+      "preparing",
+      "ready",
+      "pickedUp",
+      "onTheWay",
+      "outForDelivery",
+      "undeliverable",
+      "delivered",
+      "cancelled",
+      "failed",
+      "rejected",
+    ];
+
+    if (!status || !allowed.includes(status)) {
+      const error = new Error(`Invalid status. Allowed: ${allowed.join(", ")}`);
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const order = await Order.findByIdAndUpdate(
+      orderId,
+      { orderStatus: status },
+      { new: true }
+    );
+
+    if (!order) {
+      const error = new Error("Order not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    return res.status(200).json({
+      message: `Order status updated to ${status}`,
+      data: order,
+    });
+  } catch (error) {
+    console.log(error.message);
+    next(error);
+  }
+};
+
+// ======================================
 // GET ORDER TRACKING DETAILS
 // ======================================
 export const GetOrderTracking = async (req, res, next) => {
@@ -276,6 +536,7 @@ export const GetOrderTracking = async (req, res, next) => {
       updatedAt: order.updatedAt,
       billDetails: order.billDetails,
       orderItems: order.orderItems,
+      rating: order.rating,
       restaurant: {
         id: order.restaurantId?._id,
         name: order.restaurantId?.restaurantName || "Cravings Kitchen",
