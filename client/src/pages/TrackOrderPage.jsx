@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../config/api.config.js";
 import LiveOrderTrackerWrapped from "../components/orderTracking/LiveOrderTracker";
 import Loader from "../components/Loader";
 import {
   IoArrowBack,
   IoMapOutline,
-  IoReceiptOutline,
-  IoStorefrontOutline,
 } from "react-icons/io5";
 
 const TrackOrderPage = () => {

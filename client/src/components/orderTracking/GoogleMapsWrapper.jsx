@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { APIProvider } from "@vis.gl/react-google-maps";
-import { IoKeyOutline, IoCheckmarkCircle, IoInformationCircleOutline } from "react-icons/io5";
+import { IoKeyOutline, IoInformationCircleOutline } from "react-icons/io5";
 
 const GoogleMapsKeyContext = createContext({
   apiKey: "",
@@ -22,7 +22,7 @@ export const GoogleMapsWrapper = ({ children }) => {
     if (!apiKey && envKey) {
       setApiKey(envKey);
     }
-  }, [envKey]);
+  }, [envKey, apiKey]);
 
   const handleSaveKey = (e) => {
     e.preventDefault();

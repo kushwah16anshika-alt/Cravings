@@ -8,16 +8,11 @@ import {
 import {
   IoStorefront,
   IoHome,
-  IoNavigate,
-  IoLocate,
   IoMapOutline,
-  IoFlame,
   IoCall,
-  IoInformationCircle,
   IoKeyOutline,
-  IoSparkles,
 } from "react-icons/io5";
-import { MdDeliveryDining, MdOutlineMyLocation } from "react-icons/md";
+import { MdDeliveryDining } from "react-icons/md";
 import DeliveryRoutePolyline from "./DeliveryRoutePolyline";
 import MapBoundsFitter from "./MapBoundsFitter";
 import { useGoogleMapsKey } from "./GoogleMapsWrapper";
@@ -25,7 +20,7 @@ import { useGoogleMapsKey } from "./GoogleMapsWrapper";
 /**
  * Custom Center Control Button Component inside Google Map
  */
-const MapControlsOverlay = ({ onCenterRider, onFitAll, riderName }) => {
+const MapControlsOverlay = ({ onCenterRider, onFitAll }) => {
   return (
     <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
       <button
@@ -220,6 +215,9 @@ const InteractiveRadarMap = ({
           <span className="text-orange-400 font-bold">Vehicle:</span>
           <span className="font-semibold text-white">{rider?.vehicle || "Hero Electric • KA-01-EA-4521"}</span>
           <span className="text-slate-600">•</span>
+          <span className="text-amber-400 font-bold">Progress:</span>
+          <span className="text-slate-300 font-semibold">{Math.round(progress * 100)}%</span>
+          <span className="text-slate-600">•</span>
           <span className="text-emerald-400 font-bold">GPS Accuracy:</span>
           <span className="text-slate-300 font-semibold">± 3 meters</span>
         </div>
@@ -237,7 +235,7 @@ const InteractiveRadarMap = ({
  * Complies strictly with @vis.gl/react-google-maps patterns and Google Maps Platform Skill requirements.
  */
 export const OrderTrackingMap = ({
-  orderId,
+  orderId = "",
   restaurant,
   destination,
   rider,
@@ -320,7 +318,10 @@ export const OrderTrackingMap = ({
   }
 
   return (
-    <div className="relative w-full h-full min-h-[480px] rounded-3xl overflow-hidden shadow-xl border border-slate-200">
+    <div
+      className="relative w-full h-full min-h-[480px] rounded-3xl overflow-hidden shadow-xl border border-slate-200"
+      data-order-id={orderId}
+    >
       {/* Explicit Height Container to prevent CF2 Map Height Collapse */}
       <div className="w-full h-full min-h-[480px]">
         <Map

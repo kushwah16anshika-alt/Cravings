@@ -1,15 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import api from "../../config/api.config.js";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
 import OrderTrackingMap from "./OrderTrackingMap";
-import GoogleMapsWrapper, { useGoogleMapsKey } from "./GoogleMapsWrapper";
+import GoogleMapsWrapper from "./GoogleMapsWrapper";
 import {
   IoStorefrontOutline,
   IoHomeOutline,
   IoCallOutline,
   IoChatbubbleEllipsesOutline,
-  IoTimeOutline,
   IoShieldCheckmarkOutline,
   IoRefreshOutline,
   IoPlayOutline,
@@ -17,12 +15,10 @@ import {
   IoChevronDown,
   IoChevronUp,
   IoReceiptOutline,
-  IoCheckmarkCircle,
-  IoSparkles,
-  IoKeyOutline,
+  IoCloseOutline,
 } from "react-icons/io5";
-import { MdDeliveryDining, MdOutlineRestaurantMenu, MdFastfood } from "react-icons/md";
-import { FaMotorcycle, FaStar } from "react-icons/fa";
+import { MdDeliveryDining } from "react-icons/md";
+import { FaStar } from "react-icons/fa";
 
 const TRACKING_STEPS = [
   { id: "pending", label: "Order Placed", desc: "Sent to kitchen", icon: "📝" },
@@ -57,7 +53,7 @@ export const LiveOrderTracker = ({
   const [isSimulatingLiveRide, setIsSimulatingLiveRide] = useState(false);
   const simIntervalRef = useRef(null);
 
-  const fetchTrackingData = async (silent = false) => {
+  const fetchTrackingData = useCallback(async (silent = false) => {
     if (!orderId && !initialOrderData) return;
     try {
       if (!silent) setIsRefreshing(true);
@@ -75,13 +71,13 @@ export const LiveOrderTracker = ({
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  };
+  }, [orderId, initialOrderData, order]);
 
   useEffect(() => {
     if (orderId) {
       fetchTrackingData(false);
     }
-  }, [orderId]);
+  }, [orderId, fetchTrackingData]);
 
   // Handle Live Ride Simulation along route
   useEffect(() => {
@@ -172,6 +168,15 @@ export const LiveOrderTracker = ({
     else if (sIdx === 4) setSimulatedProgress(1.0);
   };
 
+  if (isLoading && !order) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 bg-white rounded-3xl border border-slate-200 shadow-sm w-full max-w-5xl mx-auto">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-orange-500 border-t-transparent" />
+        <p className="mt-3 text-xs font-bold text-slate-600">Connecting to live order telemetry...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-5 w-full max-w-5xl mx-auto">
       {/* Top Banner / Order Summary Header */}
@@ -214,6 +219,16 @@ export const LiveOrderTracker = ({
           >
             <IoRefreshOutline size={20} className={isRefreshing ? "animate-spin text-orange-600" : ""} />
           </button>
+
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 hover:text-rose-600 hover:border-rose-200 transition shadow-xs active:scale-95"
+              title="Close Tracker"
+            >
+              <IoCloseOutline size={22} />
+            </button>
+          )}
         </div>
       </div>
 

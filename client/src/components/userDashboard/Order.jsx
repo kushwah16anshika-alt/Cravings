@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Loader from "../Loader";
 import api from "../../config/api.config.js";
 import toast from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import OrderTrackingModal from "../orderTracking/OrderTrackingModal";
 import {
   IoStorefrontOutline,
@@ -13,7 +13,6 @@ import {
   IoStar,
   IoStarOutline,
 } from "react-icons/io5";
-import { MdDeliveryDining } from "react-icons/md";
 
 const ORDER_STEPS = [
   { key: "pending", label: "Placed" },
@@ -33,7 +32,6 @@ const getStepIndex = (status) => {
 };
 
 const Order = () => {
-  const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [expandedOrderId, setExpandedOrderId] = useState(null);
@@ -53,7 +51,7 @@ const Order = () => {
       try {
         const fallbackRes = await api.get("/customer/all-orders");
         setOrders(fallbackRes.data.data || []);
-      } catch (err) {
+      } catch {
         toast.error(
           error.response?.data?.message || "Failed to fetch orders. Please try again."
         );

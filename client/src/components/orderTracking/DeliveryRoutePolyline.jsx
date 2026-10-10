@@ -14,7 +14,7 @@ export const DeliveryRoutePolyline = ({ path = [], color = "#ea580c" }) => {
   const glowPolylineRef = useRef(null);
 
   useEffect(() => {
-    if (!map || !path || path.length < 2) return;
+    if (!map || !path || path.length < 2 || !window?.google?.maps) return;
 
     // Clean up previous polyline instances
     if (polylineRef.current) {

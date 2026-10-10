@@ -1,97 +1,207 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaPhoneAlt } from "react-icons/fa";
 import { IoLocationOutline, IoStorefrontOutline, IoTimeOutline } from "react-icons/io5";
 import toast from "react-hot-toast";
+import api from "../../config/api.config.js";
+
+const DEFAULT_ORDERS = [
+  {
+    id: "CRV-9304",
+    displayId: "CRV-9304",
+    status: "new",
+    restaurant: "Flavors of Punjab",
+    restaurantAddress: "Canteen Hub, Block 2",
+    dropAddress: "Ramanujan Hostel, Room 218",
+    customerName: "Karan Johar",
+    customerPhone: "+91 98765 43210",
+    items: [
+      { name: "Butter Chicken Rice Bowl", qty: 1 },
+      { name: "Garlic Butter Naan", qty: 2 },
+    ],
+    orderTotal: "₹340",
+    riderEarning: "₹50",
+    time: "2 mins ago",
+    dist: "0.8 km",
+    isLive: false,
+  },
+  {
+    id: "CRV-9281",
+    displayId: "CRV-9281",
+    status: "delivering",
+    restaurant: "Spice Symphony Kitchen",
+    restaurantAddress: "Student Central Food Court, Stall #4",
+    dropAddress: "CV Raman Hostel, Room 312",
+    customerName: "Rohan Verma",
+    customerPhone: "+91 98765 12345",
+    items: [
+      { name: "Paneer Tikka Roll", qty: 2 },
+      { name: "Cold Coffee", qty: 1 },
+    ],
+    orderTotal: "₹280",
+    riderEarning: "₹45",
+    time: "12 mins ago",
+    dist: "1.2 km",
+    isLive: false,
+  },
+  {
+    id: "CRV-9190",
+    displayId: "CRV-9190",
+    status: "accepted",
+    restaurant: "Burger & Shake Factory",
+    restaurantAddress: "North Gate Plaza",
+    dropAddress: "Faculty Quarters, Flat 4B",
+    customerName: "Dr. Arvind Gupta",
+    customerPhone: "+91 98111 22334",
+    items: [
+      { name: "Crispy Veg Maharaja Burger", qty: 2 },
+      { name: "Peri Peri Fries", qty: 1 },
+    ],
+    orderTotal: "₹450",
+    riderEarning: "₹60",
+    time: "18 mins ago",
+    dist: "1.5 km",
+    isLive: false,
+  },
+  {
+    id: "CRV-8942",
+    displayId: "CRV-8942",
+    status: "completed",
+    restaurant: "Urban Pizza & Cafe",
+    restaurantAddress: "Central Avenue 1",
+    dropAddress: "Girls Hostel 2, Gate #1",
+    customerName: "Sneha Patel",
+    customerPhone: "+91 99887 76655",
+    items: [
+      { name: "Farmhouse Pizza", qty: 1 },
+      { name: "Garlic Bread", qty: 1 },
+    ],
+    orderTotal: "₹390",
+    riderEarning: "₹50",
+    time: "45 mins ago",
+    dist: "0.9 km",
+    isLive: false,
+  },
+];
 
 const RiderOrders = () => {
   const [selectedFilter, setSelectedFilter] = useState("all");
+  const [orders, setOrders] = useState(DEFAULT_ORDERS);
+  const [loading, setLoading] = useState(false);
 
-  const [orders, setOrders] = useState([
-    {
-      id: "CRV-9304",
-      status: "new",
-      restaurant: "Flavors of Punjab",
-      restaurantAddress: "Canteen Hub, Block 2",
-      dropAddress: "Ramanujan Hostel, Room 218",
-      customerName: "Karan Johar",
-      customerPhone: "+91 98765 43210",
-      items: [
-        { name: "Butter Chicken Rice Bowl", qty: 1 },
-        { name: "Garlic Butter Naan", qty: 2 },
-      ],
-      orderTotal: "₹340",
-      riderEarning: "₹50",
-      time: "2 mins ago",
-      dist: "0.8 km",
-    },
-    {
-      id: "CRV-9281",
-      status: "delivering",
-      restaurant: "Spice Symphony Kitchen",
-      restaurantAddress: "Student Central Food Court, Stall #4",
-      dropAddress: "CV Raman Hostel, Room 312",
-      customerName: "Rohan Verma",
-      customerPhone: "+91 98765 12345",
-      items: [
-        { name: "Paneer Tikka Roll", qty: 2 },
-        { name: "Cold Coffee", qty: 1 },
-      ],
-      orderTotal: "₹280",
-      riderEarning: "₹45",
-      time: "12 mins ago",
-      dist: "1.2 km",
-    },
-    {
-      id: "CRV-9190",
-      status: "accepted",
-      restaurant: "Burger & Shake Factory",
-      restaurantAddress: "North Gate Plaza",
-      dropAddress: "Faculty Quarters, Flat 4B",
-      customerName: "Dr. Arvind Gupta",
-      customerPhone: "+91 98111 22334",
-      items: [
-        { name: "Crispy Veg Maharaja Burger", qty: 2 },
-        { name: "Peri Peri Fries", qty: 1 },
-      ],
-      orderTotal: "₹450",
-      riderEarning: "₹60",
-      time: "18 mins ago",
-      dist: "1.5 km",
-    },
-    {
-      id: "CRV-8942",
-      status: "completed",
-      restaurant: "Urban Pizza & Cafe",
-      restaurantAddress: "Central Avenue 1",
-      dropAddress: "Girls Hostel 2, Gate #1",
-      customerName: "Sneha Patel",
-      customerPhone: "+91 99887 76655",
-      items: [
-        { name: "Farmhouse Pizza", qty: 1 },
-        { name: "Garlic Bread", qty: 1 },
-      ],
-      orderTotal: "₹390",
-      riderEarning: "₹50",
-      time: "45 mins ago",
-      dist: "0.9 km",
-    },
-  ]);
+  const mapServerOrder = (srv) => {
+    let mappedStatus;
+    const s = (srv.orderStatus || "").toLowerCase();
+    if (s === "delivered" || s === "completed") {
+      mappedStatus = "completed";
+    } else if (["pickedup", "ontheway", "outfordelivery"].includes(s)) {
+      mappedStatus = "delivering";
+    } else if (s === "accepted" || s === "ready" || s === "preparing") {
+      mappedStatus = "accepted";
+    } else {
+      mappedStatus = "new";
+    }
 
-  const handleAcceptOrder = (orderId) => {
+    return {
+      id: srv._id || srv.id,
+      displayId: srv._id ? `CRV-${srv._id.slice(-4).toUpperCase()}` : (srv.id || "CRV-0000"),
+      status: mappedStatus,
+      rawStatus: srv.orderStatus,
+      restaurant: srv.restaurantId?.restaurantName || "Cravings Partner Restaurant",
+      restaurantAddress: srv.restaurantId?.address
+        ? `${srv.restaurantId.address}, ${srv.restaurantId.city || ""}`
+        : "Campus Food Court",
+      dropAddress: srv.deliveryAddress?.address
+        ? `${srv.deliveryAddress.address}, ${srv.deliveryAddress.city || ""}`
+        : "Customer Delivery Location",
+      customerName: srv.deliveryAddress?.name || srv.customerId?.fullname || "Customer",
+      customerPhone: srv.deliveryAddress?.phone || srv.customerId?.phone || "+91 98765 43210",
+      items: srv.orderItems?.map((item) => ({
+        name: item.itemName || "Item",
+        qty: item.quantity || 1,
+      })) || [],
+      orderTotal: `₹${srv.billDetails?.finalAmount || srv.billDetails?.totalAmount || 300}`,
+      riderEarning: `₹${srv.billDetails?.deliveryCharge || 50}`,
+      time: srv.createdAt
+        ? new Date(srv.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+        : "Just now",
+      dist: "1.0 km",
+      isLive: true,
+    };
+  };
+
+  const fetchOrders = React.useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await api.get("/order/rider/orders");
+      if (res.data?.data && res.data.data.length > 0) {
+        const mapped = res.data.data.map(mapServerOrder);
+        setOrders(mapped);
+      }
+    } catch {
+      // Fallback silently to default preview orders if not logged in as rider or backend offline
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  const handleAcceptOrder = async (orderId) => {
+    const targetOrder = orders.find((o) => o.id === orderId);
+    if (targetOrder?.isLive) {
+      try {
+        await api.patch(`/order/rider/accept/${orderId}`);
+        toast.success("Order accepted. Head to restaurant for pickup.");
+        fetchOrders();
+        return;
+      } catch (err) {
+        toast.error(err.response?.data?.message || "Failed to accept order");
+        return;
+      }
+    }
+
     setOrders((prev) =>
       prev.map((o) => (o.id === orderId ? { ...o, status: "accepted" } : o))
     );
     toast.success("Order accepted. Head to restaurant for pickup.");
   };
 
-  const handlePickupOrder = (orderId) => {
+  const handlePickupOrder = async (orderId) => {
+    const targetOrder = orders.find((o) => o.id === orderId);
+    if (targetOrder?.isLive) {
+      try {
+        await api.patch(`/order/rider/status/${orderId}`, { status: "pickedUp" });
+        toast.success("Order picked up. Head to customer drop location.");
+        fetchOrders();
+        return;
+      } catch (err) {
+        toast.error(err.response?.data?.message || "Failed to update pickup");
+        return;
+      }
+    }
+
     setOrders((prev) =>
       prev.map((o) => (o.id === orderId ? { ...o, status: "delivering" } : o))
     );
     toast.success("Order picked up. Head to customer drop location.");
   };
 
-  const handleDeliverOrder = (orderId) => {
+  const handleDeliverOrder = async (orderId) => {
+    const targetOrder = orders.find((o) => o.id === orderId);
+    if (targetOrder?.isLive) {
+      try {
+        await api.patch(`/order/rider/status/${orderId}`, { status: "delivered" });
+        toast.success("Delivery completed.");
+        fetchOrders();
+        return;
+      } catch (err) {
+        toast.error(err.response?.data?.message || "Failed to mark delivered");
+        return;
+      }
+    }
+
     setOrders((prev) =>
       prev.map((o) => (o.id === orderId ? { ...o, status: "completed" } : o))
     );
@@ -139,8 +249,13 @@ const RiderOrders = () => {
       {/* Title & Filter Tabs */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1 border-b border-slate-200/80">
         <div>
-          <h1 className="font-heading text-xl font-bold text-slate-900">
-            Delivery Orders
+          <h1 className="font-heading text-xl font-bold text-slate-900 flex items-center gap-2">
+            <span>Delivery Orders</span>
+            {loading && (
+              <span className="text-[11px] font-semibold text-orange-500 animate-pulse bg-orange-50 px-2 py-0.5 rounded-full border border-orange-200">
+                Syncing...
+              </span>
+            )}
           </h1>
           <p className="text-xs text-slate-500">
             Manage incoming pickup and delivery requests.
@@ -186,7 +301,7 @@ const RiderOrders = () => {
               <div className="space-y-3 flex-1">
                 <div className="flex items-center gap-2.5">
                   <span className="text-sm font-bold text-slate-900">
-                    #{order.id}
+                    #{order.displayId || order.id}
                   </span>
                   {getStatusBadge(order.status)}
                   <span className="text-xs text-slate-400 flex items-center gap-1">
