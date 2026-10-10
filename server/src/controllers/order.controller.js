@@ -637,3 +637,166 @@ export const UpdateOrderStatusForDemo = async (req, res, next) => {
     next(error);
   }
 };
+
+// ======================================
+// GET RIDER DELIVERY ORDERS
+// ======================================
+export const GetRiderDeliveryOrders = async (req, res, next) => {
+  try {
+    const currentUser = req.user;
+
+    let rider = await Rider.findOne({ riderId: currentUser._id });
+    if (!rider && (currentUser.userType === "rider" || currentUser.userType === "admin")) {
+      rider = await Rider.create({ riderId: currentUser._id });
+    }
+
+    const riderObjectId = rider ? rider._id : null;
+
+    const query = riderObjectId
+      ? {
+          $or: [
+            { riderId: riderObjectId },
+            {
+              riderId: { $exists: false },
+              orderStatus: { $in: ["ready", "preparing", "accepted"] },
+            },
+            {
+              riderId: null,
+              orderStatus: { $in: ["ready", "preparing", "accepted"] },
+            },
+          ],
+        }
+      : {
+          orderStatus: { $in: ["ready", "preparing", "accepted"] },
+        };
+
+    const orders = await Order.find(query)
+      .populate(
+        "restaurantId",
+        "restaurantName address city state pinCode geoLocation contactDetails coverImage"
+      )
+      .populate("customerId")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      message: "Rider delivery orders fetched successfully",
+      data: orders,
+      riderId: riderObjectId,
+    });
+  } catch (error) {
+    console.log("GetRiderDeliveryOrders error:", error.message);
+    next(error);
+  }
+};
+
+// ======================================
+// RIDER ACCEPT ORDER
+// ======================================
+export const RiderAcceptOrder = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+    const currentUser = req.user;
+
+    if (!orderId) {
+      const error = new Error("Order ID is required");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    let rider = await Rider.findOne({ riderId: currentUser._id });
+    if (!rider) {
+      rider = await Rider.create({ riderId: currentUser._id });
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      const error = new Error("Order not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    if (order.riderId && order.riderId.toString() !== rider._id.toString()) {
+      const error = new Error("This order has already been accepted by another rider");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    order.riderId = rider._id;
+    if (order.orderStatus === "pending") {
+      order.orderStatus = "accepted";
+    }
+    await order.save();
+
+    const updatedOrder = await Order.findById(orderId)
+      .populate(
+        "restaurantId",
+        "restaurantName address city state pinCode geoLocation contactDetails coverImage"
+      )
+      .populate("customerId");
+
+    return res.status(200).json({
+      message: "Order accepted successfully",
+      data: updatedOrder,
+    });
+  } catch (error) {
+    console.log("RiderAcceptOrder error:", error.message);
+    next(error);
+  }
+};
+
+// ======================================
+// RIDER UPDATE DELIVERY STATUS
+// ======================================
+export const RiderUpdateDeliveryStatus = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+    const currentUser = req.user;
+
+    const allowedStatuses = ["pickedUp", "onTheWay", "outForDelivery", "delivered"];
+    if (!status || !allowedStatuses.includes(status)) {
+      const error = new Error(
+        `Invalid status. Allowed statuses for rider: ${allowedStatuses.join(", ")}`
+      );
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) {
+      const error = new Error("Order not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    const rider = await Rider.findOne({ riderId: currentUser._id });
+    if (
+      currentUser.userType !== "admin" &&
+      rider &&
+      order.riderId &&
+      order.riderId.toString() !== rider._id.toString()
+    ) {
+      const error = new Error("You are not assigned to this delivery");
+      error.statusCode = 403;
+      return next(error);
+    }
+
+    order.orderStatus = status;
+    await order.save();
+
+    const updatedOrder = await Order.findById(orderId)
+      .populate(
+        "restaurantId",
+        "restaurantName address city state pinCode geoLocation contactDetails coverImage"
+      )
+      .populate("customerId");
+
+    return res.status(200).json({
+      message: `Delivery status updated to ${status}`,
+      data: updatedOrder,
+    });
+  } catch (error) {
+    console.log("RiderUpdateDeliveryStatus error:", error.message);
+    next(error);
+  }
+};

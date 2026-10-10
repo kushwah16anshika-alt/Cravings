@@ -9,6 +9,9 @@ import {
   RateOrder,
   UpdateOrderStatus,
   UpdateOrderStatusForDemo,
+  GetRiderDeliveryOrders,
+  RiderAcceptOrder,
+  RiderUpdateDeliveryStatus,
 } from "../controllers/order.controller.js";
 
 const router = express.Router();
@@ -21,9 +24,13 @@ router.get("/:orderId", AuthProtect, GetOrderById);
 
 // Order Actions & Status Updates
 router.patch("/cancel/:orderId", AuthProtect, CancelOrder);
-router.post("/cancel/:orderId", AuthProtect, CancelOrder);
 router.patch("/rate/:orderId", AuthProtect, RateOrder);
 router.patch("/status/:orderId", AuthProtect, UpdateOrderStatus);
 router.patch("/simulate-status/:orderId", AuthProtect, UpdateOrderStatusForDemo);
+
+// Rider Delivery Management
+router.get("/rider/orders", AuthProtect, GetRiderDeliveryOrders);
+router.patch("/rider/accept/:orderId", AuthProtect, RiderAcceptOrder);
+router.patch("/rider/status/:orderId", AuthProtect, RiderUpdateDeliveryStatus);
 
 export default router;
