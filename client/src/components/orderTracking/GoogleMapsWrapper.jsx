@@ -8,6 +8,7 @@ const GoogleMapsKeyContext = createContext({
   hasCustomKey: false,
 });
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useGoogleMapsKey = () => useContext(GoogleMapsKeyContext);
 
 export const GoogleMapsWrapper = ({ children }) => {
