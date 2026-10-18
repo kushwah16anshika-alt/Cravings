@@ -82,9 +82,12 @@ export const FeedbackForm = async (req, res, next) => {
 
 export const GetAllRestaurants = async (req, res, next) => {
   try {
-    const restaurants = await Restaurant.find().populate("managerId", "fullname email phone photo");
+    const restaurants = await Restaurant.find({ status: { $ne: "blocked" } })
+      .populate("managerId", "fullname email phone photo")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
+      success: true,
       data: restaurants,
     });
   } catch (error) {

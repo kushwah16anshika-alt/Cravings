@@ -1431,10 +1431,11 @@ export const getRestaurantDashboardStats = async (req, res, next) => {
       }
     });
 
-    const menuItems = await Menu.find({ restaurantId: restaurant._id });
-    const totalMenuItems = menuItems.length;
-    const availableMenuItems = menuItems.filter(
-      (m) => m.itemStatus === "available"
+    const menuDoc = await Menu.findOne({ restaurantId: restaurant._id });
+    const items = menuDoc?.menuItems || [];
+    const totalMenuItems = items.filter((m) => !m.isDeleted).length;
+    const availableMenuItems = items.filter(
+      (m) => !m.isDeleted && (m.status === "available" || m.isAvailable)
     ).length;
     const unavailableMenuItems = totalMenuItems - availableMenuItems;
 
