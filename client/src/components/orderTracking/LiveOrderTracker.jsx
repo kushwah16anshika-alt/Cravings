@@ -301,9 +301,9 @@ export const LiveOrderTracker = ({
         </div>
       </div>
 
-      {/* Main Grid: Left Google Map & Live Simulation, Right Cards */}
+      {/* Main Grid: Left Live Tracking Map, Right Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-        {/* Google Maps Container */}
+        {/* Leaflet & OpenStreetMap Container */}
         <div className="lg:col-span-8 space-y-3">
           <div className="w-full h-[480px] sm:h-[520px]">
             <OrderTrackingMap

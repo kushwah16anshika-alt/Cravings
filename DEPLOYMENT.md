@@ -53,6 +53,7 @@ This guide provides instructions to deploy the **Cravings** full-stack web appli
    | `GMAIL_PASSCODE` | `your_google_app_password` |
    | `RAZORPAY_KEY_ID` | `rzp_test_TNexn2UwjkFL71` |
    | `GEMINI_API_KEY` | `your_google_gemini_api_key_here` |
+| `GEOAPIFY_API_KEY` | `your_geoapify_api_key_here` (Free 3,000 requests/day at geoapify.com) |
 6. Click **Deploy Web Service**.
 7. Copy your backend service URL (e.g. `https://cravings-backend.onrender.com`).
 
@@ -77,6 +78,7 @@ This guide provides instructions to deploy the **Cravings** full-stack web appli
    |---|---|
    | `VITE_API_BASE_URL` | `https://your-cravings-backend.onrender.com` (Your Render backend URL) |
    | `VITE_RAZORPAY_KEY_ID` | `rzp_test_TNexn2UwjkFL71` |
+   | `VITE_GEOAPIFY_API_KEY` | `your_geoapify_api_key_here` (Optional client fallback for geocoding & routing) |
 5. Click **Deploy**.
 6. Once deployed, copy your frontend Vercel URL (e.g. `https://cravings-app.vercel.app`) and update `CLIENT_URL` in your backend environment variables!
 
