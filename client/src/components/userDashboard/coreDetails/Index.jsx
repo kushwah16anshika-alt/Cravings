@@ -87,6 +87,19 @@ const Index = () => {
     setEditingId(addr._id);
   };
 
+  const handleSelectAutocomplete = (selected) => {
+    setFormData((prev) => ({
+      ...prev,
+      address: selected.address || prev.address,
+      city: selected.city || prev.city,
+      state: selected.state || prev.state,
+      pinCode: selected.pinCode || prev.pinCode,
+      country: selected.country || prev.country || "India",
+      geoLat: selected.geoLat ? String(selected.geoLat) : prev.geoLat,
+      geoLon: selected.geoLon ? String(selected.geoLon) : prev.geoLon,
+    }));
+  };
+
   const handleCancel = () => {
     setEditingId(null);
     setFormData(emptyForm);
@@ -174,15 +187,15 @@ const Index = () => {
 
             <div className="sm:col-span-2">
               <label className="block text-[11px] font-bold text-slate-700 uppercase mb-1">
-                Street / Building Address
+                Street / Building Address (Geoapify Search & OpenStreetMap Pin)
               </label>
-              <input
-                type="text"
-                name="address"
+              <AddressAutocomplete
                 value={formData.address}
                 onChange={handleChange}
-                placeholder="Flat 302, Green Avenue, High Street"
-                className="w-full px-3 py-2 text-xs font-medium rounded-xl bg-white border border-slate-200 focus:border-orange-500 focus:outline-hidden"
+                onSelectAddress={handleSelectAutocomplete}
+                currentLat={formData.geoLat}
+                currentLon={formData.geoLon}
+                placeholder="Search street, building, or pin on OpenStreetMap..."
               />
             </div>
 
@@ -310,6 +323,13 @@ const Index = () => {
               <p className="text-xs font-normal text-slate-600 leading-relaxed">
                 {[addr.address, addr.city, addr.state, addr.pinCode].filter(Boolean).join(", ")}
               </p>
+
+              {addr.geoLocation?.lat && addr.geoLocation?.lon && (
+                <div className="flex items-center gap-1 text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 w-fit">
+                  <IoCheckmarkCircle size={11} className="text-emerald-600" />
+                  <span>GPS Pinned ({Number(addr.geoLocation.lat).toFixed(3)}, {Number(addr.geoLocation.lon).toFixed(3)})</span>
+                </div>
+              )}
             </div>
           ))}
         </div>

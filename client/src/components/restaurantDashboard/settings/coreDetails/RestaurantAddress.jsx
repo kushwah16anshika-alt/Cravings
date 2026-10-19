@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { MdEdit } from "react-icons/md";
 import api from "../../../../config/api.config.js";
 import toast from "react-hot-toast";
+import AddressAutocomplete from "../../../map/AddressAutocomplete";
+import RestaurantLocationMap from "../../../map/RestaurantLocationMap";
 
 const RestaurantAddress = () => {
   const [editingRestaurantAddress, setEditingRestaurantAddress] =
