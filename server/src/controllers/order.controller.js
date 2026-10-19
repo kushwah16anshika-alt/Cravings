@@ -527,8 +527,27 @@ export const GetOrderTracking = async (req, res, next) => {
       riderProgress = 0.0;
     }
 
-    const riderLat = restLat + (destLat - restLat) * riderProgress;
-    const riderLng = restLng + (destLng - restLng) * riderProgress;
+    // Use live rider coordinates if available, otherwise calculate position along route
+    const hasLiveRiderLocation =
+      order.riderId?.currentLocation?.lat &&
+      order.riderId?.currentLocation?.lon &&
+      !isNaN(parseFloat(order.riderId.currentLocation.lat)) &&
+      !isNaN(parseFloat(order.riderId.currentLocation.lon));
+
+    let riderLat = restLat + (destLat - restLat) * riderProgress;
+    let riderLng = restLng + (destLng - restLng) * riderProgress;
+    let isLiveGps = false;
+
+    if (
+      hasLiveRiderLocation &&
+      (status === "outfordelivery" ||
+        status === "ontheway" ||
+        status === "pickedup")
+    ) {
+      riderLat = parseFloat(order.riderId.currentLocation.lat);
+      riderLng = parseFloat(order.riderId.currentLocation.lon);
+      isLiveGps = true;
+    }
 
     const trackingData = {
       orderId: order._id,
@@ -576,6 +595,7 @@ export const GetOrderTracking = async (req, res, next) => {
           lng: riderLng,
         },
         progress: riderProgress,
+        isLiveGps,
       },
       estimatedMinutes: status === "delivered" ? 0 : status === "outfordelivery" || status === "ontheway" ? 12 : 25,
       distanceKm: "2.4 km",

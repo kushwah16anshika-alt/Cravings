@@ -150,3 +150,45 @@ export const riderUpdateProfile = async (req, res, next) => {
     next(error);
   }
 };
+
+// ======================================
+// UPDATE LIVE RIDER GPS LOCATION
+// ======================================
+export const updateRiderLocation = async (req, res, next) => {
+  try {
+    const currentUser = req.user;
+    const { lat, lon } = req.body;
+
+    if (lat === undefined || lon === undefined) {
+      const error = new Error("Latitude (lat) and Longitude (lon) are required");
+      error.statusCode = 400;
+      return next(error);
+    }
+
+    const rider = await Rider.findOne({ riderId: currentUser._id });
+    if (!rider) {
+      const error = new Error("Rider profile not found");
+      error.statusCode = 404;
+      return next(error);
+    }
+
+    rider.currentLocation = {
+      lat: String(lat),
+      lon: String(lon),
+    };
+
+    await rider.save();
+
+    return res.status(200).json({
+      message: "Rider location updated successfully",
+      data: {
+        riderId: rider._id,
+        currentLocation: rider.currentLocation,
+        updatedAt: rider.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.error("updateRiderLocation error:", error.message);
+    next(error);
+  }
+};
