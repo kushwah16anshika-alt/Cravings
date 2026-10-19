@@ -1,60 +1,54 @@
-import { useEffect, useRef } from "react";
-import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
+import React from "react";
+import { Polyline } from "react-leaflet";
 
 /**
- * Renders an animated glowing delivery route polyline on Google Maps
+ * Renders an animated glowing delivery route polyline on Leaflet OpenStreetMap
  * @param {Object} props
- * @param {Array<{lat: number, lng: number}>} props.path - Coordinates array
- * @param {string} props.color - Stroke color (default: #ea580c)
+ * @param {Array<Array<number>>} props.path - Coordinates array in [lat, lon] format
+ * @param {string} [props.color="#ea580c"] - Stroke color
  */
 export const DeliveryRoutePolyline = ({ path = [], color = "#ea580c" }) => {
-  const map = useMap();
-  const coreLib = useMapsLibrary("core");
-  const polylineRef = useRef(null);
-  const glowPolylineRef = useRef(null);
+  if (!path || path.length < 2) return null;
 
-  useEffect(() => {
-    if (!map || !path || path.length < 2 || !window?.google?.maps) return;
+  // Ensure all points are [lat, lng] arrays
+  const formattedPositions = path
+    .map((pt) => {
+      if (Array.isArray(pt)) return pt;
+      if (pt && typeof pt.lat === "number") {
+        return [pt.lat, pt.lng ?? pt.lon];
+      }
+      return null;
+    })
+    .filter(Boolean);
 
-    // Clean up previous polyline instances
-    if (polylineRef.current) {
-      polylineRef.current.setMap(null);
-    }
-    if (glowPolylineRef.current) {
-      glowPolylineRef.current.setMap(null);
-    }
+  if (formattedPositions.length < 2) return null;
 
-    try {
-      // Glow polyline (translucent wide background line)
-      glowPolylineRef.current = new window.google.maps.Polyline({
-        path: path,
-        geodesic: true,
-        strokeColor: color,
-        strokeOpacity: 0.25,
-        strokeWeight: 10,
-        map: map,
-      });
-
-      // Main active delivery polyline
-      polylineRef.current = new window.google.maps.Polyline({
-        path: path,
-        geodesic: true,
-        strokeColor: color,
-        strokeOpacity: 0.9,
-        strokeWeight: 4,
-        map: map,
-      });
-    } catch (err) {
-      console.warn("DeliveryRoutePolyline render warning:", err);
-    }
-
-    return () => {
-      if (polylineRef.current) polylineRef.current.setMap(null);
-      if (glowPolylineRef.current) glowPolylineRef.current.setMap(null);
-    };
-  }, [map, path, color, coreLib]);
-
-  return null;
+  return (
+    <>
+      {/* Outer translucent glow line */}
+      <Polyline
+        positions={formattedPositions}
+        pathOptions={{
+          color,
+          weight: 10,
+          opacity: 0.25,
+          lineCap: "round",
+          lineJoin: "round",
+        }}
+      />
+      {/* Main crisp polyline */}
+      <Polyline
+        positions={formattedPositions}
+        pathOptions={{
+          color,
+          weight: 4,
+          opacity: 0.95,
+          lineCap: "round",
+          lineJoin: "round",
+        }}
+      />
+    </>
+  );
 };
 
 export default DeliveryRoutePolyline;

@@ -13,8 +13,11 @@ import {
   IoHeart,
   IoHeartOutline,
   IoSparkles,
+  IoMapOutline,
+  IoGridOutline,
 } from "react-icons/io5";
 import { MdArrowForward } from "react-icons/md";
+import RestaurantsMapExplorer from "../components/map/RestaurantsMapExplorer";
 
 // Restaurant Types
 const RESTAURANT_TYPES = [
@@ -37,6 +40,7 @@ const OrderNow = () => {
   const [selectedType, setSelectedType] = useState("all");
   const [showOpenOnly, setShowOpenOnly] = useState(false);
   const [minRating, setMinRating] = useState(0);
+  const [viewMode, setViewMode] = useState("grid"); // "grid" | "map"
 
   const [savedFavorites, setSavedFavorites] = useState(() => {
     try {

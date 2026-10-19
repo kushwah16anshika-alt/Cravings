@@ -35,6 +35,19 @@ const RestaurantAddress = () => {
     }));
   };
 
+  const handleSelectAddress = (selected) => {
+    setRestaurantAddressFormData((prev) => ({
+      ...prev,
+      address: selected.address || prev.address,
+      city: selected.city || prev.city,
+      state: selected.state || prev.state,
+      pinCode: selected.pinCode || prev.pinCode,
+      country: selected.country || prev.country || "India",
+      geoLat: selected.geoLat ? String(selected.geoLat) : prev.geoLat,
+      geoLon: selected.geoLon ? String(selected.geoLon) : prev.geoLon,
+    }));
+  };
+
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
       toast.error("Geolocation is not supported by your browser.");
@@ -169,17 +182,25 @@ const RestaurantAddress = () => {
         <div className="w-full">
           <label className="text-xs font-semibold">Address</label>
 
-          <input
-            type="text"
-            name="address"
-            value={restaurantAddressFormData.address || ""}
-            onChange={handleRestaurantAddressChange}
-            className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingRestaurantAddress
-                ? "bg-white"
-                : "bg-(--color-base-100)"
-              } rounded`}
-            disabled={!editingRestaurantAddress}
-          />
+          {editingRestaurantAddress ? (
+            <AddressAutocomplete
+              value={restaurantAddressFormData.address || ""}
+              onChange={handleRestaurantAddressChange}
+              onSelectAddress={handleSelectAddress}
+              currentLat={restaurantAddressFormData.geoLat}
+              currentLon={restaurantAddressFormData.geoLon}
+              placeholder="Search or pin address..."
+              showMapPicker={true}
+            />
+          ) : (
+            <input
+              type="text"
+              name="address"
+              value={restaurantAddressFormData.address || ""}
+              className="w-full px-1.5 py-1 border border-(--color-secondary) bg-(--color-base-100) rounded text-xs"
+              disabled
+            />
+          )}
         </div>
 
         {/* City */}
@@ -284,8 +305,35 @@ const RestaurantAddress = () => {
                 } rounded`}
               disabled
             />
-          </div>
         </div>
+      </div>
+
+      {/* OpenStreetMap Location Preview */}
+      <div className="mt-4 pt-3 border-t border-(--color-secondary)">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs font-bold text-(--color-primary)">
+            🗺️ OpenStreetMap Restaurant Location Preview
+          </span>
+          {restaurantAddressFormData.geoLat && restaurantAddressFormData.geoLon && (
+            <span className="text-[10px] text-slate-500 font-mono">
+              GPS: {Number(restaurantAddressFormData.geoLat).toFixed(4)}, {Number(restaurantAddressFormData.geoLon).toFixed(4)}
+            </span>
+          )}
+        </div>
+        <RestaurantLocationMap
+          restaurant={{
+            restaurantName: restaurantData?.restaurantName || "My Restaurant",
+            address: restaurantAddressFormData.address,
+            city: restaurantAddressFormData.city,
+            contactDetails: restaurantData?.contactDetails,
+            averageRating: restaurantData?.averageRating,
+            geoLocation: {
+              lat: restaurantAddressFormData.geoLat,
+              lon: restaurantAddressFormData.geoLon,
+            },
+          }}
+          height="180px"
+        />
       </div>
     </div>
   );

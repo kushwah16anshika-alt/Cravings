@@ -79,6 +79,23 @@ export const LiveOrderTracker = ({
     }
   }, [orderId, fetchTrackingData]);
 
+  // Rate-limited polling for active orders (Requirement 7)
+  useEffect(() => {
+    if (!orderId) return;
+
+    const normStatus = (order?.orderStatus || "").toLowerCase();
+    const isCompleted = ["delivered", "cancelled", "rejected", "failed"].includes(normStatus);
+
+    if (isCompleted) return;
+
+    // Poll every 8 seconds when order is on the way or active
+    const pollTimer = setInterval(() => {
+      fetchTrackingData(true);
+    }, 8000);
+
+    return () => clearInterval(pollTimer);
+  }, [orderId, order?.orderStatus, fetchTrackingData]);
+
   // Handle Live Ride Simulation along route
   useEffect(() => {
     if (isSimulatingLiveRide) {
@@ -132,10 +149,12 @@ export const LiveOrderTracker = ({
     ? simulatedProgress 
     : (order?.rider?.progress !== undefined ? order.rider.progress : (stepIdx === 4 ? 1.0 : stepIdx >= 3 ? 0.65 : 0.1));
 
-  const effRiderLocation = {
-    lat: restLocation.lat + (destLocation.lat - restLocation.lat) * effProgress,
-    lng: restLocation.lng + (destLocation.lng - restLocation.lng) * effProgress,
-  };
+  const effRiderLocation = (order?.rider?.isLiveGps && order?.rider?.location)
+    ? order.rider.location
+    : {
+        lat: restLocation.lat + (destLocation.lat - restLocation.lat) * effProgress,
+        lng: restLocation.lng + (destLocation.lng - restLocation.lng) * effProgress,
+      };
 
   const currentRiderObj = {
     name: riderName,
@@ -144,6 +163,7 @@ export const LiveOrderTracker = ({
     rating: riderRating,
     progress: effProgress,
     location: effRiderLocation,
+    isLiveGps: !!order?.rider?.isLiveGps,
   };
 
   // ETA Calculation
@@ -317,7 +337,7 @@ export const LiveOrderTracker = ({
                   <span className="bg-orange-500/20 text-orange-400 text-[9px] px-1.5 py-0.2 rounded border border-orange-500/40">DEMO</span>
                 </p>
                 <p className="text-[10px] text-slate-400">
-                  Test moving vehicle coordinates along the real-time Google Maps route
+                  Test moving vehicle coordinates along the real-time OpenStreetMap route
                 </p>
               </div>
             </div>

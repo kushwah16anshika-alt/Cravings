@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -15,14 +15,22 @@ import {
   IoTicketOutline,
   IoSparkles,
   IoFlame,
+  IoLocationOutline,
 } from "react-icons/io5";
 import { MdOutlineRestaurantMenu, MdArrowForward, MdNotes } from "react-icons/md";
 import { TbChefHat } from "react-icons/tb";
+import AddressAutocomplete from "./map/AddressAutocomplete";
 
 const Cart = () => {
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [appliedPromo, setAppliedPromo] = useState(null);
+
+  // Address selection state
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [isChangingAddress, setIsChangingAddress] = useState(false);
+  const [customAddressText, setCustomAddressText] = useState("");
 
   const {
     cart,
@@ -50,6 +58,73 @@ const Cart = () => {
       script.onerror = () => resolve(false);
       document.body.appendChild(script);
     });
+  };
+
+  // Fetch customer saved addresses for delivery selection
+  useEffect(() => {
+    if (isLogin && (role === "user" || role === "customer")) {
+      const loadAddresses = async () => {
+        try {
+          const res = await api.get("/customer/address-book");
+          const book = res.data?.data || [];
+          setSavedAddresses(book);
+          if (book.length > 0) {
+            const def = book.find((a) => a.isDefault) || book[0];
+            setSelectedAddress({
+              name: def.name || user?.fullname || "Customer",
+              address: def.address,
+              city: def.city || "Bengaluru",
+              state: def.state || "Karnataka",
+              pinCode: def.pinCode || "560001",
+              country: def.country || "India",
+              geoLocation: {
+                lat: def.geoLocation?.lat || "",
+                lon: def.geoLocation?.lon || "",
+              },
+            });
+            setCustomAddressText(def.address);
+          }
+        } catch (e) {
+          console.warn("Could not load address book for checkout:", e.message);
+        }
+      };
+      loadAddresses();
+    }
+  }, [isLogin, role, user]);
+
+  const handleSelectCustomAddress = (selected) => {
+    const addrObj = {
+      name: user?.fullname || "Customer",
+      address: selected.address || selected.fullAddress,
+      city: selected.city || "Bengaluru",
+      state: selected.state || "Karnataka",
+      pinCode: selected.pinCode || "560001",
+      country: selected.country || "India",
+      geoLocation: {
+        lat: selected.geoLat ? String(selected.geoLat) : "",
+        lon: selected.geoLon ? String(selected.geoLon) : "",
+      },
+    };
+    setSelectedAddress(addrObj);
+    setCustomAddressText(selected.address || selected.fullAddress);
+    setIsChangingAddress(false);
+  };
+
+  const handlePickSavedAddress = (addr) => {
+    setSelectedAddress({
+      name: addr.name || user?.fullname || "Customer",
+      address: addr.address,
+      city: addr.city || "Bengaluru",
+      state: addr.state || "Karnataka",
+      pinCode: addr.pinCode || "560001",
+      country: addr.country || "India",
+      geoLocation: {
+        lat: addr.geoLocation?.lat || "",
+        lon: addr.geoLocation?.lon || "",
+      },
+    });
+    setCustomAddressText(addr.address);
+    setIsChangingAddress(false);
   };
 
   const handleApplyPromo = (e) => {
@@ -83,10 +158,11 @@ const Cart = () => {
     try {
       setIsPlacingOrder(true);
 
-      // 1. Create order in DB with full customization details
+      // 1. Create order in DB with full customization details and pinned delivery address
       const createOrderRes = await api.post("/order/create", {
         restaurantId: cart.restaurantId,
         paymentMethod: "upi",
+        deliveryAddress: selectedAddress || undefined,
         orderItems: cart.items.map((i) => ({
           itemId: i.itemId || i._id,
           itemName: i.itemName,
@@ -439,6 +515,88 @@ const Cart = () => {
 
           {/* Right: Bill Details & Payment */}
           <div className="lg:col-span-5 space-y-4 sticky top-24">
+            {/* Delivery Destination Card (Geoapify & OpenStreetMap) */}
+            <div className="rounded-3xl bg-white border border-slate-200/80 p-5 shadow-xs space-y-3">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center font-bold">
+                    <IoLocationOutline size={17} />
+                  </div>
+                  <div>
+                    <h3 className="font-heading text-xs font-black uppercase tracking-wider text-slate-800">
+                      Delivery Destination
+                    </h3>
+                    <p className="text-[10px] text-slate-400">OpenStreetMap GPS Destination</p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsChangingAddress(!isChangingAddress)}
+                  className="text-xs font-bold text-orange-600 hover:text-orange-500"
+                >
+                  {isChangingAddress ? "Done" : "Change"}
+                </button>
+              </div>
+
+              {!isChangingAddress ? (
+                <div className="text-xs space-y-1">
+                  <p className="font-extrabold text-slate-900">
+                    {selectedAddress?.name || user?.fullname || "Customer"}
+                  </p>
+                  <p className="text-slate-600 font-medium">
+                    {selectedAddress?.address
+                      ? `${selectedAddress.address}, ${selectedAddress.city || ""}`
+                      : "Default Registered Address"}
+                  </p>
+                  {selectedAddress?.geoLocation?.lat && (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 mt-1">
+                      <IoShieldCheckmarkOutline size={12} className="text-emerald-600" />
+                      <span>GPS Pinned for Live Rider Telematics</span>
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-3 pt-1">
+                  <AddressAutocomplete
+                    value={customAddressText}
+                    onChange={(e) => setCustomAddressText(e.target.value)}
+                    onSelectAddress={handleSelectCustomAddress}
+                    currentLat={selectedAddress?.geoLocation?.lat}
+                    currentLon={selectedAddress?.geoLocation?.lon}
+                    placeholder="Search street, building, or pin on map..."
+                  />
+
+                  {savedAddresses.length > 0 && (
+                    <div className="space-y-1.5 pt-1">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase">
+                        Or Pick Saved Address:
+                      </span>
+                      <div className="max-h-36 overflow-y-auto space-y-1">
+                        {savedAddresses.map((addr) => (
+                          <button
+                            key={addr._id}
+                            type="button"
+                            onClick={() => handlePickSavedAddress(addr)}
+                            className="w-full text-left p-2 rounded-xl border border-slate-200 text-xs hover:border-orange-500 hover:bg-orange-50/50 transition flex items-center justify-between"
+                          >
+                            <span className="font-bold text-slate-800 truncate">
+                              {addr.name} - {addr.address}
+                            </span>
+                            {addr.isDefault && (
+                              <span className="text-[9px] bg-orange-100 text-orange-700 px-1 rounded font-bold">
+                                Default
+                              </span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Promo Code Card */}
             <div className="rounded-3xl bg-white border border-slate-200/80 p-5 shadow-xs">
               <form onSubmit={handleApplyPromo} className="flex gap-2">

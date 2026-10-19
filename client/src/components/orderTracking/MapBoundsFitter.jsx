@@ -1,49 +1,51 @@
 import { useEffect } from "react";
-import { useMap } from "@vis.gl/react-google-maps";
+import { useMap } from "react-leaflet";
+import L from "leaflet";
 
 /**
- * Auto-fits Google Map camera bounds to encompass all active coordinates
+ * Auto-fits Leaflet Map camera bounds to encompass all active coordinates
  * @param {Object} props
- * @param {Array<{lat: number, lng: number}>} props.points
+ * @param {Array<Array<number>|{lat: number, lng: number}>} props.points
  * @param {boolean} [props.autoFit=true]
+ * @param {Array<number>} [props.padding=[50, 50]]
  */
-export const MapBoundsFitter = ({ points = [], autoFit = true }) => {
+export const MapBoundsFitter = ({ points = [], autoFit = true, padding = [50, 50] }) => {
   const map = useMap();
 
   useEffect(() => {
-    if (!map || !autoFit || !points || points.length === 0 || !window.google?.maps) return;
+    if (!map || !autoFit || !points || points.length === 0) return;
 
     try {
-      const bounds = new window.google.maps.LatLngBounds();
-      let validCount = 0;
-
-      points.forEach((pt) => {
-        if (pt && typeof pt.lat === "number" && typeof pt.lng === "number" && !isNaN(pt.lat) && !isNaN(pt.lng)) {
-          bounds.extend({ lat: pt.lat, lng: pt.lng });
-          validCount++;
-        }
-      });
-
-      if (validCount > 0) {
-        map.fitBounds(bounds, {
-          top: 60,
-          right: 60,
-          bottom: 60,
-          left: 60,
-        });
-
-        // Ensure zoom is reasonable if all points are very close
-        const listener = window.google.maps.event.addListenerOnce(map, "idle", () => {
-          if (map.getZoom() > 17) {
-            map.setZoom(16);
+      const validPoints = points
+        .map((pt) => {
+          if (Array.isArray(pt)) {
+            const [lat, lng] = pt;
+            if (typeof lat === "number" && typeof lng === "number" && !isNaN(lat) && !isNaN(lng)) {
+              return [lat, lng];
+            }
+          } else if (pt && typeof pt.lat === "number") {
+            const lng = pt.lng ?? pt.lon;
+            if (typeof lng === "number" && !isNaN(pt.lat) && !isNaN(lng)) {
+              return [pt.lat, lng];
+            }
           }
-        });
-        return () => window.google.maps.event.removeListener(listener);
+          return null;
+        })
+        .filter(Boolean);
+
+      if (validPoints.length === 0) return;
+
+      if (validPoints.length === 1) {
+        map.setView(validPoints[0], Math.min(map.getZoom() || 15, 16), { animate: true });
+        return;
       }
+
+      const bounds = L.latLngBounds(validPoints);
+      map.fitBounds(bounds, { padding, maxZoom: 16, animate: true });
     } catch (err) {
-      console.warn("MapBoundsFitter error:", err);
+      console.warn("MapBoundsFitter warning:", err);
     }
-  }, [map, points, autoFit]);
+  }, [map, points, autoFit, padding]);
 
   return null;
 };

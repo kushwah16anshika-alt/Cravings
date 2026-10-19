@@ -129,7 +129,7 @@ const Order = () => {
             Order History
           </h2>
           <p className="text-xs sm:text-sm font-normal text-slate-500">
-            Track live deliveries with Google Maps, view receipts, and rate past meals
+            Track live deliveries on OpenStreetMap, view receipts, and rate past meals
           </p>
         </div>
 
@@ -388,7 +388,7 @@ const Order = () => {
                           className="inline-flex items-center gap-1.5 rounded-xl border border-orange-200 bg-orange-50 px-3.5 py-2 text-xs font-bold text-orange-700 hover:bg-orange-100 transition shadow-xs"
                         >
                           <IoMapOutline size={15} />
-                          <span>Google Map Tracker</span>
+                          <span>Live Map Tracker</span>
                         </button>
 
                         {restId && (

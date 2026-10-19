@@ -1,20 +1,26 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { APIProvider } from "@vis.gl/react-google-maps";
-import { IoKeyOutline, IoInformationCircleOutline } from "react-icons/io5";
+import { IoKeyOutline, IoInformationCircleOutline, IoCheckmarkCircleOutline } from "react-icons/io5";
 
-const GoogleMapsKeyContext = createContext({
+const MapKeyContext = createContext({
   apiKey: "",
   setApiKey: () => {},
   hasCustomKey: false,
+  openKeySettings: () => {},
 });
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const useGoogleMapsKey = () => useContext(GoogleMapsKeyContext);
+export const useGoogleMapsKey = () => useContext(MapKeyContext);
+// eslint-disable-next-line react-refresh/only-export-components
+export const useMapKey = () => useContext(MapKeyContext);
 
+/**
+ * Geoapify & OpenStreetMap Configuration Wrapper
+ * Replaces the obsolete Google Maps Wrapper with a zero-cost, open mapping layer.
+ */
 export const GoogleMapsWrapper = ({ children }) => {
-  const envKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
+  const envKey = import.meta.env.VITE_GEOAPIFY_API_KEY || "";
   const [apiKey, setApiKey] = useState(() => {
-    return localStorage.getItem("cravings_gmaps_api_key") || envKey;
+    return localStorage.getItem("cravings_geoapify_key") || envKey;
   });
   const [showKeyModal, setShowKeyModal] = useState(false);
   const [tempKey, setTempKey] = useState(apiKey);
@@ -30,9 +36,9 @@ export const GoogleMapsWrapper = ({ children }) => {
     const clean = tempKey.trim();
     setApiKey(clean);
     if (clean) {
-      localStorage.setItem("cravings_gmaps_api_key", clean);
+      localStorage.setItem("cravings_geoapify_key", clean);
     } else {
-      localStorage.removeItem("cravings_gmaps_api_key");
+      localStorage.removeItem("cravings_geoapify_key");
     }
     setShowKeyModal(false);
   };
@@ -48,19 +54,10 @@ export const GoogleMapsWrapper = ({ children }) => {
   };
 
   return (
-    <GoogleMapsKeyContext.Provider value={contextValue}>
-      {apiKey ? (
-        <APIProvider
-          apiKey={apiKey}
-          libraries={["places", "geometry", "routes", "marker"]}
-        >
-          {children}
-        </APIProvider>
-      ) : (
-        <>{children}</>
-      )}
+    <MapKeyContext.Provider value={contextValue}>
+      {children}
 
-      {/* API Key Config Modal for developer/evaluator */}
+      {/* Geoapify API Key Config Modal */}
       {showKeyModal && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-fadeIn">
           <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl border border-slate-200 space-y-4">
@@ -70,10 +67,10 @@ export const GoogleMapsWrapper = ({ children }) => {
               </div>
               <div>
                 <h3 className="font-heading text-lg font-black text-slate-900">
-                  Google Maps API Configuration
+                  OpenStreetMap & Geoapify Config
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Configure your Google Maps Platform API key
+                  OpenStreetMap tiles are active by default. Optional Geoapify key for routing & geocoding.
                 </p>
               </div>
             </div>
@@ -81,32 +78,32 @@ export const GoogleMapsWrapper = ({ children }) => {
             <form onSubmit={handleSaveKey} className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Google Maps API Key
+                  Geoapify API Key (Optional)
                 </label>
                 <input
                   type="text"
                   value={tempKey}
                   onChange={(e) => setTempKey(e.target.value)}
-                  placeholder="AIzaSy..."
+                  placeholder="e.g. 4a8b... (leave blank to use backend proxy)"
                   className="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-xs font-mono focus:border-orange-500 focus:outline-hidden"
                 />
               </div>
 
-              <div className="rounded-2xl bg-slate-50 p-3.5 border border-slate-200 text-xs text-slate-600 space-y-2">
-                <p className="flex items-start gap-1.5 text-slate-700 font-semibold">
-                  <IoInformationCircleOutline className="text-orange-600 flex-shrink-0 mt-0.5" size={16} />
-                  <span>Prototyping with Maps Demo Key:</span>
+              <div className="rounded-2xl bg-emerald-50/80 p-3.5 border border-emerald-200/80 text-xs text-emerald-900 space-y-2">
+                <p className="flex items-start gap-1.5 font-bold">
+                  <IoCheckmarkCircleOutline className="text-emerald-600 flex-shrink-0 mt-0.5" size={16} />
+                  <span>Free-Tier Friendly & Always Accessible:</span>
                 </p>
-                <p className="text-[11px] text-slate-500">
-                  Get a free, instant Maps Demo Key with zero Cloud project configuration by visiting:
+                <p className="text-[11px] text-emerald-800">
+                  Cravings now uses <strong>OpenStreetMap</strong> and <strong>Geoapify</strong>. Map tiles display freely without any API key. Get a free Geoapify key (3,000 requests/day, no credit card required) at:
                 </p>
                 <a
-                  href="https://mapsplatform.google.com/maps-demo-key?utm_campaign=gmp_git_agentskills_v1"
+                  href="https://www.geoapify.com/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block text-orange-600 font-bold hover:underline text-[11px]"
                 >
-                  Generate Free Maps Demo Key →
+                  Visit Geoapify.com (Free Tier) →
                 </a>
               </div>
 
@@ -116,7 +113,7 @@ export const GoogleMapsWrapper = ({ children }) => {
                   onClick={() => setShowKeyModal(false)}
                   className="rounded-xl px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 transition"
                 >
-                  Cancel
+                  Close
                 </button>
                 <button
                   type="submit"
@@ -129,7 +126,7 @@ export const GoogleMapsWrapper = ({ children }) => {
           </div>
         </div>
       )}
-    </GoogleMapsKeyContext.Provider>
+    </MapKeyContext.Provider>
   );
 };
 
