@@ -14,6 +14,7 @@ import {
 import {
   MdOutlineDashboard,
 } from "react-icons/md";
+import { IoSparklesOutline } from "react-icons/io5";
 
 import toast from "react-hot-toast";
 import api from "../config/api.config.js";

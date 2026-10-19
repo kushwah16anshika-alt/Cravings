@@ -20,7 +20,11 @@ const router = express.Router();
 router.post("/create", AuthProtect, CreateOrder);
 router.get("/my-orders", AuthProtect, GetCustomerOrders);
 router.get("/track/:orderId", AuthProtect, GetOrderTracking);
-router.get("/:orderId", AuthProtect, GetOrderById);
+
+// Rider Delivery Management
+router.get("/rider/orders", AuthProtect, GetRiderDeliveryOrders);
+router.patch("/rider/accept/:orderId", AuthProtect, RiderAcceptOrder);
+router.patch("/rider/status/:orderId", AuthProtect, RiderUpdateDeliveryStatus);
 
 // Order Actions & Status Updates
 router.patch("/cancel/:orderId", AuthProtect, CancelOrder);
@@ -28,9 +32,7 @@ router.patch("/rate/:orderId", AuthProtect, RateOrder);
 router.patch("/status/:orderId", AuthProtect, UpdateOrderStatus);
 router.patch("/simulate-status/:orderId", AuthProtect, UpdateOrderStatusForDemo);
 
-// Rider Delivery Management
-router.get("/rider/orders", AuthProtect, GetRiderDeliveryOrders);
-router.patch("/rider/accept/:orderId", AuthProtect, RiderAcceptOrder);
-router.patch("/rider/status/:orderId", AuthProtect, RiderUpdateDeliveryStatus);
+// Parameterized order route (must follow specific subpaths)
+router.get("/:orderId", AuthProtect, GetOrderById);
 
 export default router;

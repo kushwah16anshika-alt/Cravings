@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Customer from "../models/customer.model.js";
 import Menu from "../models/menu.model.js";
 import Order from "../models/order.model.js";
@@ -262,8 +263,8 @@ export const GetOrderById = async (req, res, next) => {
   try {
     const { orderId } = req.params;
 
-    if (!orderId) {
-      const error = new Error("Order ID is required");
+    if (!orderId || !mongoose.Types.ObjectId.isValid(orderId)) {
+      const error = new Error("Valid Order ID is required");
       error.statusCode = 400;
       return next(error);
     }
@@ -477,8 +478,8 @@ export const GetOrderTracking = async (req, res, next) => {
   try {
     const { orderId } = req.params;
 
-    if (!orderId) {
-      const error = new Error("Order ID is required");
+    if (!orderId || !mongoose.Types.ObjectId.isValid(orderId)) {
+      const error = new Error("Valid Order ID is required");
       error.statusCode = 400;
       return next(error);
     }
