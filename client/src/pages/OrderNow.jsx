@@ -257,7 +257,7 @@ const OrderNow = () => {
         </div>
 
         {/* Results Header */}
-        <div className="flex items-center justify-between mt-8 mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 mt-8 mb-6">
           <div className="flex items-center gap-2">
             <h2 className="font-heading text-xl font-black text-slate-900">
               Available Restaurants
@@ -267,24 +267,64 @@ const OrderNow = () => {
             </span>
           </div>
 
-          {(searchQuery || selectedType !== "all" || showOpenOnly || minRating > 0) && (
-            <button
-              onClick={() => {
-                setSearchQuery("");
-                setSelectedType("all");
-                setShowOpenOnly(false);
-                setMinRating(0);
-              }}
-              className="text-xs font-bold text-orange-600 hover:underline"
-            >
-              Reset Filters
-            </button>
-          )}
+          <div className="flex items-center gap-3">
+            {/* View Mode Toggle: Grid vs Map */}
+            <div className="inline-flex items-center rounded-2xl bg-slate-100 p-1 border border-slate-200 text-xs font-bold shadow-xs">
+              <button
+                type="button"
+                onClick={() => setViewMode("grid")}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition ${
+                  viewMode === "grid"
+                    ? "bg-white text-orange-600 shadow-xs font-black"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <IoGridOutline size={15} />
+                <span>Grid</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("map")}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition ${
+                  viewMode === "map"
+                    ? "bg-white text-orange-600 shadow-xs font-black"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <IoMapOutline size={15} />
+                <span>Map Explorer</span>
+              </button>
+            </div>
+
+            {(searchQuery || selectedType !== "all" || showOpenOnly || minRating > 0) && (
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedType("all");
+                  setShowOpenOnly(false);
+                  setMinRating(0);
+                }}
+                className="text-xs font-bold text-orange-600 hover:underline"
+              >
+                Reset Filters
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Restaurant Grid */}
+        {/* Restaurant Content: Grid or Interactive Map */}
         {isLoading ? (
           <Loader height="350px" text="Discovering verified kitchens..." />
+        ) : viewMode === "map" ? (
+          <div className="mb-12">
+            <RestaurantsMapExplorer
+              restaurants={filteredRestaurants}
+              height="580px"
+              onSelectRestaurant={(restaurant) =>
+                navigate(`/restaurant-details/${restaurant._id}`)
+              }
+            />
+          </div>
         ) : filteredRestaurants.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredRestaurants.map((restaurant) => {
