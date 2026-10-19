@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { IoKeyOutline, IoInformationCircleOutline, IoCheckmarkCircleOutline } from "react-icons/io5";
+import { IoKeyOutline, IoCheckmarkCircleOutline } from "react-icons/io5";
 
 const MapKeyContext = createContext({
   apiKey: "",

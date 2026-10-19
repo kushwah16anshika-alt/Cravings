@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -6,19 +6,14 @@ import {
   Popup,
   useMap,
 } from "react-leaflet";
-import L from "leaflet";
 import {
-  IoStorefront,
-  IoHome,
   IoMapOutline,
   IoCall,
   IoKeyOutline,
-  IoNavigateOutline,
   IoSpeedometerOutline,
   IoTimeOutline,
 } from "react-icons/io5";
 import { MdDeliveryDining } from "react-icons/md";
-import { FaStar } from "react-icons/fa";
 import DeliveryRoutePolyline from "./DeliveryRoutePolyline";
 import MapBoundsFitter from "./MapBoundsFitter";
 import { useGoogleMapsKey } from "./GoogleMapsWrapper";
@@ -98,7 +93,7 @@ export const OrderTrackingMap = ({
   restaurant,
   destination,
   rider,
-  orderStatus = "onTheWay",
+  _orderStatus = "onTheWay",
   customPolylinePath = null,
 }) => {
   const { openKeySettings } = useGoogleMapsKey();
@@ -363,7 +358,7 @@ export const OrderTrackingMap = ({
           <span className="text-slate-600 hidden sm:inline">•</span>
 
           <span className="text-[10px] text-slate-400 hidden sm:inline">
-            Routing: {routeData?.provider === "geoapify" ? "Geoapify API" : "OpenStreetMap"}
+            Routing: {isRouteLoading ? "Calculating route..." : routeData?.provider === "geoapify" ? "Geoapify API" : "OpenStreetMap"}
           </span>
         </div>
       </div>

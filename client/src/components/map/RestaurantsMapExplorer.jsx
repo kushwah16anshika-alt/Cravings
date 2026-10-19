@@ -3,8 +3,7 @@ import { Marker, Popup } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import CravingsMap from "./CravingsMap";
 import { createRestaurantIcon } from "./LeafletIcons";
-import { IoCallOutline, IoLocationOutline, IoStorefrontOutline } from "react-icons/io5";
-import { FaStar } from "react-icons/fa";
+import { IoLocationOutline, IoStorefrontOutline } from "react-icons/io5";
 
 /**
  * Interactive OpenStreetMap Explorer for browsing and selecting restaurants

@@ -299,12 +299,14 @@ const RestaurantAddress = () => {
               name="geoLon"
               value={restaurantAddressFormData.geoLon || ""}
               placeholder="e.g. 77.2090"
-              className={`w-full px-1.5 py-1 border border-(--color-secondary) ${editingRestaurantAddress
+              className={`w-full px-1.5 py-1 border border-(--color-secondary) ${
+                editingRestaurantAddress
                   ? "bg-white"
                   : "bg-(--color-base-100)"
-                } rounded`}
+              } rounded`}
               disabled
             />
+          </div>
         </div>
       </div>
 
