@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
 import { MdEdit, MdOutlineAddLocationAlt, MdDeleteOutline } from "react-icons/md";
-import { IoLocationOutline, IoHomeOutline } from "react-icons/io5";
+import { IoLocationOutline, IoHomeOutline, IoCheckmarkCircle } from "react-icons/io5";
 import { RiLoader4Fill } from "react-icons/ri";
 import api from "../../../config/api.config.js";
 import toast from "react-hot-toast";
+import AddressAutocomplete from "../../map/AddressAutocomplete";
 
 const emptyForm = {
   name: "",
