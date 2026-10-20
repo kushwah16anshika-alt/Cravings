@@ -146,7 +146,7 @@ const Cart = () => {
     }
 
     if (role !== "user" && role !== "customer") {
-      toast.error("Only student/customer accounts can place food orders");
+      toast.error("Only customer accounts can place food orders");
       return;
     }
 

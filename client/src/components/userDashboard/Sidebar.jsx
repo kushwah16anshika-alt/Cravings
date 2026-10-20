@@ -53,7 +53,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     }
   };
 
-  const userName = user?.fullName || user?.fullname || "Student";
+  const userName = user?.fullName || user?.fullname || "Foodie";
   const userPhoto =
     user?.photo?.url ||
     `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(userName)}`;

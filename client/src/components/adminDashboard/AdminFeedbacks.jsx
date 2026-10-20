@@ -42,10 +42,10 @@ const AdminFeedbacks = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="font-heading text-xl sm:text-2xl font-black text-slate-900">
-            Student Feedback & Support Desk
+            Customer Feedback & Support Desk
           </h2>
           <p className="text-xs text-slate-500 font-medium">
-            Review customer satisfaction ratings, canteen suggestions, and support tickets
+            Review customer satisfaction ratings, restaurant suggestions, and support tickets
           </p>
         </div>
 
@@ -100,7 +100,7 @@ const AdminFeedbacks = () => {
             <span className="text-4xl">💬</span>
             <p className="text-sm font-bold text-slate-700">No feedback submissions yet</p>
             <p className="text-xs text-slate-400">
-              When students rate their experience, submissions will appear here.
+              When customers rate their experience, submissions will appear here.
             </p>
           </div>
         ) : (

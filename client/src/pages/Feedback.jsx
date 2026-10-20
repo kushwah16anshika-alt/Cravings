@@ -21,8 +21,8 @@ const Feedback = () => {
     "Food Quality & Taste",
     "Delivery Speed & Packaging",
     "App & Ordering Experience",
-    "Canteen & Vendor Service",
-    "Pricing & Student Discounts",
+    "Restaurant & Partner Kitchen Service",
+    "Pricing & Promo Discounts",
   ];
 
   const handleInputChange = (e) => {

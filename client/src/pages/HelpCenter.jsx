@@ -36,7 +36,7 @@ const HelpCenter = () => {
     {
       question: "How can I request a cancellation or refund?",
       answer:
-        "Raise a support ticket below citing your Order ID, or call our student help desk at +91 98765 43210 for prompt assistance.",
+        "Raise a support ticket below citing your Order ID, or call our customer support desk at +91 98765 43210 for prompt assistance.",
       icon: <FaCreditCard className="text-orange-600" />,
     },
     {
@@ -46,7 +46,7 @@ const HelpCenter = () => {
       icon: <FaBicycle className="text-orange-600" />,
     },
     {
-      question: "How do I manage my saved dorm addresses?",
+      question: "How do I manage my saved delivery addresses?",
       answer:
         "Navigate to Customer Dashboard → Profile & Addresses to add, edit, or set default delivery locations with GPS pinning.",
       icon: <FaUser className="text-orange-600" />,

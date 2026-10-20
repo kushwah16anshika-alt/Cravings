@@ -39,7 +39,7 @@ export const GetAiTrendingSuggestions = async (req, res, next) => {
       },
       {
         id: "sug-4",
-        title: "Budget Student Meals",
+        title: "Budget-Friendly Meals",
         prompt: "Pocket-friendly lunch thali, rolls, or burger combos under 150",
         icon: "💰",
         tag: "Pocket Friendly",

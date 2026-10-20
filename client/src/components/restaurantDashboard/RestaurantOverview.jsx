@@ -296,7 +296,7 @@ const RestaurantOverview = ({ onNavigateTab, onStatusUpdated }) => {
               Kitchen Fulfillment Flow
             </h2>
             <p className="text-xs font-medium text-slate-500">
-              Live operational stages from student ordering to delivery completion.
+              Live operational stages from customer ordering to delivery completion.
             </p>
           </div>
           <button
@@ -411,7 +411,7 @@ const RestaurantOverview = ({ onNavigateTab, onStatusUpdated }) => {
                   const itemsSummary = (order.orderItems || [])
                     .map((item) => `${item.quantity}x ${item.itemName}`)
                     .join(", ");
-                  const customerName = order.customerId?.fullName || "Student";
+                  const customerName = order.customerId?.fullName || "Customer";
                   const amount = order.billDetails?.finalAmount || 0;
 
                   return (

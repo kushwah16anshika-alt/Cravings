@@ -129,7 +129,7 @@ const RestaurantOrders = () => {
             Live Kitchen Orders
           </h1>
           <p className="text-xs text-slate-500 font-medium">
-            Monitor incoming student tickets, accept preparation jobs, and mark food ready for riders.
+            Monitor incoming customer orders, accept preparation jobs, and mark food ready for riders.
           </p>
         </div>
 
@@ -537,7 +537,7 @@ const RestaurantOrders = () => {
               </div>
               {selectedOrder.billDetails?.discountAmount > 0 && (
                 <div className="flex justify-between font-bold text-emerald-600">
-                  <span>Student Discount</span>
+                  <span>Promo Discount</span>
                   <span>-₹{selectedOrder.billDetails.discountAmount}</span>
                 </div>
               )}

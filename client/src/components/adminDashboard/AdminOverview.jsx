@@ -182,7 +182,7 @@ const AdminOverview = ({ onNavigateTab }) => {
               {summary.totalUsers || 0}
             </h3>
             <p className="text-xs font-bold text-slate-500 mt-1 flex items-center gap-2">
-              <span>{summary.customerCount || 0} Students</span>
+              <span>{summary.customerCount || 0} Customers</span>
               <span>•</span>
               <span>{summary.riderCount || 0} Riders</span>
             </p>
@@ -269,7 +269,7 @@ const AdminOverview = ({ onNavigateTab }) => {
             <span className="text-4xl">📦</span>
             <p className="text-sm font-bold text-slate-700">No orders placed yet</p>
             <p className="text-xs text-slate-400">
-              When students start ordering food, live records will stream here.
+              When customers start ordering food, live records will stream here.
             </p>
           </div>
         ) : (

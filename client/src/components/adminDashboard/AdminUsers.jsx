@@ -13,7 +13,7 @@ import { MdRefresh } from "react-icons/md";
 
 const USER_ROLES = [
   { value: "all", label: "All Community", icon: <IoPersonOutline /> },
-  { value: "customer", label: "Students", icon: <IoPersonOutline /> },
+  { value: "customer", label: "Customers", icon: <IoPersonOutline /> },
   { value: "rider", label: "Delivery Riders", icon: <IoBicycleOutline /> },
   { value: "restaurant", label: "Kitchen Managers", icon: <IoStorefrontOutline /> },
   { value: "admin", label: "Admins", icon: <IoShieldCheckmarkOutline /> },
@@ -98,7 +98,7 @@ const AdminUsers = () => {
           <IoSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-orange-600 text-base" />
           <input
             type="text"
-            placeholder="Search by student name, email, phone number..."
+            placeholder="Search by customer name, email, phone number..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2.5 text-xs font-semibold rounded-2xl bg-slate-50 border border-slate-200 focus:outline-hidden focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition"
@@ -191,7 +191,7 @@ const AdminUsers = () => {
                             u.userType
                           )}`}
                         >
-                          {u.userType === "user" ? "Student" : u.userType}
+                          {u.userType === "user" ? "Customer" : u.userType}
                         </span>
                       </td>
                       <td className="py-3.5 text-slate-600 font-medium truncate max-w-[180px]">
