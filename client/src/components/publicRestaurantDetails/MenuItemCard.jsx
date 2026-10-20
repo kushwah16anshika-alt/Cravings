@@ -25,6 +25,20 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
     (item.customizationOptions?.addOns && item.customizationOptions.addOns.length > 0) ||
     (item.customizationOptions?.crustsOrBases && item.customizationOptions.crustsOrBases.length > 0);
 
+  const handleOpenCustomize = (e) => {
+    e?.stopPropagation?.();
+    if (!isLogin || !user) {
+      toast.error("Please login to customize this meal.");
+      return;
+    }
+    if (role !== "user" && role !== "customer") {
+      toast.error("Please login as a customer to order food.");
+      return;
+    }
+    if (isUnavailable) return;
+    setIsCustomizeOpen(true);
+  };
+
   const handleAdd = () => {
     if (!isLogin || !user) {
       toast.error("Please login to add items to your cart.");
@@ -107,16 +121,15 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
           <div className="flex-1 min-w-0 space-y-1">
             {/* Tag Badges */}
             <div className="flex flex-wrap items-center gap-1.5 mb-1">
-              {isCustomizable && (
-                <button
-                  type="button"
-                  onClick={() => setIsCustomizeOpen(true)}
-                  className="inline-flex items-center gap-1 rounded-md bg-gradient-to-r from-orange-500/15 to-amber-500/15 border border-orange-300/60 px-2 py-0.5 text-[9px] font-black text-orange-700 hover:from-orange-500 hover:to-amber-500 hover:text-white transition-all shadow-2xs"
-                >
-                  <IoSparkles size={10} className="text-orange-600 animate-pulse" />
-                  <span>Customizable</span>
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={handleOpenCustomize}
+                className="inline-flex items-center gap-1 rounded-md bg-gradient-to-r from-orange-500/15 to-amber-500/15 border border-orange-300/60 px-2 py-0.5 text-[9px] font-black text-orange-700 hover:from-orange-500 hover:to-amber-500 hover:text-white transition-all shadow-2xs"
+                title="Customize this dish"
+              >
+                <IoSparkles size={10} className="text-orange-600 animate-pulse" />
+                <span>Customizable</span>
+              </button>
               {item.isTopRated && (
                 <span className="inline-flex items-center gap-0.5 rounded-md bg-amber-100 px-1.5 py-0.5 text-[9px] font-extrabold text-amber-800">
                   <IoStar size={10} /> Top Pick
@@ -170,38 +183,42 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
                       {itemCount}
                     </span>
                     <button
-                      onClick={() => {
-                        if (isCustomizable) {
-                          setIsCustomizeOpen(true);
-                        } else {
-                          increaseItem(item._id);
-                        }
-                      }}
+                      onClick={() => increaseItem(item._id)}
                       className="flex h-7 w-7 items-center justify-center rounded-xl bg-orange-700/60 hover:bg-orange-700 active:scale-90 transition"
-                      title={isCustomizable ? "Add another customization" : "Add more"}
+                      title="Add standard portion"
                     >
                       <IoAdd size={16} />
                     </button>
                   </div>
-                  {isCustomizable && (
-                    <button
-                      type="button"
-                      onClick={() => setIsCustomizeOpen(true)}
-                      className="flex items-center justify-center h-8 w-8 rounded-xl bg-orange-50 border border-orange-200 text-orange-600 hover:bg-orange-600 hover:text-white transition"
-                      title="Add another customization"
-                    >
-                      <IoSparkles size={14} />
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={handleOpenCustomize}
+                    className="flex items-center gap-1 h-8 px-2.5 rounded-xl bg-orange-50 border border-orange-200 text-orange-700 hover:bg-orange-600 hover:text-white transition text-[11px] font-bold shadow-2xs"
+                    title="Customize another portion with spice, extras & notes"
+                  >
+                    <IoSparkles size={12} className="text-orange-500" />
+                    <span>Customize</span>
+                  </button>
                 </div>
               ) : (
-                <button
-                  onClick={handleAdd}
-                  className="flex items-center gap-1 rounded-2xl border-2 border-orange-600 bg-orange-50/50 px-4 py-1.5 text-xs font-black text-orange-600 shadow-xs hover:bg-orange-600 hover:text-white active:scale-95 transition-all duration-200"
-                >
-                  <IoAdd size={16} />
-                  <span>{isCustomizable ? "CUSTOMIZE" : "ADD"}</span>
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={handleOpenCustomize}
+                    className="flex items-center gap-1 rounded-2xl border border-orange-200 bg-orange-50/80 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-orange-700 shadow-2xs hover:bg-orange-600 hover:text-white hover:border-orange-600 active:scale-95 transition-all duration-200"
+                    title="Customize spice level, size, add-ons & cooking instructions"
+                  >
+                    <IoSparkles size={13} className="text-orange-600" />
+                    <span>Customize</span>
+                  </button>
+                  <button
+                    onClick={handleAdd}
+                    className="flex items-center gap-1 rounded-2xl border-2 border-orange-600 bg-orange-600 px-3.5 sm:px-4 py-1.5 text-xs font-black text-white shadow-xs hover:bg-orange-500 active:scale-95 transition-all duration-200"
+                  >
+                    <IoAdd size={16} />
+                    <span>ADD</span>
+                  </button>
+                </div>
               )}
             </div>
           </div>
