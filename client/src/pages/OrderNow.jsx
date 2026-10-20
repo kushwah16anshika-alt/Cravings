@@ -235,29 +235,29 @@ const OrderNow = () => {
           </div>
         </div>
 
-        {/* Custom Meal Studio Quick Banner */}
+        {/* In-Restaurant Customization Banner */}
         <div className="mt-6 rounded-3xl bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 p-5 sm:p-6 text-white shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span className="text-3xl bg-white/20 p-2 rounded-2xl">🥗</span>
+            <span className="text-3xl bg-white/20 p-2 rounded-2xl">🧑‍🍳</span>
             <div>
               <h3 className="font-heading text-sm sm:text-base font-black text-white">
-                Looking to build a custom bowl, thali or burger?
+                Customize Meals Directly in Any Restaurant
               </h3>
               <p className="text-xs text-orange-100 font-medium">
-                Choose every ingredient, customize portion & spice in our Custom Meal Studio.
+                Select any restaurant below to personalize spice levels, portion sizes, add-ons & cooking instructions straight from their menu.
               </p>
             </div>
           </div>
-          <button
-            onClick={() => navigate("/customize-meal")}
+          <a
+            href="#restaurant-list"
             className="flex-shrink-0 px-5 py-2.5 rounded-2xl bg-white text-orange-700 font-black text-xs shadow-md hover:bg-orange-50 active:scale-95 transition"
           >
-            Open Meal Studio ✨
-          </button>
+            Explore Menus Below ↓
+          </a>
         </div>
 
         {/* Results Header */}
-        <div className="flex flex-wrap items-center justify-between gap-3 mt-8 mb-6">
+        <div id="restaurant-list" className="flex flex-wrap items-center justify-between gap-3 mt-8 mb-6">
           <div className="flex items-center gap-2">
             <h2 className="font-heading text-xl font-black text-slate-900">
               Available Restaurants

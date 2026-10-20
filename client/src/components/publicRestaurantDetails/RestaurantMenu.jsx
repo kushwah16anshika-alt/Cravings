@@ -4,14 +4,12 @@ import { MdOutlineRestaurantMenu } from "react-icons/md";
 import { TbChefHat } from "react-icons/tb";
 import { foodTypeDot } from "./helpers";
 import MenuItemCard from "./MenuItemCard";
-import CustomMealStudioModal from "./CustomMealStudioModal";
 
 const RestaurantMenu = ({ menuItems, restaurantId, restaurantName }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
   const [activeFoodType, setActiveFoodType] = useState("All");
   const [onlyCustomizable, setOnlyCustomizable] = useState(false);
-  const [isStudioOpen, setIsStudioOpen] = useState(false);
 
   // Exclude discontinued + deleted; keep available & unavailable
   const activeItems = useMemo(
@@ -57,7 +55,7 @@ const RestaurantMenu = ({ menuItems, restaurantId, restaurantName }) => {
   return (
     <>
       <div className="rounded-3xl bg-white border border-slate-200/80 shadow-xs overflow-hidden space-y-0">
-        {/* Banner: Build Your Own Meal Studio */}
+        {/* Banner: In-Restaurant Meal Customization */}
         <div className="p-5 sm:p-6 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 text-white backdrop-blur-xs flex-shrink-0 shadow-sm">
@@ -67,24 +65,29 @@ const RestaurantMenu = ({ menuItems, restaurantId, restaurantName }) => {
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center gap-1 rounded-full bg-white/25 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-white backdrop-blur-xs">
                   <IoSparkles size={10} />
-                  <span>Custom Meal Studio</span>
+                  <span>Kitchen Customization</span>
                 </span>
               </div>
               <h3 className="font-heading text-base sm:text-lg font-black text-white">
-                Want to build your own custom meal?
+                Customize any dish from {restaurantName || "our kitchen"}
               </h3>
               <p className="text-xs text-orange-100 font-medium">
-                Pick your exact base, protein, fresh veggies, toppings & signature sauces.
+                Personalize portion sizes, spice levels, add-ons, dips & special chef instructions directly on any dish below.
               </p>
             </div>
           </div>
 
           <button
-            onClick={() => setIsStudioOpen(true)}
-            className="self-start sm:self-center flex-shrink-0 flex items-center gap-2 rounded-2xl bg-white px-5 py-2.5 text-xs font-black text-orange-700 shadow-md hover:bg-orange-50 active:scale-95 transition"
+            type="button"
+            onClick={() => setOnlyCustomizable((prev) => !prev)}
+            className={`self-start sm:self-center flex-shrink-0 flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs font-black shadow-md active:scale-95 transition ${
+              onlyCustomizable
+                ? "bg-slate-900 text-white hover:bg-slate-800"
+                : "bg-white text-orange-700 hover:bg-orange-50"
+            }`}
           >
-            <IoSparkles className="text-orange-600" />
-            <span>Craft Meal Box</span>
+            <IoSparkles className={onlyCustomizable ? "text-amber-400" : "text-orange-600"} />
+            <span>{onlyCustomizable ? "Show All Dishes" : "Filter Highlighted Dishes"}</span>
           </button>
         </div>
 
@@ -205,16 +208,6 @@ const RestaurantMenu = ({ menuItems, restaurantId, restaurantName }) => {
           )}
         </div>
       </div>
-
-      {/* Custom Meal Studio Modal */}
-      {isStudioOpen && (
-        <CustomMealStudioModal
-          isOpen={isStudioOpen}
-          onClose={() => setIsStudioOpen(false)}
-          defaultRestaurantId={restaurantId}
-          defaultRestaurantName={restaurantName}
-        />
-      )}
     </>
   );
 };

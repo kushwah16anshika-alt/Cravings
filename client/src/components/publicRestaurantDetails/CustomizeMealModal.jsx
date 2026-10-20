@@ -46,12 +46,19 @@ const CustomizeMealModal = ({
       { name: "Garlic Mayo", price: 20 },
     ];
 
+    const defaultAddOns = [
+      { name: "Extra Cheese / Paneer Layer", price: 40 },
+      { name: "Extra Butter / Ghee Glaze", price: 25 },
+      { name: "Crispy Fried Onions & Herbs", price: 20 },
+      { name: "Roasted Cashews & Raisins", price: 35 },
+    ];
+
     const raw = item?.customizationOptions || {};
     return {
       sizes: raw.sizes?.length ? raw.sizes : defaultSizes,
       crustsOrBases: raw.crustsOrBases || [],
       spiceLevels: raw.spiceLevels?.length ? raw.spiceLevels : defaultSpice,
-      addOns: raw.addOns || [],
+      addOns: raw.addOns?.length ? raw.addOns : defaultAddOns,
       saucesOrDips: raw.saucesOrDips?.length ? raw.saucesOrDips : defaultSauces,
     };
   }, [item]);
@@ -208,7 +215,7 @@ const CustomizeMealModal = ({
             <div className="min-w-0 pr-6">
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-extrabold uppercase tracking-wider mb-1 backdrop-blur-xs">
                 <IoSparkles size={11} />
-                <span>Customize Your Dish</span>
+                <span>{restaurantName || "In-Restaurant"} Kitchen</span>
               </span>
               <h3 className="font-heading text-lg sm:text-xl font-black text-white truncate">
                 {item.itemName}
@@ -524,7 +531,7 @@ const CustomizeMealModal = ({
               className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 px-6 py-3 text-xs sm:text-sm font-extrabold text-white shadow-lg shadow-orange-600/30 hover:from-orange-500 hover:to-amber-500 active:scale-95 transition"
             >
               <IoRestaurantOutline size={18} />
-              <span>Add to Cart</span>
+              <span>Add to {restaurantName || "Order"}</span>
             </button>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React from "react";
 import { Toaster } from "react-hot-toast";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -18,7 +18,6 @@ import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import Test from "./pages/Test";
 import OrderNow from "./pages/OrderNow";
 import RestaurantDetailsPage from "./pages/RestaurantDetailsPage";
-import CustomMealStudio from "./pages/CustomMealStudio";
 import Cart from "./components/Cart";
 import TrackOrderPage from "./pages/TrackOrderPage";
 
@@ -49,8 +48,8 @@ const App = () => {
 
           <Route path="/test" element={<Test />} />
           <Route path="/order-now" element={<OrderNow />} />
-          <Route path="/customize-meal" element={<CustomMealStudio />} />
-          <Route path="/build-meal" element={<CustomMealStudio />} />
+          <Route path="/customize-meal" element={<Navigate to="/order-now" replace />} />
+          <Route path="/build-meal" element={<Navigate to="/order-now" replace />} />
 
           <Route
             path="/restaurant-details/:restaurantId"

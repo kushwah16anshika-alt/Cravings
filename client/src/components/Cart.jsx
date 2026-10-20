@@ -283,13 +283,6 @@ const Cart = () => {
             <span>Explore Restaurants</span>
             <MdArrowForward size={18} />
           </Link>
-          <Link
-            to="/customize-meal"
-            className="inline-flex items-center gap-2 rounded-2xl bg-white border border-slate-200 px-6 py-3.5 text-sm font-extrabold text-slate-800 shadow-xs hover:bg-slate-50 active:scale-95 transition"
-          >
-            <TbChefHat size={18} className="text-orange-600" />
-            <span>Custom Meal Studio</span>
-          </Link>
         </div>
       </div>
     );
@@ -496,17 +489,11 @@ const Cart = () => {
               <span>Want something else from {cart.restaurantName}?</span>
               <div className="flex items-center gap-3">
                 <Link
-                  to="/customize-meal"
-                  className="text-amber-700 hover:underline font-black flex items-center gap-1"
-                >
-                  <TbChefHat />
-                  <span>Build Custom Box</span>
-                </Link>
-                <Link
                   to={`/restaurant-details/${cart.restaurantId}`}
-                  className="text-orange-600 hover:underline font-black flex items-center gap-0.5"
+                  className="text-orange-600 hover:underline font-black flex items-center gap-1 bg-white px-3 py-1.5 rounded-xl border border-orange-200 shadow-2xs hover:bg-orange-50 transition"
                 >
-                  <span>Add More Dishes</span>
+                  <TbChefHat className="text-orange-600" />
+                  <span>Customize & Add More Dishes</span>
                   <MdArrowForward />
                 </Link>
               </div>
