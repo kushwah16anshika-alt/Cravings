@@ -83,9 +83,9 @@ const RestaurantDetailsPage = () => {
 
       <RestaurantInfoStrip restaurant={restaurant} />
 
-      <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-8 items-start">
-        {/* Left Sidebar */}
-        <div className="space-y-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8 grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 md:gap-8 items-start">
+        {/* Left Sidebar (on mobile rendered below the menu for immediate food ordering) */}
+        <div className="space-y-6 order-2 lg:order-1">
           <RestaurantAbout description={restaurant.description} />
           <RestaurantGallery images={restaurant.restaurantImage} />
           <RestaurantContact restaurant={restaurant} />
@@ -93,7 +93,7 @@ const RestaurantDetailsPage = () => {
         </div>
 
         {/* Right: Menu */}
-        <div>
+        <div className="order-1 lg:order-2">
           <RestaurantMenu
             menuItems={details.menuItems || []}
             restaurantId={restaurant._id}
@@ -104,22 +104,23 @@ const RestaurantDetailsPage = () => {
 
       {/* Cart Bottom Bar */}
       {cart && totalItems > 0 && (
-        <div className="fixed inset-x-0 bottom-6 z-40 flex justify-center px-4">
-          <div className="bg-(--color-primary) text-white px-6 py-3.5 rounded-2xl w-full max-w-2xl flex justify-between items-center shadow-2xl shadow-(--color-primary)/40 animate-float">
-            <div className="flex items-center space-x-3">
-              <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold">
+        <div className="fixed inset-x-0 bottom-4 sm:bottom-6 z-40 flex justify-center px-3 sm:px-4">
+          <div className="bg-(--color-primary) text-white px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-2xl w-full max-w-2xl flex justify-between items-center shadow-2xl shadow-(--color-primary)/40 animate-float gap-3">
+            <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+              <span className="bg-white/20 px-2.5 sm:px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap">
                 {totalItems} {totalItems === 1 ? "Item" : "Items"}
               </span>
-              <span className="font-bold text-base">
+              <span className="font-bold text-sm sm:text-base whitespace-nowrap">
                 ₹{totalPrice}
               </span>
             </div>
 
             <button
-              className="bg-white text-(--color-primary) px-5 py-2 rounded-xl font-bold text-sm hover:bg-slate-100 active:scale-95 transition shadow-sm"
+              className="bg-white text-(--color-primary) px-3.5 sm:px-5 py-2 rounded-xl font-bold text-xs sm:text-sm hover:bg-slate-100 active:scale-95 transition shadow-sm whitespace-nowrap flex-shrink-0"
               onClick={() => navigate("/cart")}
             >
-              View Cart & Checkout →
+              <span className="hidden sm:inline">View Cart & Checkout →</span>
+              <span className="sm:hidden">Checkout →</span>
             </button>
           </div>
         </div>

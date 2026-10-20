@@ -20,7 +20,7 @@ const RestaurantHero = ({ restaurant, onBack }) => {
     "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80";
 
   return (
-    <div className="relative w-full h-80 md:h-[400px] overflow-hidden bg-slate-950">
+    <div className="relative w-full min-h-[340px] sm:h-80 md:h-[400px] overflow-hidden bg-slate-950">
       <img
         src={coverUrl}
         alt={restaurant.restaurantName}
@@ -34,16 +34,16 @@ const RestaurantHero = ({ restaurant, onBack }) => {
       {/* Back button */}
       <button
         onClick={onBack}
-        className="absolute top-6 left-6 z-10 flex items-center gap-2 rounded-2xl bg-white/20 px-4 py-2 text-xs font-extrabold text-white backdrop-blur-md border border-white/20 shadow-lg hover:bg-white/30 active:scale-95 transition"
+        className="absolute top-4 left-4 sm:top-6 sm:left-6 z-10 flex items-center gap-1.5 sm:gap-2 rounded-2xl bg-white/20 px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs font-extrabold text-white backdrop-blur-md border border-white/20 shadow-lg hover:bg-white/30 active:scale-95 transition"
       >
-        <IoArrowBack size={16} />
+        <IoArrowBack size={15} />
         <span>Back to Eateries</span>
       </button>
 
       {/* Hero content */}
-      <div className="absolute bottom-0 inset-x-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 text-white">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-3">
+      <div className="absolute bottom-0 inset-x-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-5 sm:pb-8 text-white">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6">
+          <div className="space-y-2.5 sm:space-y-3">
             {/* Badges */}
             <div className="flex flex-wrap items-center gap-2">
               <span
@@ -65,7 +65,7 @@ const RestaurantHero = ({ restaurant, onBack }) => {
               </span>
             </div>
 
-            <h1 className="font-heading text-3xl sm:text-5xl font-black text-white drop-shadow-md">
+            <h1 className="font-heading text-2xl sm:text-4xl md:text-5xl font-black text-white drop-shadow-md">
               {restaurant.restaurantName}
             </h1>
 

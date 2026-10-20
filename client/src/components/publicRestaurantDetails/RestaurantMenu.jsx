@@ -56,10 +56,10 @@ const RestaurantMenu = ({ menuItems, restaurantId, restaurantName }) => {
     <>
       <div className="rounded-3xl bg-white border border-slate-200/80 shadow-xs overflow-hidden space-y-0">
         {/* Banner: In-Restaurant Meal Customization */}
-        <div className="p-5 sm:p-6 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 text-white backdrop-blur-xs flex-shrink-0 shadow-sm">
-              <TbChefHat size={26} />
+        <div className="p-4 sm:p-6 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 sm:gap-4">
+          <div className="flex items-center gap-3 sm:gap-3.5">
+            <div className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-white/20 text-white backdrop-blur-xs flex-shrink-0 shadow-sm">
+              <TbChefHat size={24} className="sm:text-[26px]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -68,7 +68,7 @@ const RestaurantMenu = ({ menuItems, restaurantId, restaurantName }) => {
                   <span>Kitchen Customization</span>
                 </span>
               </div>
-              <h3 className="font-heading text-base sm:text-lg font-black text-white">
+              <h3 className="font-heading text-sm sm:text-lg font-black text-white">
                 Customize any dish from {restaurantName || "our kitchen"}
               </h3>
               <p className="text-xs text-orange-100 font-medium">
@@ -80,7 +80,7 @@ const RestaurantMenu = ({ menuItems, restaurantId, restaurantName }) => {
           <button
             type="button"
             onClick={() => setOnlyCustomizable((prev) => !prev)}
-            className={`self-start sm:self-center flex-shrink-0 flex items-center gap-2 rounded-2xl px-5 py-2.5 text-xs font-black shadow-md active:scale-95 transition ${
+            className={`self-start sm:self-center flex-shrink-0 flex items-center gap-2 rounded-2xl px-4 sm:px-5 py-2 sm:py-2.5 text-xs font-black shadow-md active:scale-95 transition ${
               onlyCustomizable
                 ? "bg-slate-900 text-white hover:bg-slate-800"
                 : "bg-white text-orange-700 hover:bg-orange-50"
@@ -92,14 +92,14 @@ const RestaurantMenu = ({ menuItems, restaurantId, restaurantName }) => {
         </div>
 
         {/* Header & Sticky Filter Strip */}
-        <div className="p-5 sm:p-6 border-b border-slate-100 space-y-4">
-          <div className="flex items-center justify-between">
+        <div className="p-4 sm:p-6 border-b border-slate-100 space-y-3 sm:space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
+              <div className="flex h-8.5 w-8.5 sm:h-9 sm:w-9 items-center justify-center rounded-xl bg-orange-100 text-orange-600 flex-shrink-0">
                 <MdOutlineRestaurantMenu size={20} />
               </div>
               <div>
-                <h2 className="font-heading text-xl font-black text-slate-900">
+                <h2 className="font-heading text-lg sm:text-xl font-black text-slate-900">
                   Menu & Dishes
                 </h2>
                 <p className="text-xs font-bold text-slate-400">
@@ -111,7 +111,7 @@ const RestaurantMenu = ({ menuItems, restaurantId, restaurantName }) => {
             {/* Quick Toggle for Customizable Dishes */}
             <button
               onClick={() => setOnlyCustomizable((prev) => !prev)}
-              className={`flex items-center gap-1.5 text-xs font-extrabold px-3 py-1.5 rounded-xl border transition ${
+              className={`self-start sm:self-auto flex items-center gap-1.5 text-xs font-extrabold px-3 py-1.5 rounded-xl border transition ${
                 onlyCustomizable
                   ? "bg-orange-600 text-white border-orange-600 shadow-xs"
                   : "bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100"
@@ -185,7 +185,7 @@ const RestaurantMenu = ({ menuItems, restaurantId, restaurantName }) => {
         </div>
 
         {/* Menu Items Grid */}
-        <div className="p-5 sm:p-6">
+        <div className="p-3.5 sm:p-6">
           {filteredItems.length === 0 ? (
             <div className="py-16 text-center text-slate-400">
               <span className="text-4xl">🍽️</span>
@@ -195,7 +195,7 @@ const RestaurantMenu = ({ menuItems, restaurantId, restaurantName }) => {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {filteredItems.map((item) => (
                 <MenuItemCard
                   key={item._id}

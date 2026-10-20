@@ -71,13 +71,13 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
   return (
     <>
       <div
-        className={`group relative flex flex-col justify-between rounded-3xl bg-white border border-slate-200/80 p-4 shadow-xs card-hover transition-all duration-300 ${
+        className={`group relative flex flex-col justify-between rounded-3xl bg-white border border-slate-200/80 p-3.5 sm:p-4 shadow-xs card-hover transition-all duration-300 ${
           isUnavailable ? "opacity-65 grayscale cursor-not-allowed" : "hover:border-orange-200"
         }`}
       >
-        <div className="flex gap-4 items-start">
+        <div className="flex gap-3 sm:gap-4 items-start">
           {/* Item Image with Badges */}
-          <div className="relative h-28 w-28 flex-shrink-0 rounded-2xl overflow-hidden bg-slate-100 border border-slate-100">
+          <div className="relative h-22 w-22 sm:h-28 sm:w-28 flex-shrink-0 rounded-2xl overflow-hidden bg-slate-100 border border-slate-100">
             {item.image?.url ? (
               <img
                 src={item.image.url}
@@ -89,19 +89,19 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
               />
             ) : (
               <div className="h-full w-full flex items-center justify-center bg-orange-50/50 text-orange-400">
-                <MdOutlineRestaurantMenu size={32} className="opacity-40" />
+                <MdOutlineRestaurantMenu size={28} className="opacity-40" />
               </div>
             )}
 
             {/* Diet Dot */}
             <span
-              className={`absolute top-2 left-2 flex h-4 w-4 items-center justify-center rounded-sm border bg-white p-0.5 shadow-xs ${
+              className={`absolute top-1.5 left-1.5 sm:top-2 sm:left-2 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-sm border bg-white p-0.5 shadow-xs ${
                 isPureVeg ? "border-emerald-600" : "border-red-600"
               }`}
               title={item.foodType}
             >
               <span
-                className={`h-2 w-2 rounded-full ${
+                className={`h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full ${
                   isPureVeg ? "bg-emerald-600" : "bg-red-600"
                 }`}
               />
@@ -110,7 +110,7 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
             {/* Unavailable Overlay */}
             {isUnavailable && (
               <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center">
-                <span className="text-[10px] font-black uppercase tracking-wider text-white px-2 py-0.5 rounded-full bg-red-600">
+                <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-white px-2 py-0.5 rounded-full bg-red-600">
                   Sold Out
                 </span>
               </div>
@@ -120,11 +120,11 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
           {/* Item Details */}
           <div className="flex-1 min-w-0 space-y-1">
             {/* Tag Badges */}
-            <div className="flex flex-wrap items-center gap-1.5 mb-1">
+            <div className="flex flex-wrap items-center gap-1 sm:gap-1.5 mb-1">
               <button
                 type="button"
                 onClick={handleOpenCustomize}
-                className="inline-flex items-center gap-1 rounded-md bg-gradient-to-r from-orange-500/15 to-amber-500/15 border border-orange-300/60 px-2 py-0.5 text-[9px] font-black text-orange-700 hover:from-orange-500 hover:to-amber-500 hover:text-white transition-all shadow-2xs"
+                className="inline-flex items-center gap-1 rounded-md bg-gradient-to-r from-orange-500/15 to-amber-500/15 border border-orange-300/60 px-1.5 sm:px-2 py-0.5 text-[9px] font-black text-orange-700 hover:from-orange-500 hover:to-amber-500 hover:text-white transition-all shadow-2xs"
                 title="Customize this dish"
               >
                 <IoSparkles size={10} className="text-orange-600 animate-pulse" />
@@ -132,7 +132,7 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
               </button>
               {item.isTopRated && (
                 <span className="inline-flex items-center gap-0.5 rounded-md bg-amber-100 px-1.5 py-0.5 text-[9px] font-extrabold text-amber-800">
-                  <IoStar size={10} /> Top Pick
+                  <IoStar size={9} /> Top Pick
                 </span>
               )}
               {item.isNew && (
@@ -147,7 +147,7 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
               )}
             </div>
 
-            <h4 className="font-heading text-base font-extrabold text-slate-900 group-hover:text-orange-600 transition truncate">
+            <h4 className="font-heading text-sm sm:text-base font-extrabold text-slate-900 group-hover:text-orange-600 transition truncate">
               {item.itemName}
             </h4>
 
@@ -155,8 +155,8 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
               {item.description || "Delicately prepared with fresh ingredients."}
             </p>
 
-            <div className="pt-2 flex items-center justify-between gap-2">
-              <span className="font-heading text-base font-black text-slate-900">
+            <div className="pt-2 flex flex-wrap sm:flex-nowrap items-center justify-between gap-1.5 sm:gap-2">
+              <span className="font-heading text-sm sm:text-base font-black text-slate-900 whitespace-nowrap">
                 ₹{item.price}
               </span>
 
@@ -164,8 +164,8 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
               {isUnavailable ? (
                 <span className="text-xs font-bold text-slate-400">Unavailable</span>
               ) : itemCount > 0 ? (
-                <div className="flex items-center gap-1.5">
-                  <div className="flex items-center gap-2 rounded-2xl bg-orange-600 p-1 text-white shadow-md shadow-orange-600/30">
+                <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap justify-end">
+                  <div className="flex items-center gap-1.5 sm:gap-2 rounded-2xl bg-orange-600 p-1 text-white shadow-md shadow-orange-600/30">
                     <button
                       onClick={() => {
                         const targetVariant = itemVariants[itemVariants.length - 1];
@@ -175,47 +175,49 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
                           decreaseItem(item._id);
                         }
                       }}
-                      className="flex h-7 w-7 items-center justify-center rounded-xl bg-orange-700/60 hover:bg-orange-700 active:scale-90 transition"
+                      className="flex h-6.5 w-6.5 sm:h-7 sm:w-7 items-center justify-center rounded-xl bg-orange-700/60 hover:bg-orange-700 active:scale-90 transition"
+                      aria-label="Decrease quantity"
                     >
-                      <IoRemove size={16} />
+                      <IoRemove size={15} />
                     </button>
-                    <span className="font-heading font-black text-sm px-1 min-w-4 text-center">
+                    <span className="font-heading font-black text-xs sm:text-sm px-1 min-w-4 text-center">
                       {itemCount}
                     </span>
                     <button
                       onClick={() => increaseItem(item._id)}
-                      className="flex h-7 w-7 items-center justify-center rounded-xl bg-orange-700/60 hover:bg-orange-700 active:scale-90 transition"
+                      className="flex h-6.5 w-6.5 sm:h-7 sm:w-7 items-center justify-center rounded-xl bg-orange-700/60 hover:bg-orange-700 active:scale-90 transition"
                       title="Add standard portion"
+                      aria-label="Increase quantity"
                     >
-                      <IoAdd size={16} />
+                      <IoAdd size={15} />
                     </button>
                   </div>
                   <button
                     type="button"
                     onClick={handleOpenCustomize}
-                    className="flex items-center gap-1 h-8 px-2.5 rounded-xl bg-orange-50 border border-orange-200 text-orange-700 hover:bg-orange-600 hover:text-white transition text-[11px] font-bold shadow-2xs"
+                    className="flex items-center gap-1 h-7.5 sm:h-8 px-2 sm:px-2.5 rounded-xl bg-orange-50 border border-orange-200 text-orange-700 hover:bg-orange-600 hover:text-white transition text-[10px] sm:text-[11px] font-bold shadow-2xs whitespace-nowrap"
                     title="Customize another portion with spice, extras & notes"
                   >
-                    <IoSparkles size={12} className="text-orange-500" />
+                    <IoSparkles size={11} className="text-orange-500 flex-shrink-0" />
                     <span>Customize</span>
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1 sm:gap-1.5 flex-nowrap">
                   <button
                     type="button"
                     onClick={handleOpenCustomize}
-                    className="flex items-center gap-1 rounded-2xl border border-orange-200 bg-orange-50/80 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-orange-700 shadow-2xs hover:bg-orange-600 hover:text-white hover:border-orange-600 active:scale-95 transition-all duration-200"
+                    className="flex items-center gap-1 rounded-xl sm:rounded-2xl border border-orange-200 bg-orange-50/80 px-2 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-bold text-orange-700 shadow-2xs hover:bg-orange-600 hover:text-white hover:border-orange-600 active:scale-95 transition-all duration-200 whitespace-nowrap"
                     title="Customize spice level, size, add-ons & cooking instructions"
                   >
-                    <IoSparkles size={13} className="text-orange-600" />
+                    <IoSparkles size={12} className="text-orange-600 flex-shrink-0" />
                     <span>Customize</span>
                   </button>
                   <button
                     onClick={handleAdd}
-                    className="flex items-center gap-1 rounded-2xl border-2 border-orange-600 bg-orange-600 px-3.5 sm:px-4 py-1.5 text-xs font-black text-white shadow-xs hover:bg-orange-500 active:scale-95 transition-all duration-200"
+                    className="flex items-center gap-1 rounded-xl sm:rounded-2xl border-2 border-orange-600 bg-orange-600 px-3 sm:px-4 py-1 sm:py-1.5 text-xs font-black text-white shadow-xs hover:bg-orange-500 active:scale-95 transition-all duration-200 whitespace-nowrap"
                   >
-                    <IoAdd size={16} />
+                    <IoAdd size={15} className="flex-shrink-0" />
                     <span>ADD</span>
                   </button>
                 </div>

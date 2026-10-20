@@ -175,19 +175,25 @@ const CustomizeMealModal = ({
     item.foodType?.toLowerCase() === "vegan";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-xs animate-fadeIn">
-      <div className="relative w-full max-w-xl max-h-[92vh] flex flex-col rounded-3xl bg-white border border-slate-200/80 shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-950/70 backdrop-blur-xs animate-fadeIn">
+      <div className="relative w-full max-w-xl max-h-[90vh] sm:max-h-[88vh] flex flex-col rounded-t-[28px] sm:rounded-3xl bg-white border border-slate-200/80 shadow-2xl overflow-hidden">
+        {/* Mobile Drag Indicator */}
+        <div className="sm:hidden flex justify-center pt-2.5 pb-1 bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500">
+          <div className="h-1 w-10 rounded-full bg-white/40" />
+        </div>
+
         {/* Top Header with Image & Title */}
-        <div className="relative bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 text-white p-5 sm:p-6 flex-shrink-0">
+        <div className="relative bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 text-white p-4 sm:p-6 flex-shrink-0">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-xs transition active:scale-90"
+            className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 flex h-8 w-8 items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white backdrop-blur-xs transition active:scale-90"
+            aria-label="Close customization"
           >
             <IoClose size={20} />
           </button>
 
-          <div className="flex items-center gap-4">
-            <div className="relative h-20 w-20 flex-shrink-0 rounded-2xl overflow-hidden bg-white/20 border-2 border-white/40 shadow-md">
+          <div className="flex items-center gap-3.5 sm:gap-4">
+            <div className="relative h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0 rounded-2xl overflow-hidden bg-white/20 border-2 border-white/40 shadow-md">
               {item.image?.url ? (
                 <img
                   src={item.image.url}
@@ -196,31 +202,31 @@ const CustomizeMealModal = ({
                 />
               ) : (
                 <div className="h-full w-full flex items-center justify-center text-white/80">
-                  <MdOutlineFastfood size={28} />
+                  <MdOutlineFastfood size={26} />
                 </div>
               )}
               <span
-                className={`absolute top-1.5 left-1.5 flex h-4 w-4 items-center justify-center rounded-sm bg-white p-0.5 shadow-xs ${
+                className={`absolute top-1 left-1 sm:top-1.5 sm:left-1.5 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-sm bg-white p-0.5 shadow-xs ${
                   isPureVeg ? "border border-emerald-600" : "border border-red-600"
                 }`}
               >
                 <span
-                  className={`h-2 w-2 rounded-full ${
+                  className={`h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full ${
                     isPureVeg ? "bg-emerald-600" : "bg-red-600"
                   }`}
                 />
               </span>
             </div>
 
-            <div className="min-w-0 pr-6">
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[10px] font-extrabold uppercase tracking-wider mb-1 backdrop-blur-xs">
-                <IoSparkles size={11} />
+            <div className="min-w-0 pr-6 sm:pr-8">
+              <span className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-white/20 text-white text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider mb-1 backdrop-blur-xs">
+                <IoSparkles size={10} />
                 <span>{restaurantName || "In-Restaurant"} Kitchen</span>
               </span>
-              <h3 className="font-heading text-lg sm:text-xl font-black text-white truncate">
+              <h3 className="font-heading text-base sm:text-xl font-black text-white truncate">
                 {item.itemName}
               </h3>
-              <p className="text-xs text-orange-100 font-semibold line-clamp-1">
+              <p className="text-xs text-orange-100 font-semibold truncate">
                 Base price: ₹{basePrice} • {item.category || "Main Dish"}
               </p>
             </div>
@@ -228,7 +234,7 @@ const CustomizeMealModal = ({
         </div>
 
         {/* Scrollable Customization Body */}
-        <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6 divide-y divide-slate-100 text-slate-800">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 sm:space-y-6 divide-y divide-slate-100 text-slate-800">
           {/* 1. Size / Portion Selection */}
           {options.sizes.length > 0 && (
             <div className="space-y-3 pt-2 first:pt-0">
@@ -434,7 +440,7 @@ const CustomizeMealModal = ({
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {options.saucesOrDips.map((sauce, idx) => {
                   const isChecked = selectedSauces.some((s) => s.name === sauce.name);
                   return (
@@ -495,45 +501,40 @@ const CustomizeMealModal = ({
         </div>
 
         {/* Bottom Sticky Action & Price Bar */}
-        <div className="p-4 sm:p-5 bg-white border-t border-slate-100 flex items-center justify-between gap-4 shadow-lg flex-shrink-0">
+        <div className="p-3.5 sm:p-5 bg-white border-t border-slate-100 flex items-center justify-between gap-2.5 sm:gap-4 shadow-lg flex-shrink-0">
           {/* Quantity Controls */}
-          <div className="flex items-center gap-2 rounded-2xl bg-slate-100 p-1 border border-slate-200">
+          <div className="flex items-center gap-1 sm:gap-2 rounded-2xl bg-slate-100 p-1 border border-slate-200 flex-shrink-0">
             <button
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              className="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-slate-700 shadow-xs hover:bg-slate-200 active:scale-90 transition"
+              className="flex h-7.5 w-7.5 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-white text-slate-700 shadow-xs hover:bg-slate-200 active:scale-90 transition"
+              aria-label="Decrease quantity"
             >
-              <IoRemove size={16} />
+              <IoRemove size={15} />
             </button>
-            <span className="font-heading font-black text-sm px-2 min-w-5 text-center text-slate-900">
+            <span className="font-heading font-black text-xs sm:text-sm px-1.5 min-w-5 text-center text-slate-900">
               {quantity}
             </span>
             <button
               onClick={() => setQuantity((q) => q + 1)}
-              className="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-slate-700 shadow-xs hover:bg-slate-200 active:scale-90 transition"
+              className="flex h-7.5 w-7.5 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-white text-slate-700 shadow-xs hover:bg-slate-200 active:scale-90 transition"
+              aria-label="Increase quantity"
             >
-              <IoAdd size={16} />
+              <IoAdd size={15} />
             </button>
           </div>
 
-          {/* Price & Add to Cart Button */}
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block">
-                Total Price
-              </span>
-              <span className="font-heading text-lg sm:text-xl font-black text-slate-900">
-                ₹{totalItemPrice}
-              </span>
-            </div>
-
-            <button
-              onClick={handleAddToCart}
-              className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 px-6 py-3 text-xs sm:text-sm font-extrabold text-white shadow-lg shadow-orange-600/30 hover:from-orange-500 hover:to-amber-500 active:scale-95 transition"
-            >
-              <IoRestaurantOutline size={18} />
-              <span>Add to {restaurantName || "Order"}</span>
-            </button>
-          </div>
+          {/* Add to Cart Button with Price */}
+          <button
+            onClick={handleAddToCart}
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-orange-600 to-amber-600 px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-extrabold text-white shadow-lg shadow-orange-600/30 hover:from-orange-500 hover:to-amber-500 active:scale-95 transition min-w-0"
+          >
+            <IoRestaurantOutline size={17} className="flex-shrink-0" />
+            <span className="truncate">Add to Cart</span>
+            <span className="opacity-60 flex-shrink-0">•</span>
+            <span className="font-black text-xs sm:text-sm whitespace-nowrap flex-shrink-0">
+              ₹{totalItemPrice}
+            </span>
+          </button>
         </div>
       </div>
     </div>
