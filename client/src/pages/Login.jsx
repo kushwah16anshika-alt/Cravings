@@ -267,12 +267,12 @@ const Login = () => {
                   <div className="flex items-center gap-3">
                     <img
                       src="https://api.dicebear.com/7.x/bottts/svg?seed=Aarav"
-                      alt="Student"
+                      alt="Customer"
                       className="h-9 w-9 rounded-xl bg-orange-500/20"
                     />
                     <div>
                       <p className="text-xs font-black text-white">"Fastest food delivery to your doorstep!"</p>
-                      <p className="text-[10px] text-orange-400 font-bold">5.0 ★ Verified Student</p>
+                      <p className="text-[10px] text-orange-400 font-bold">5.0 ★ Verified Customer</p>
                     </div>
                   </div>
                 </div>

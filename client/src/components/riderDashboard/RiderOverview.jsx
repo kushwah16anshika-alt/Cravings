@@ -17,8 +17,8 @@ const RiderOverview = () => {
   const [activeDelivery, setActiveDelivery] = useState({
     id: "CRV-9281",
     restaurant: "Spice Symphony Kitchen",
-    restaurantLocation: "Student Central Food Court, Stall #4",
-    dropLocation: "CV Raman Hostel, Room 312",
+    restaurantLocation: "Central Food Court, Counter #4",
+    dropLocation: "Greenview Residency, Flat 312",
     customerName: "Rohan Verma",
     customerPhone: "+91 98765 12345",
     items: "2x Paneer Tikka Roll, 1x Cold Coffee",
@@ -59,7 +59,7 @@ const RiderOverview = () => {
     {
       id: "CRV-8942",
       restaurant: "Urban Pizza & Cafe",
-      dropLocation: "Girls Hostel 2, Gate #1",
+      dropLocation: "Lakeview Towers, Gate #1",
       customer: "Sneha Patel",
       items: "1x Farmhouse Pizza, 1x Garlic Bread",
       time: "25 mins ago",
@@ -69,7 +69,7 @@ const RiderOverview = () => {
     {
       id: "CRV-8821",
       restaurant: "The Daily Chai & Snacks",
-      dropLocation: "Engineering Block B, Lab 204",
+      dropLocation: "Tech Park Tower B, Suite 204",
       customer: "Aditya Sharma",
       items: "2x Bun Maska, 2x Special Masala Chai",
       time: "1 hour ago",
@@ -79,7 +79,7 @@ const RiderOverview = () => {
     {
       id: "CRV-8750",
       restaurant: "Royal Biryani Corner",
-      dropLocation: "Aryabhatta Hostel, Room 108",
+      dropLocation: "Metro Heights, Flat 108",
       customer: "Kunal Deshmukh",
       items: "1x Hyderabadi Dum Biryani, 1x Raita",
       time: "2 hours ago",

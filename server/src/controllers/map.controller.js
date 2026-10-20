@@ -288,7 +288,7 @@ export const reverseGeocode = async (req, res, next) => {
       data: {
         formatted: `Delivery Location (${lat.toFixed(4)}, ${lon.toFixed(4)})`,
         addressLine1: `Pinned Location (${lat.toFixed(4)}, ${lon.toFixed(4)})`,
-        addressLine2: "Campus / Residential Zone",
+        addressLine2: "Residential / Urban Zone",
         city: "Bengaluru",
         state: "Karnataka",
         pinCode: "560001",

@@ -32,7 +32,7 @@ const Footer = () => {
               Stay in the Loop on Delicious Discounts 🍕
             </h3>
             <p className="text-xs text-slate-300">
-              Get flash coupon codes, secret canteen menus, and student rewards in your inbox.
+              Get flash coupon codes, secret chef specials, and gourmet rewards in your inbox.
             </p>
           </div>
 
@@ -43,7 +43,7 @@ const Footer = () => {
                 type="email"
                 value={newsletterEmail}
                 onChange={(e) => setNewsletterEmail(e.target.value)}
-                placeholder="Enter your student email"
+                placeholder="Enter your email address"
                 className="w-full pl-10 pr-3 py-2.5 rounded-2xl bg-white/10 border border-white/15 text-xs text-white placeholder:text-slate-400 focus:outline-hidden focus:border-orange-500"
               />
             </div>

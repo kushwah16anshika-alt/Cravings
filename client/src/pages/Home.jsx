@@ -50,31 +50,31 @@ const perks = [
   },
   {
     icon: <MdLocalOffer className="text-3xl text-amber-600" />,
-    title: "Student-Friendly Deals",
-    desc: "Pocket-friendly prices, combo meals, and daily promo discounts.",
+    title: "Great Deals & Combos",
+    desc: "Pocket-friendly prices, combo meals, and daily restaurant promo discounts.",
   },
 ];
 
 const testimonials = [
   {
     name: "Aarav Sharma",
-    dept: "Computer Science, Year 3",
+    location: "Downtown • Verified Foodie",
     avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Aarav",
-    quote: "Cravings has saved my exam nights! Hot biryani and burgers right when midnight study sessions peak.",
+    quote: "Cravings has become my daily go-to! Hot biryani and gourmet burgers delivered right to my doorstep with incredible speed.",
     rating: 5,
   },
   {
     name: "Priya Nair",
-    dept: "Design & Media, Year 2",
+    location: "Green Glen • Verified Customer",
     avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Priya",
-    quote: "The interface is so smooth and the live order tracking is spot on. Hands down the best food delivery app.",
+    quote: "The interface is so smooth and the live GPS order tracking is spot on. Hands down the best food delivery app.",
     rating: 5,
   },
   {
     name: "Rohan Verma",
-    dept: "Mechanical Engg, Year 4",
+    location: "Central District • Gourmet Enthusiast",
     avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Rohan",
-    quote: "Zero delivery hassles and great local cafe options. The combo deals make it super economical!",
+    quote: "Zero delivery hassles and great local restaurant options. The meal customization feature makes it super flexible!",
     rating: 5,
   },
 ];
@@ -618,7 +618,7 @@ const Home = () => {
               Engineered for Superfast Delivery
             </h2>
             <p className="text-sm text-slate-600 mt-2 font-medium">
-              We eliminate canteen queues, unhygienic stalls, and late-night hunger with smart food technology.
+              We eliminate long queues, slow deliveries, and mealtime hassles with smart food technology.
             </p>
           </div>
 
@@ -650,7 +650,7 @@ const Home = () => {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
             <span className="text-xs font-extrabold uppercase tracking-widest text-orange-600">
-              Student Reviews
+              Customer Reviews
             </span>
             <h2 className="font-heading text-3xl font-black text-slate-900 mt-1">
               Loved by 500,000+ Foodies
@@ -682,7 +682,7 @@ const Home = () => {
                   />
                   <div>
                     <h4 className="text-sm font-extrabold text-slate-900">{t.name}</h4>
-                    <p className="text-[11px] font-semibold text-slate-500">{t.dept}</p>
+                    <p className="text-[11px] font-semibold text-slate-500">{t.location}</p>
                   </div>
                 </div>
               </div>

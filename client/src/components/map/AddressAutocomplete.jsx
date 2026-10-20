@@ -31,7 +31,7 @@ export const AddressAutocomplete = ({
   onSelectAddress,
   currentLat = "",
   currentLon = "",
-  placeholder = "Search street, landmark, or campus building...",
+  placeholder = "Search street, landmark, or building address...",
   showMapPicker = true,
 }) => {
   const [query, setQuery] = useState(value);

@@ -113,7 +113,7 @@ const Register = () => {
   };
 
   const roleCards = [
-    { type: "user", label: "Student / Customer", icon: <IoPersonOutline size={18} /> },
+    { type: "user", label: "Customer / Foodie", icon: <IoPersonOutline size={18} /> },
     { type: "restaurant", label: "Restaurant Partner", icon: <IoStorefrontOutline size={18} /> },
     { type: "rider", label: "Delivery Partner", icon: <IoBicycleOutline size={18} /> },
   ];
@@ -357,13 +357,13 @@ const Register = () => {
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
               <span className="text-xs font-extrabold uppercase tracking-widest text-emerald-300">
-                Join 500k+ Students
+                Join 500k+ Food Lovers
               </span>
             </div>
 
             <div className="space-y-4">
               <h3 className="font-heading text-3xl font-black leading-tight">
-                Unlock exclusive student perks & priority delivery.
+                Unlock exclusive foodie perks & priority delivery.
               </h3>
               <ul className="space-y-2 text-xs font-semibold text-slate-300">
                 <li className="flex items-center gap-2">
@@ -373,7 +373,7 @@ const Register = () => {
                   <span className="text-orange-400 font-bold">✓</span> Instant doorstep delivery under 25 mins
                 </li>
                 <li className="flex items-center gap-2">
-                  <span className="text-orange-400 font-bold">✓</span> Exclusive canteen discounts & combo meals
+                  <span className="text-orange-400 font-bold">✓</span> Exclusive restaurant discounts & combo meals
                 </li>
               </ul>
             </div>

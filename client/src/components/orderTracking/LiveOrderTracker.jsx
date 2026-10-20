@@ -129,11 +129,11 @@ export const LiveOrderTracker = ({
 
   // Normalized order object data
   const restaurantName = order?.restaurant?.name || order?.restaurantId?.restaurantName || "Bella Napoli Pizzeria";
-  const restaurantAddress = order?.restaurant?.address || order?.restaurantId?.address || "Gourmet Galleria, University Ave";
+  const restaurantAddress = order?.restaurant?.address || order?.restaurantId?.address || "Gourmet Galleria, Central Avenue";
   const restaurantPhone = order?.restaurant?.phone || order?.restaurantId?.contactDetails?.phone || "+91 98765 43201";
   
   const destName = order?.destination?.recipientName || order?.deliveryAddress?.name || "Customer";
-  const destAddress = order?.destination?.address || order?.deliveryAddress?.address || "Main Campus Hostel, Block 4";
+  const destAddress = order?.destination?.address || order?.deliveryAddress?.address || "Flat 402, Greenview Heights, Downtown";
   
   const riderName = order?.rider?.name || "Vikram Patel";
   const riderPhone = order?.rider?.phone || "+91 98450 99881";

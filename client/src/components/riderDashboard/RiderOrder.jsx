@@ -10,8 +10,8 @@ const DEFAULT_ORDERS = [
     displayId: "CRV-9304",
     status: "new",
     restaurant: "Flavors of Punjab",
-    restaurantAddress: "Canteen Hub, Block 2",
-    dropAddress: "Ramanujan Hostel, Room 218",
+    restaurantAddress: "Gourmet Hub, Block 2",
+    dropAddress: "Sunrise Apartments, Flat 218",
     customerName: "Karan Johar",
     customerPhone: "+91 98765 43210",
     items: [
@@ -29,8 +29,8 @@ const DEFAULT_ORDERS = [
     displayId: "CRV-9281",
     status: "delivering",
     restaurant: "Spice Symphony Kitchen",
-    restaurantAddress: "Student Central Food Court, Stall #4",
-    dropAddress: "CV Raman Hostel, Room 312",
+    restaurantAddress: "Central Food Court, Counter #4",
+    dropAddress: "Greenview Residency, Flat 312",
     customerName: "Rohan Verma",
     customerPhone: "+91 98765 12345",
     items: [
@@ -68,7 +68,7 @@ const DEFAULT_ORDERS = [
     status: "completed",
     restaurant: "Urban Pizza & Cafe",
     restaurantAddress: "Central Avenue 1",
-    dropAddress: "Girls Hostel 2, Gate #1",
+    dropAddress: "Lakeview Towers, Gate #1",
     customerName: "Sneha Patel",
     customerPhone: "+91 99887 76655",
     items: [
@@ -109,7 +109,7 @@ const RiderOrders = () => {
       restaurant: srv.restaurantId?.restaurantName || "Cravings Partner Restaurant",
       restaurantAddress: srv.restaurantId?.address
         ? `${srv.restaurantId.address}, ${srv.restaurantId.city || ""}`
-        : "Campus Food Court",
+        : "Central Food Court",
       dropAddress: srv.deliveryAddress?.address
         ? `${srv.deliveryAddress.address}, ${srv.deliveryAddress.city || ""}`
         : "Customer Delivery Location",
