@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Contact from "../models/contact.model.js";
 import Restaurant from "../models/restaurant.model.js";
+import User from "../models/user.model.js";
 import Menu from "../models/menu.model.js";
 import Feedback from "../models/feedback.model.js";
 
