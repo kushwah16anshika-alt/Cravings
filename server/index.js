@@ -128,11 +128,11 @@ app.listen(port, async () => {
 
   await connectDB();
 
-  // Auto-seed initial data on fresh deployment if DB is empty
+  // Auto-seed initial data on fresh deployment if DB is empty or incomplete
   try {
     const restaurantCount = await Restaurant.countDocuments();
-    if (restaurantCount === 0) {
-      console.log("🌱 Fresh database detected. Auto-seeding restaurants & menus...");
+    if (restaurantCount < 8) {
+      console.log(`🌱 Database check: ${restaurantCount}/8 restaurants found. Running auto-seed for restaurants & menus...`);
       await adminSeed();
       await userSeed();
       await restaurantSeed();
@@ -143,8 +143,18 @@ app.listen(port, async () => {
   }
 
   try {
-    const result = await cloudinary.api.ping();
-    console.log("☁️ Cloudinary Connected Successfully");
+    const hasCloudinary =
+      (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY) ||
+      process.env.CLOUDINARY_URL;
+
+    if (hasCloudinary) {
+      const result = await cloudinary.api.ping();
+      console.log("☁️ Cloudinary Connected Successfully");
+    } else {
+      console.warn(
+        "⚠️ Cloudinary notice: CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET not set. Media uploads will be disabled until configured."
+      );
+    }
   } catch (error) {
     console.warn("Cloudinary Connection Warning:", error.message);
   }

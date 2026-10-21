@@ -1304,13 +1304,17 @@ export const restaurantSeed = async () => {
       const existing = await Restaurant.findOne({
         $or: [
           { restaurantName: restData.restaurantName },
-          { managerId: restData.managerId },
+          ...(restData.managerId ? [{ managerId: restData.managerId }] : []),
         ],
       });
 
+      let createdRestaurant;
       if (existing) {
-        await Menu.deleteMany({ restaurantId: existing._id });
-        await existing.deleteOne();
+        Object.assign(existing, restData);
+        createdRestaurant = await existing.save();
+        await Menu.deleteMany({ restaurantId: createdRestaurant._id });
+      } else {
+        createdRestaurant = await Restaurant.create(restData);
       }
 
       // Helper to generate intelligent customization options based on dish category
