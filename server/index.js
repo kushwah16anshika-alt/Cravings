@@ -30,27 +30,41 @@ import cookieParser from "cookie-parser";
 const app = express();
 
 // Deployment-Ready Dynamic CORS Configuration
-const allowedOrigins = process.env.CLIENT_URL
-  ? process.env.CLIENT_URL.split(",").map((url) => url.trim())
-  : [
-      "http://localhost:5173",
-      "http://127.0.0.1:5173",
-      "http://localhost:3000",
-      "http://localhost:4173",
-    ];
+const defaultAllowedOrigins = [
+  "https://cravings-beta.vercel.app",
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:3000",
+  "http://localhost:4173",
+];
+
+const envAllowedOrigins = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(",")
+      .map((url) => url.trim().replace(/\/$/, ""))
+      .filter(Boolean)
+  : [];
+
+const allowedOrigins = Array.from(
+  new Set([...defaultAllowedOrigins, ...envAllowedOrigins])
+);
 
 app.use(
   cors({
     origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, server-to-server)
       if (!origin) return callback(null, true);
+
+      const normalizedOrigin = origin.replace(/\/$/, "");
       if (
-        allowedOrigins.includes(origin) ||
-        allowedOrigins.includes("*") ||
+        allowedOrigins.includes(normalizedOrigin) ||
         process.env.NODE_ENV !== "production"
       ) {
         return callback(null, true);
       }
-      return callback(null, true);
+
+      return callback(
+        new Error(`CORS blocked for origin: ${origin}. Not in allowed origins list.`)
+      );
     },
     credentials: true,
   })
