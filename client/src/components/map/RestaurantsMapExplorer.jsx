@@ -36,7 +36,8 @@ export const RestaurantsMapExplorer = ({
         }
 
         return {
-          id: r._id,
+          id: r._id || r.id,
+          _id: r._id || r.id,
           name: r.restaurantName,
           address: r.address || "City Center",
           city: r.city || "Bengaluru",
@@ -118,7 +119,7 @@ export const RestaurantsMapExplorer = ({
 
                   <button
                     type="button"
-                    onClick={() => navigate(`/restaurant-details/${r.id}`)}
+                    onClick={() => navigate(`/restaurant-details/${r._id || r.id}`)}
                     className="w-full mt-2 flex items-center justify-center gap-1 py-1.5 px-3 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-black transition shadow-xs shadow-orange-600/30"
                   >
                     <IoStorefrontOutline size={14} />

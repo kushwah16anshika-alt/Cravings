@@ -123,6 +123,7 @@ const Home = () => {
 
           return {
             id: res._id,
+            _id: res._id,
             name: res.restaurantName || "Featured Kitchen",
             description: res.description || "Authentic culinary delights and fresh gourmet meals",
             cuisines: cuisines.length > 0 ? cuisines : ["Multi-Cuisine", "Fast Food"],
@@ -482,7 +483,7 @@ const Home = () => {
                 return (
                   <div
                     key={restaurant.id}
-                    onClick={() => navigate(`/restaurant-details/${restaurant.id}`)}
+                    onClick={() => navigate(`/restaurant-details/${restaurant._id || restaurant.id}`)}
                     className="group relative flex flex-col rounded-3xl bg-white border border-slate-200/80 shadow-xs card-hover cursor-pointer overflow-hidden"
                   >
                     {/* Cover Image */}

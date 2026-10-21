@@ -14,16 +14,17 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
   const [showConflictModal, setShowConflictModal] = useState(false);
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
 
+  const itemId = item._id || item.id;
   const isCustomer = isLogin && user && (role === "user" || role === "customer");
-  const isUnavailable = item.status === "unavailable" || item.status === "discontinued";
-  const itemCount = isCustomer ? getItemQuantity(item._id) : 0;
-  const itemVariants = isCustomer ? getItemVariants(item._id) : [];
+  const isUnavailable = item.status === "unavailable" || item.status === "discontinued" || item.isAvailable === false;
+  const itemCount = isCustomer && itemId ? getItemQuantity(itemId) : 0;
+  const itemVariants = isCustomer && itemId ? getItemVariants(itemId) : [];
 
   const isCustomizable =
-    item.customizationOptions?.isCustomizable ||
-    (item.customizationOptions?.sizes && item.customizationOptions.sizes.length > 0) ||
-    (item.customizationOptions?.addOns && item.customizationOptions.addOns.length > 0) ||
-    (item.customizationOptions?.crustsOrBases && item.customizationOptions.crustsOrBases.length > 0);
+    Boolean(item.customizationOptions?.isCustomizable) ||
+    (Array.isArray(item.customizationOptions?.sizes) && item.customizationOptions.sizes.length > 0) ||
+    (Array.isArray(item.customizationOptions?.addOns) && item.customizationOptions.addOns.length > 0) ||
+    (Array.isArray(item.customizationOptions?.crustsOrBases) && item.customizationOptions.crustsOrBases.length > 0);
 
   const handleOpenCustomize = (e) => {
     e?.stopPropagation?.();
@@ -66,7 +67,9 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
     setShowConflictModal(false);
   };
 
-  const isPureVeg = item.foodType?.toLowerCase() === "vegetarian" || item.foodType?.toLowerCase() === "vegan";
+  const foodTypeLower = (item.foodType || "").toLowerCase();
+  const isPureVeg = foodTypeLower.includes("veg") && !foodTypeLower.includes("non");
+  const imageUrl = item.image?.url || (typeof item.image === "string" ? item.image : "");
 
   return (
     <>
@@ -78,10 +81,10 @@ const MenuItemCard = ({ item, restaurantId, restaurantName }) => {
         <div className="flex gap-3 sm:gap-4 items-start">
           {/* Item Image with Badges */}
           <div className="relative h-22 w-22 sm:h-28 sm:w-28 flex-shrink-0 rounded-2xl overflow-hidden bg-slate-100 border border-slate-100">
-            {item.image?.url ? (
+            {imageUrl ? (
               <img
-                src={item.image.url}
-                alt={item.itemName}
+                src={imageUrl}
+                alt={item.itemName || "Dish"}
                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                 onError={(e) => {
                   e.target.src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80";

@@ -103,7 +103,7 @@ const RestaurantHero = ({ restaurant, onBack }) => {
             </div>
             <div>
               <p className="font-heading text-xl font-black text-white leading-none">
-                {(restaurant.averageRating || 4.5).toFixed(1)}
+                {Number(restaurant.averageRating || 4.5).toFixed(1)}
               </p>
               <p className="text-[11px] font-bold text-slate-300">500+ ratings</p>
             </div>
