@@ -15,36 +15,42 @@ const RestaurantMenu = ({ menuItems, restaurantId, restaurantName }) => {
   const activeItems = useMemo(
     () =>
       (menuItems || []).filter(
-        (item) => !item.isDeleted && item.status !== "discontinued"
+        (item) => item && !item.isDeleted && item.status !== "discontinued"
       ),
     [menuItems]
   );
 
   const categories = useMemo(() => {
-    const cats = [...new Set(activeItems.map((i) => i.category))];
+    const cats = [...new Set(activeItems.map((i) => i.category).filter(Boolean))];
     return ["All", ...cats];
   }, [activeItems]);
 
   const foodTypes = useMemo(() => {
-    const types = [...new Set(activeItems.map((i) => i.foodType))];
+    const types = [...new Set(activeItems.map((i) => i.foodType).filter(Boolean))];
     return ["All", ...types];
   }, [activeItems]);
 
   const filteredItems = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+
     return activeItems.filter((item) => {
-      const matchSearch =
-        !searchQuery ||
-        item.itemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const name = (item.itemName || "").toLowerCase();
+      const desc = (item.description || "").toLowerCase();
+      const matchSearch = !q || name.includes(q) || desc.includes(q);
+
       const matchCategory =
-        activeCategory === "All" || item.category === activeCategory;
+        activeCategory === "All" ||
+        (item.category || "").toLowerCase() === activeCategory.toLowerCase();
+
       const matchFoodType =
-        activeFoodType === "All" || item.foodType === activeFoodType;
-      
+        activeFoodType === "All" ||
+        (item.foodType || "").toLowerCase() === activeFoodType.toLowerCase();
+
       const isCustomizable =
-        item.customizationOptions?.isCustomizable ||
-        (item.customizationOptions?.sizes && item.customizationOptions.sizes.length > 0) ||
-        (item.customizationOptions?.addOns && item.customizationOptions.addOns.length > 0);
+        Boolean(item.customizationOptions?.isCustomizable) ||
+        (Array.isArray(item.customizationOptions?.sizes) && item.customizationOptions.sizes.length > 0) ||
+        (Array.isArray(item.customizationOptions?.addOns) && item.customizationOptions.addOns.length > 0) ||
+        (Array.isArray(item.customizationOptions?.crustsOrBases) && item.customizationOptions.crustsOrBases.length > 0);
 
       const matchCustomizable = !onlyCustomizable || isCustomizable;
 
@@ -189,16 +195,22 @@ const RestaurantMenu = ({ menuItems, restaurantId, restaurantName }) => {
           {filteredItems.length === 0 ? (
             <div className="py-16 text-center text-slate-400">
               <span className="text-4xl">🍽️</span>
-              <p className="text-sm font-bold text-slate-700 mt-2">No matching dishes</p>
+              <p className="text-sm font-bold text-slate-700 mt-2">
+                {activeItems.length === 0
+                  ? "No dishes listed yet"
+                  : "No matching dishes"}
+              </p>
               <p className="text-xs text-slate-400 mt-1">
-                Try switching category tabs or clearing your custom filters.
+                {activeItems.length === 0
+                  ? "This restaurant has not added any dishes to their menu yet."
+                  : "Try switching category tabs or clearing your custom filters."}
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-              {filteredItems.map((item) => (
+              {filteredItems.map((item, idx) => (
                 <MenuItemCard
-                  key={item._id}
+                  key={item._id || item.id || `menu-item-${idx}`}
                   item={item}
                   restaurantId={restaurantId}
                   restaurantName={restaurantName}

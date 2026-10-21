@@ -31,8 +31,34 @@ const RestaurantDetailsPage = () => {
           `/public/restaurant-detail/${restaurantId}`
         );
 
-        setDetails(response.data.data);
+        // Server returns { data: { restaurantId: { ... }, menuItems: [ ... ] } }
+        // In Axios, response.data holds the server body: { data: { ... } }
+        // We safely handle response.data.data, response.data, and any variations
+        const resBody = response?.data;
+        const payload = resBody?.data || resBody || {};
+
+        const restaurant =
+          payload.restaurantId ||
+          payload.restaurant ||
+          resBody?.restaurantId ||
+          resBody?.restaurant ||
+          (payload._id ? payload : null);
+
+        const menuItems = Array.isArray(payload.menuItems)
+          ? payload.menuItems
+          : Array.isArray(resBody?.menuItems)
+          ? resBody.menuItems
+          : Array.isArray(payload.menu)
+          ? payload.menu
+          : [];
+
+        setDetails({
+          restaurant,
+          restaurantId: restaurant, // preserve compatibility
+          menuItems,
+        });
       } catch (error) {
+        console.error("Failed to load restaurant details:", error);
         toast.error(
           error.response?.data?.message ||
             "Failed to load restaurant details. Please try again."
@@ -51,7 +77,9 @@ const RestaurantDetailsPage = () => {
     return <Loader height="80vh" width="100%" text="Fetching fresh menu & restaurant details..." />;
   }
 
-  if (!details || !details.restaurantId) {
+  const restaurant = details?.restaurant || details?.restaurantId;
+
+  if (!details || !restaurant) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center gap-4 text-center p-6">
         <TbChefHat className="text-6xl text-(--color-primary)" />
@@ -71,8 +99,6 @@ const RestaurantDetailsPage = () => {
       </div>
     );
   }
-
-  const restaurant = details.restaurantId;
 
   return (
     <div className="min-h-screen bg-(--color-base-200) pb-24 relative">
@@ -96,7 +122,7 @@ const RestaurantDetailsPage = () => {
         <div className="order-1 lg:order-2">
           <RestaurantMenu
             menuItems={details.menuItems || []}
-            restaurantId={restaurant._id}
+            restaurantId={restaurant._id || restaurantId}
             restaurantName={restaurant.restaurantName}
           />
         </div>

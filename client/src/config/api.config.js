@@ -6,8 +6,11 @@ const DEFAULT_API_BASE_URL =
     ? "https://cravings-bdyf.onrender.com"
     : "http://localhost:4500";
 
+const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
+const baseURL = rawBaseUrl.replace(/\/+$/, "");
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL,
+  baseURL,
   withCredentials: true,
 });
 
